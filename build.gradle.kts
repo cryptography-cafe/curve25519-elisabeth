@@ -32,6 +32,9 @@ tasks.register<Javadoc>("internalDocs") {
 val javaHome: String by project
 val targetJavaHome = if (hasProperty("javaHome")) javaHome else System.getenv("TARGET_JAVA_HOME")
 if (targetJavaHome != null) {
+    println("Target Java home set to ${targetJavaHome}")
+    println("Configuring Gradle to use forked compilation and testing")
+
     val javaExecutablesPath = File(targetJavaHome, "bin")
     fun javaExecutable(execName: String): String {
         val executable = File(javaExecutablesPath, execName)
