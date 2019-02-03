@@ -258,13 +258,27 @@ class FieldElement {
 
     /**
      * Constant-time selection between two FieldElements.
+     * <p>
+     * Implemented as a conditional copy. Logic is inspired by the SUPERCOP
+     * implementation.
      *
      * @param that the other field element.
      * @param b    must be 0 or 1, otherwise results are undefined.
-     * @return this if $b == 0$, or val if $b == 1$.
+     * @return a copy of this if $b == 0$, or a copy of val if $b == 1$.
+     * @see <a href=
+     *      "https://github.com/floodyberry/supercop/blob/master/crypto_sign/ed25519/ref10/fe_cmov.c"
+     *      target="_top">SUPERCOP</a>
      */
     public FieldElement ctSelect(FieldElement that, int b) {
-        throw new UnsupportedOperationException();
+        b = -b;
+        int[] result = new int[10];
+        for (int i = 0; i < 10; i++) {
+            result[i] = this.t[i];
+            int x = this.t[i] ^ that.t[i];
+            x &= b;
+            result[i] ^= x;
+        }
+        return new FieldElement(result);
     }
 
     /**
