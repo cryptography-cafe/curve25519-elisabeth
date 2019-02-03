@@ -28,6 +28,22 @@ tasks.register<Javadoc>("internalDocs") {
         .addBooleanOption("private", true)
 }
 
+// Set up bootstrapClasspath for Java 7.
+val java7BootClasspath: String by project
+val bootClasspath = if (hasProperty("java7BootClasspath")) java7BootClasspath else {
+    var java7Home = System.getenv("JAVA7_HOME")
+    if (java7Home != null) {
+        "${java7Home}/jre/lib/jce.jar:${java7Home}/jre/lib/rt.jar"
+    } else null
+}
+if (bootClasspath != null) {
+    tasks.withType<JavaCompile>().configureEach {
+        options.apply {
+            bootstrapClasspath = files(bootClasspath)
+        }
+    }
+}
+
 // Set up Java override if configured (used to test with Java 7).
 val javaHome: String by project
 val targetJavaHome = if (hasProperty("javaHome")) javaHome else System.getenv("TARGET_JAVA_HOME")
