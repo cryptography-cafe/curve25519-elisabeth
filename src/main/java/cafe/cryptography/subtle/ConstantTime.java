@@ -22,14 +22,22 @@ public final class ConstantTime {
 
     /**
      * Constant-time byte[] comparison.
+     * <p>
+     * Fails fast if the lengths differ.
      *
      * @param b a byte[]
      * @param c a byte[]
      * @return 1 if b and c are equal, 0 otherwise.
      */
     public static int equal(byte[] b, byte[] c) {
+        // Fail-fast if the lengths differ
+        if (b.length != c.length) {
+            return 0;
+        }
+
+        // Now use a constant-time comparison
         int result = 0;
-        for (int i = 0; i < 32; i++) {
+        for (int i = 0; i < b.length; i++) {
             result |= b[i] ^ c[i];
         }
 

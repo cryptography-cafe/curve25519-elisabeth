@@ -1,5 +1,6 @@
 package cafe.cryptography.subtle;
 
+import java.util.Arrays;
 import java.util.Random;
 
 import org.hamcrest.core.IsEqual;
@@ -34,10 +35,21 @@ public class ConstantTimeTest {
     }
 
     @Test
+    public void equalOnByteArraysWithDifferentLengths() {
+        byte[] zeroNine = new byte[9];
+        byte[] zeroTen = new byte[10];
+
+        assertThat(ConstantTime.equal(zeroNine, zeroNine), is(1));
+        assertThat(ConstantTime.equal(zeroTen, zeroTen), is(1));
+        assertThat(ConstantTime.equal(zeroNine, zeroTen), is(0));
+        assertThat(ConstantTime.equal(zeroTen, zeroNine), is(0));
+    }
+
+    @Test
     public void equalOnByteArraysWithRandomData() {
         Random random = new Random(758094325);
 
-        for (int i = 32; i < 33; i++) {
+        for (int i = 1; i < 33; i++) {
             byte[] a = new byte[i];
             byte[] b = new byte[i];
 
@@ -48,6 +60,12 @@ public class ConstantTimeTest {
             assertThat(ConstantTime.equal(b, b), is(1));
             assertThat(ConstantTime.equal(a, b), is(0));
             assertThat(ConstantTime.equal(b, a), is(0));
+
+            // Test mutation in MSB
+            byte[] aPrime = Arrays.copyOf(a, i);
+            assertThat(ConstantTime.equal(a, aPrime), is(1));
+            aPrime[i - 1] += 1;
+            assertThat(ConstantTime.equal(a, aPrime), is(0));
         }
     }
 
