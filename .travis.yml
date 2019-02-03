@@ -16,3 +16,5 @@ matrix:
         - export TARGET_JAVA_HOME=$JAVA_HOME
         - jdk_switcher use oraclejdk8
         - ./gradlew assemble
+
+before_install: export JAVA7_HOME=$(jdk_switcher home openjdk7)
