@@ -34,6 +34,10 @@ public class Scalar {
      * group order $\ell$.
      */
     public static Scalar fromBytesModOrderWide(byte[] input) {
+        if (input.length != 64) {
+            throw new IllegalArgumentException("Input must by 64 bytes");
+        }
+
         // s0,..., s22 have 21 bits, s23 has 29 bits
         long s0 = 0x1FFFFF & load_3(input, 0);
         long s1 = 0x1FFFFF & (load_4(input, 2) >> 5);

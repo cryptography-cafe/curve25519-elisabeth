@@ -30,4 +30,14 @@ public class ScalarTest {
         Scalar S = new Scalar(TV1_S);
         assertThat(h.multiplyAndAdd(a, r), is(equalTo(S)));
     }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void fromBytesModOrderWideThrowsOnTooShort() {
+        Scalar.fromBytesModOrderWide(new byte[63]);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void fromBytesModOrderWideThrowsOnTooLong() {
+        Scalar.fromBytesModOrderWide(new byte[65]);
+    }
 }
