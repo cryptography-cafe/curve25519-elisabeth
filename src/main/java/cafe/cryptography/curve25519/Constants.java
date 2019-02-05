@@ -15,6 +15,16 @@ public final class Constants {
     });
 
     /**
+     * Edwards $2*d$ value, equal to $2*(-121665/121666) \bmod p$.
+     */
+    public static final FieldElement EDWARDS_2D = new FieldElement(new int[] {
+        // @formatter:off
+        -21827239,  -5839606, -30745221, 13898782,  229458,
+         15978800, -12551817,  -6495438, 29715968, 9444199,
+        // @formatter:on
+    });
+
+    /**
      * Precomputed value of one of the square roots of -1 (mod p).
      */
     public static final FieldElement SQRT_M1 = new FieldElement(new int[] {

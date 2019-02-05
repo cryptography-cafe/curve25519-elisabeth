@@ -81,6 +81,35 @@ public class EdwardsPoint {
     }
 
     /**
+     * Convert the representation of this point from extended coordinates to
+     * projective coordinates.
+     * <p>
+     * Free.
+     */
+    ProjectivePoint toProjective() {
+        return new ProjectivePoint(this.X, this.Y, this.Z);
+    }
+
+    /**
+     * Convert to a ProjectiveNielsPoint.
+     */
+    ProjectiveNielsPoint toProjectiveNiels() {
+        return new ProjectiveNielsPoint(this.Y.add(this.X), this.Y.subtract(this.X), this.Z,
+                this.T.multiply(Constants.EDWARDS_2D));
+    }
+
+    /**
+     * Dehomogenize to an AffineNielsPoint.
+     */
+    AffineNielsPoint toAffineNiels() {
+        FieldElement recip = this.Z.invert();
+        FieldElement x = this.X.multiply(recip);
+        FieldElement y = this.Y.multiply(recip);
+        FieldElement xy2D = x.multiply(y).multiply(Constants.EDWARDS_2D);
+        return new AffineNielsPoint(y.add(x), y.subtract(x), xy2D);
+    }
+
+    /**
      * Point addition.
      *
      * @param Q the point to add to this one.
