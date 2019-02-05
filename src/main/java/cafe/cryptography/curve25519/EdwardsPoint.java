@@ -25,7 +25,12 @@ public class EdwardsPoint {
      * @return the encoded point.
      */
     public CompressedEdwardsY compress() {
-        throw new UnsupportedOperationException();
+        FieldElement recip = this.Z.invert();
+        FieldElement x = this.X.multiply(recip);
+        FieldElement y = this.Y.multiply(recip);
+        byte[] s = y.toByteArray();
+        s[31] |= (x.isNegative() << 7);
+        return new CompressedEdwardsY(s);
     }
 
     /**
