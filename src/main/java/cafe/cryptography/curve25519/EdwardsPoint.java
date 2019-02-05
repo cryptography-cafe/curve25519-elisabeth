@@ -116,7 +116,40 @@ public class EdwardsPoint {
      * @return $P + Q$
      */
     public EdwardsPoint add(EdwardsPoint Q) {
-        throw new UnsupportedOperationException();
+        return this.add(Q.toProjectiveNiels()).toExtended();
+    }
+
+    /**
+     * Point addition.
+     *
+     * @param Q the point to add to this one, in projective "Niels coordinates".
+     * @return $P + Q$
+     */
+    CompletedPoint add(ProjectiveNielsPoint Q) {
+        FieldElement YPlusX = this.Y.add(this.X);
+        FieldElement YMinusX = this.Y.subtract(this.X);
+        FieldElement PP = YPlusX.multiply(Q.YPlusX);
+        FieldElement MM = YMinusX.multiply(Q.YMinusX);
+        FieldElement TT2D = this.T.multiply(Q.T2D);
+        FieldElement ZZ = this.Z.multiply(Q.Z);
+        FieldElement ZZ2 = ZZ.add(ZZ);
+        return new CompletedPoint(PP.subtract(MM), PP.add(MM), ZZ2.add(TT2D), ZZ2.subtract(TT2D));
+    }
+
+    /**
+     * Point addition.
+     *
+     * @param Q the point to add to this one, in affine "Niels coordinates".
+     * @return $P + Q$
+     */
+    CompletedPoint add(AffineNielsPoint q) {
+        FieldElement YPlusX = this.Y.add(this.X);
+        FieldElement YMinusX = this.Y.subtract(this.X);
+        FieldElement PP = YPlusX.multiply(q.yPlusx);
+        FieldElement MM = YMinusX.multiply(q.yMinusx);
+        FieldElement Txy2D = this.T.multiply(q.xy2D);
+        FieldElement Z2 = this.Z.add(this.Z);
+        return new CompletedPoint(PP.subtract(MM), PP.add(MM), Z2.add(Txy2D), Z2.subtract(Txy2D));
     }
 
     /**
