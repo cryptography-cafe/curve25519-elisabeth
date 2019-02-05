@@ -269,6 +269,15 @@ public class EdwardsPoint {
     }
 
     /**
+     * Determine if this point is the identity.
+     *
+     * @return true if this point is the identity, false otherwise.
+     */
+    public boolean isIdentity() {
+        return this.ctEquals(EdwardsPoint.IDENTITY) == 1;
+    }
+
+    /**
      * Determine if this point is in the 8-torsion subgroup $(\mathcal E[8])$, and
      * therefore of small order.
      *

@@ -3,7 +3,9 @@ package cafe.cryptography.curve25519;
 import org.junit.*;
 
 import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 public class EdwardsPointTest {
     /**
@@ -83,5 +85,11 @@ public class EdwardsPointTest {
     @Test
     public void basepointMulByPow24VsBasepoint16Constant() {
         assertThat(Constants.ED25519_BASEPOINT.multiplyByPow2(4), is(BASE16_CMPRSSD.decompress()));
+    }
+
+    @Test
+    public void isIdentity() {
+        assertTrue(EdwardsPoint.IDENTITY.isIdentity());
+        assertFalse(Constants.ED25519_BASEPOINT.isIdentity());
     }
 }
