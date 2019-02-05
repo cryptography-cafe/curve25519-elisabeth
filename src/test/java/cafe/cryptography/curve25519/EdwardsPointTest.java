@@ -43,4 +43,10 @@ public class EdwardsPointTest {
         EdwardsPoint B2 = Constants.ED25519_BASEPOINT.dbl();
         assertThat(B2.compress(), is(BASE2_CMPRSSD));
     }
+
+    @Test
+    public void basepointDoubleMinusBasepoint() {
+        EdwardsPoint B2 = Constants.ED25519_BASEPOINT.dbl();
+        assertThat(B2.subtract(Constants.ED25519_BASEPOINT), is(Constants.ED25519_BASEPOINT));
+    }
 }
