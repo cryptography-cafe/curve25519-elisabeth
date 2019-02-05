@@ -177,7 +177,7 @@ public class EdwardsPoint {
      * @return $[2]P$
      */
     public EdwardsPoint dbl() {
-        throw new UnsupportedOperationException();
+        return this.toProjective().dbl().toExtended();
     }
 
     /**

@@ -22,4 +22,20 @@ class ProjectivePoint {
     EdwardsPoint toExtended() {
         return new EdwardsPoint(this.X.multiply(this.Z), Y.multiply(this.Z), this.Z.square(), this.X.multiply(this.Y));
     }
+
+    /**
+     * Point doubling: add this point to itself.
+     *
+     * @return $[2]P$ as a CompletedPoint.
+     */
+    CompletedPoint dbl() {
+        FieldElement XX = this.X.square();
+        FieldElement YY = this.Y.square();
+        FieldElement ZZ2 = this.Z.squareAndDouble();
+        FieldElement XPlusY = this.X.add(this.Y);
+        FieldElement XPlusYSq = XPlusY.square();
+        FieldElement YYPlusXX = YY.add(XX);
+        FieldElement YYMinusXX = YY.subtract(XX);
+        return new CompletedPoint(XPlusYSq.subtract(YYPlusXX), YYPlusXX, YYMinusXX, ZZ2.subtract(YYMinusXX));
+    }
 }

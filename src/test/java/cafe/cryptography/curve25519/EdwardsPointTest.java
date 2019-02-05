@@ -37,4 +37,10 @@ public class EdwardsPointTest {
         EdwardsPoint B2 = Constants.ED25519_BASEPOINT.add(Constants.ED25519_BASEPOINT.toAffineNiels()).toExtended();
         assertThat(B2.compress(), is(EdwardsPointTest.BASE2_CMPRSSD));
     }
+
+    @Test
+    public void basepointDoubleVsBasepoint2Constant() {
+        EdwardsPoint B2 = Constants.ED25519_BASEPOINT.dbl();
+        assertThat(B2.compress(), is(BASE2_CMPRSSD));
+    }
 }
