@@ -40,4 +40,40 @@ public class ScalarTest {
     public void fromBytesModOrderWideThrowsOnTooLong() {
         Scalar.fromBytesModOrderWide(new byte[65]);
     }
+
+    static final Scalar FORTYTWO = new Scalar(
+            Utils.hexToBytes("2A00000000000000000000000000000000000000000000000000000000000000"));
+    static final Scalar S1234567890 = new Scalar(
+            Utils.hexToBytes("D202964900000000000000000000000000000000000000000000000000000000"));
+    static final byte[] RADIX16_ZERO = Utils.hexToBytes(
+            "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000");
+    static final byte[] RADIX16_ONE = Utils.hexToBytes(
+            "01000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000");
+    static final byte[] RADIX16_42 = Utils.hexToBytes(
+            "FA030000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000");
+
+    /**
+     * Test method for {@link GroupElement#toRadix16(byte[])}.
+     */
+    @Test
+    public void testToRadix16() {
+        assertThat(Scalar.ZERO.toRadix16(), is(RADIX16_ZERO));
+        assertThat(Scalar.ONE.toRadix16(), is(RADIX16_ONE));
+        assertThat(FORTYTWO.toRadix16(), is(RADIX16_42));
+
+        byte[] from1234567890 = S1234567890.toRadix16();
+        int total = 0;
+        for (int i = 0; i < from1234567890.length; i++) {
+            assertThat(from1234567890[i], is(greaterThanOrEqualTo((byte) -8)));
+            assertThat(from1234567890[i], is(lessThanOrEqualTo((byte) 7)));
+            total += from1234567890[i] * Math.pow(16, i);
+        }
+        assertThat(total, is(1234567890));
+
+        byte[] tv1HR16 = (new Scalar(TV1_H)).toRadix16();
+        for (int i = 0; i < tv1HR16.length; i++) {
+            assertThat(tv1HR16[i], is(greaterThanOrEqualTo((byte) -8)));
+            assertThat(tv1HR16[i], is(lessThanOrEqualTo((byte) 7)));
+        }
+    }
 }
