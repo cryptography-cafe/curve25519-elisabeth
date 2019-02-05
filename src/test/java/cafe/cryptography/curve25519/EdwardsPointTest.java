@@ -67,4 +67,10 @@ public class EdwardsPointTest {
         EdwardsPoint B2 = Constants.ED25519_BASEPOINT.dbl();
         assertThat(B2.subtract(Constants.ED25519_BASEPOINT), is(Constants.ED25519_BASEPOINT));
     }
+
+    @Test
+    public void basepointNegateVsZeroMinusBasepoint() {
+        assertThat(Constants.ED25519_BASEPOINT.negate(),
+                is(EdwardsPoint.IDENTITY.subtract(Constants.ED25519_BASEPOINT)));
+    }
 }

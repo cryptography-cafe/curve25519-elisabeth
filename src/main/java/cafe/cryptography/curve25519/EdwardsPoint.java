@@ -4,6 +4,9 @@ package cafe.cryptography.curve25519;
  * An EdwardsPoint represents a point on the Edwards form of Curve25519.
  */
 public class EdwardsPoint {
+    public static final EdwardsPoint IDENTITY = new EdwardsPoint(FieldElement.ZERO, FieldElement.ONE, FieldElement.ONE,
+            FieldElement.ZERO);
+
     final FieldElement X;
     final FieldElement Y;
     final FieldElement Z;
@@ -202,7 +205,7 @@ public class EdwardsPoint {
      * @return $-P$
      */
     public EdwardsPoint negate() {
-        throw new UnsupportedOperationException();
+        return new EdwardsPoint(this.X.negate(), this.Y, this.Z, this.T.negate());
     }
 
     /**
