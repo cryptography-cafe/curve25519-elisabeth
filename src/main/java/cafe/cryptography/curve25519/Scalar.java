@@ -26,6 +26,9 @@ public class Scalar {
     private final byte[] s;
 
     Scalar(byte[] s) {
+        if (s.length != 32 || (((s[31] >> 7) & 0x01) != 0)) {
+            throw new IllegalArgumentException("Invalid scalar representation");
+        }
         this.s = s;
     }
 

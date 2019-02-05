@@ -9,6 +9,30 @@ import static org.hamcrest.Matchers.lessThanOrEqualTo;
 import static org.junit.Assert.assertThat;
 
 public class ScalarTest {
+    @Test
+    public void packageConstructorDoesNotThrowOnValid() {
+        byte[] s = new byte[32];
+        s[31] = 0x7f;
+        new Scalar(s);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void packageConstructorThrowsOnHighBitSet() {
+        byte[] s = new byte[32];
+        s[31] = (byte) 0x80;
+        new Scalar(s);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void packageConstructorThrowsOnTooShort() {
+        new Scalar(new byte[31]);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void packageConstructorThrowsOnTooLong() {
+        new Scalar(new byte[33]);
+    }
+
     // Example from RFC 8032 test case 1
     static final byte[] TV1_R_INPUT = Utils.hexToBytes(
             "b6b19cd8e0426f5983fa112d89a143aa97dab8bc5deb8d5b6253c928b65272f4044098c2a990039cde5b6a4818df0bfb6e40dc5dee54248032962323e701352d");
