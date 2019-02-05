@@ -26,6 +26,33 @@ public class EdwardsPointTest {
     static final CompressedEdwardsY BASE16_CMPRSSD = new CompressedEdwardsY(
             Utils.hexToBytes("eb2767c137ab7ad8279c078eff116ab0786ead3a2e0f989f72c37f82f2969670"));
 
+    /**
+     * The 8-torsion subgroup $\mathcal E [8]$.
+     * <p>
+     * In the case of Curve25519, it is cyclic; the $i$-th element of the array is
+     * $[i]P$, where $P$ is a point of order $8$ generating $\mathcal E[8]$.
+     * <p>
+     * Thus $\mathcal E[8]$ is the points indexed by 0,2,4,6, and $\mathcal E[2]$ is
+     * the points indexed by 0,4.
+     */
+    static final CompressedEdwardsY[] EIGHT_TORSION_COMPRESSED = new CompressedEdwardsY[] {
+            new CompressedEdwardsY(
+                    Utils.hexToBytes("0100000000000000000000000000000000000000000000000000000000000000")),
+            new CompressedEdwardsY(
+                    Utils.hexToBytes("c7176a703d4dd84fba3c0b760d10670f2a2053fa2c39ccc64ec7fd7792ac037a")),
+            new CompressedEdwardsY(
+                    Utils.hexToBytes("0000000000000000000000000000000000000000000000000000000000000080")),
+            new CompressedEdwardsY(
+                    Utils.hexToBytes("26e8958fc2b227b045c3f489f2ef98f0d5dfac05d3c63339b13802886d53fc05")),
+            new CompressedEdwardsY(
+                    Utils.hexToBytes("ecffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff7f")),
+            new CompressedEdwardsY(
+                    Utils.hexToBytes("26e8958fc2b227b045c3f489f2ef98f0d5dfac05d3c63339b13802886d53fc85")),
+            new CompressedEdwardsY(
+                    Utils.hexToBytes("0000000000000000000000000000000000000000000000000000000000000000")),
+            new CompressedEdwardsY(
+                    Utils.hexToBytes("c7176a703d4dd84fba3c0b760d10670f2a2053fa2c39ccc64ec7fd7792ac03fa")) };
+
     @Test
     public void basepointDecompressionCompression() {
         EdwardsPoint B = ED25519_BASEPOINT_COMPRESSED.decompress();
@@ -91,5 +118,15 @@ public class EdwardsPointTest {
     public void isIdentity() {
         assertTrue(EdwardsPoint.IDENTITY.isIdentity());
         assertFalse(Constants.ED25519_BASEPOINT.isIdentity());
+    }
+
+    @Test
+    public void isSmallOrder() {
+        // The basepoint has large prime order
+        assertFalse(Constants.ED25519_BASEPOINT.isSmallOrder());
+        // EIGHT_TORSION_COMPRESSED has all points of small order.
+        for (int i = 0; i < EIGHT_TORSION_COMPRESSED.length; i++) {
+            assertTrue(EIGHT_TORSION_COMPRESSED[i].decompress().isSmallOrder());
+        }
     }
 }

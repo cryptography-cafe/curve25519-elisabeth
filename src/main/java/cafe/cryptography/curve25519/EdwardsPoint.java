@@ -284,7 +284,7 @@ public class EdwardsPoint {
      * @return true if this point is of small order, false otherwise.
      */
     public boolean isSmallOrder() {
-        throw new UnsupportedOperationException();
+        return this.multiplyByCofactor().isIdentity();
     }
 
     /**
