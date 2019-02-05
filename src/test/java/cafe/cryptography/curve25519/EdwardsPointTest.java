@@ -18,6 +18,12 @@ public class EdwardsPointTest {
     static final CompressedEdwardsY BASE2_CMPRSSD = new CompressedEdwardsY(
             Utils.hexToBytes("c9a3f86aae465f0e56513864510f3997561fa2c9e85ea21dc2292309f3cd6022"));
 
+    /**
+     * Compressed Edwards Y form of 16*basepoint.
+     */
+    static final CompressedEdwardsY BASE16_CMPRSSD = new CompressedEdwardsY(
+            Utils.hexToBytes("eb2767c137ab7ad8279c078eff116ab0786ead3a2e0f989f72c37f82f2969670"));
+
     @Test
     public void basepointDecompressionCompression() {
         EdwardsPoint B = ED25519_BASEPOINT_COMPRESSED.decompress();
@@ -72,5 +78,10 @@ public class EdwardsPointTest {
     public void basepointNegateVsZeroMinusBasepoint() {
         assertThat(Constants.ED25519_BASEPOINT.negate(),
                 is(EdwardsPoint.IDENTITY.subtract(Constants.ED25519_BASEPOINT)));
+    }
+
+    @Test
+    public void basepointMulByPow24VsBasepoint16Constant() {
+        assertThat(Constants.ED25519_BASEPOINT.multiplyByPow2(4), is(BASE16_CMPRSSD.decompress()));
     }
 }

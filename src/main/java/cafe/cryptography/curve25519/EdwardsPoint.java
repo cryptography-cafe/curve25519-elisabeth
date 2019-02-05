@@ -247,7 +247,25 @@ public class EdwardsPoint {
      * @return $[8]P$
      */
     public EdwardsPoint multiplyByCofactor() {
-        throw new UnsupportedOperationException();
+        return this.multiplyByPow2(3);
+    }
+
+    /**
+     * Compute $[2^k]P$ by successive doublings.
+     *
+     * @param k the exponent of 2. Must be positive and non-zero.
+     * @return $[2^k]P$
+     */
+    EdwardsPoint multiplyByPow2(int k) {
+        if (!(k > 0)) {
+            throw new IllegalArgumentException("Exponent must be positive and non-zero");
+        }
+        ProjectivePoint s = this.toProjective();
+        for (int i = 0; i < k - 1; i++) {
+            s = s.dbl().toProjective();
+        }
+        // Unroll last doubling so we can go directly to extended coordinates.
+        return s.dbl().toExtended();
     }
 
     /**
