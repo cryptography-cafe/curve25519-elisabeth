@@ -55,7 +55,8 @@ public class EdwardsPoint {
      * @return a copy of this if $b == 0$, or a copy of that if $b == 1$.
      */
     public EdwardsPoint ctSelect(EdwardsPoint that, int b) {
-        throw new UnsupportedOperationException();
+        return new EdwardsPoint(this.X.ctSelect(that.X, b), this.Y.ctSelect(that.Y, b), this.Z.ctSelect(that.Z, b),
+                this.T.ctSelect(that.T, b));
     }
 
     /**

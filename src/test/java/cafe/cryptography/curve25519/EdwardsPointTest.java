@@ -86,6 +86,14 @@ public class EdwardsPointTest {
     }
 
     @Test
+    public void ctSelectReturnsCorrectResult() {
+        assertThat(Constants.ED25519_BASEPOINT.ctSelect(EdwardsPoint.IDENTITY, 0), is(Constants.ED25519_BASEPOINT));
+        assertThat(Constants.ED25519_BASEPOINT.ctSelect(EdwardsPoint.IDENTITY, 1), is(EdwardsPoint.IDENTITY));
+        assertThat(EdwardsPoint.IDENTITY.ctSelect(Constants.ED25519_BASEPOINT, 0), is(EdwardsPoint.IDENTITY));
+        assertThat(EdwardsPoint.IDENTITY.ctSelect(Constants.ED25519_BASEPOINT, 1), is(Constants.ED25519_BASEPOINT));
+    }
+
+    @Test
     public void basepointPlusBasepointVsBasepoint2Constant() {
         EdwardsPoint B2 = Constants.ED25519_BASEPOINT.add(Constants.ED25519_BASEPOINT);
         assertThat(B2.compress(), is(BASE2_CMPRSSD));
