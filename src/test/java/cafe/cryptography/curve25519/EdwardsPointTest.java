@@ -27,6 +27,18 @@ public class EdwardsPointTest {
             Utils.hexToBytes("eb2767c137ab7ad8279c078eff116ab0786ead3a2e0f989f72c37f82f2969670"));
 
     /**
+     * 4493907448824000747700850167940867464579944529806937181821189941592931634714
+     */
+    static final Scalar A_SCALAR = new Scalar(
+            Utils.hexToBytes("1a0e978a90f6622d3747023f8ad8264da758aa1b88e040d1589e7b7f2376ef09"));
+
+    /**
+     * A_SCALAR * basepoint, computed with ed25519.py
+     */
+    static final CompressedEdwardsY A_TIMES_BASEPOINT = new CompressedEdwardsY(
+            Utils.hexToBytes("ea27e26053df1b5956f14d5dec3c34c384a269b74cc3803ea8e2e7c9425e40a5"));
+
+    /**
      * The 8-torsion subgroup $\mathcal E [8]$.
      * <p>
      * In the case of Curve25519, it is cyclic; the $i$-th element of the array is
@@ -107,6 +119,12 @@ public class EdwardsPointTest {
     public void basepointNegateVsZeroMinusBasepoint() {
         assertThat(Constants.ED25519_BASEPOINT.negate(),
                 is(EdwardsPoint.IDENTITY.subtract(Constants.ED25519_BASEPOINT)));
+    }
+
+    @Test
+    public void scalarMulVsEd25519py() {
+        EdwardsPoint aB = Constants.ED25519_BASEPOINT.multiply(A_SCALAR);
+        assertThat(aB.compress(), is(A_TIMES_BASEPOINT));
     }
 
     @Test

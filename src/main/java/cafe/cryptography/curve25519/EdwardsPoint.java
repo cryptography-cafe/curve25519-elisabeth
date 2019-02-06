@@ -224,7 +224,31 @@ public class EdwardsPoint {
      * @return $[s]P$
      */
     public EdwardsPoint multiply(final Scalar s) {
-        throw new UnsupportedOperationException();
+        // Construct a lookup table of [P,2P,3P,4P,5P,6P,7P,8P]
+        final ProjectiveNielsPoint.LookupTable lookupTable = ProjectiveNielsPoint.buildLookupTable(this);
+
+        // Compute
+        //
+        // s = s_0 + s_1*16^1 + ... + s_63*16^63,
+        //
+        // with -8 ≤ s_i < 8 for 0 ≤ i < 63 and -8 ≤ s_63 ≤ 8.
+        final byte[] e = s.toRadix16();
+
+        // Compute s*P as
+        //
+        // @formatter:off
+        //    s*P = P*(s_0 +   s_1*16^1 +   s_2*16^2 + ... +   s_63*16^63)
+        //    s*P =  P*s_0 + P*s_1*16^1 + P*s_2*16^2 + ... + P*s_63*16^63
+        //    s*P = P*s_0 + 16*(P*s_1 + 16*(P*s_2 + 16*( ... + P*s_63)...))
+        // @formatter:on
+        //
+        // We sum right-to-left.
+        EdwardsPoint Q = EdwardsPoint.IDENTITY;
+        for (int i = 63; i >= 0; i--) {
+            Q = Q.multiplyByPow2(4);
+            Q = Q.add(lookupTable.select(e[i])).toExtended();
+        }
+        return Q;
     }
 
     /**
