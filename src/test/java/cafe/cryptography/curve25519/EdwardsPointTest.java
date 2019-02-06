@@ -33,10 +33,23 @@ public class EdwardsPointTest {
             Utils.hexToBytes("1a0e978a90f6622d3747023f8ad8264da758aa1b88e040d1589e7b7f2376ef09"));
 
     /**
+     * 2506056684125797857694181776241676200180934651973138769173342316833279714961
+     */
+    static final Scalar B_SCALAR = new Scalar(
+            Utils.hexToBytes("91267acf25c2091ba217747b66f0b32e9df2a56741cfdac456a7d4aab8608a05"));
+
+    /**
      * A_SCALAR * basepoint, computed with ed25519.py
      */
     static final CompressedEdwardsY A_TIMES_BASEPOINT = new CompressedEdwardsY(
             Utils.hexToBytes("ea27e26053df1b5956f14d5dec3c34c384a269b74cc3803ea8e2e7c9425e40a5"));
+
+    /**
+     * A_SCALAR * (A_TIMES_BASEPOINT) + B_SCALAR * BASEPOINT computed with
+     * ed25519.py
+     */
+    static final CompressedEdwardsY DOUBLE_SCALAR_MULT_RESULT = new CompressedEdwardsY(
+            Utils.hexToBytes("7dfd6c45af6d6e0eba20371a236459c4c0468343de704b85096ffe354f132b42"));
 
     /**
      * The 8-torsion subgroup $\mathcal E [8]$.
@@ -133,6 +146,46 @@ public class EdwardsPointTest {
     public void scalarMulVsEd25519py() {
         EdwardsPoint aB = Constants.ED25519_BASEPOINT.multiply(A_SCALAR);
         assertThat(aB.compress(), is(A_TIMES_BASEPOINT));
+    }
+
+    @Test
+    public void testVartimeDoubleScalarMultiplyBasepoint() {
+        // Little-endian
+        Scalar zero = Scalar.ZERO;
+        Scalar one = Scalar.ONE;
+        Scalar two = new Scalar(Utils.hexToBytes("0200000000000000000000000000000000000000000000000000000000000000"));
+        Scalar a = new Scalar(Utils.hexToBytes("d072f8dd9c07fa7bc8d22a4b325d26301ee9202f6db89aa7c3731529e37e437c"));
+        EdwardsPoint A = new CompressedEdwardsY(
+                Utils.hexToBytes("d4cf8595571830644bd14af416954d09ab7159751ad9e0f7a6cbd92379e71a66")).decompress();
+        EdwardsPoint B = Constants.ED25519_BASEPOINT;
+        EdwardsPoint I = EdwardsPoint.IDENTITY;
+
+        // 0 * I + 0 * B = I
+        assertThat(EdwardsPoint.vartimeDoubleScalarMultiplyBasepoint(zero, I, zero), is(I));
+        // 1 * I + 0 * B = I
+        assertThat(EdwardsPoint.vartimeDoubleScalarMultiplyBasepoint(one, I, zero), is(I));
+        // 1 * I + 1 * B = B
+        assertThat(EdwardsPoint.vartimeDoubleScalarMultiplyBasepoint(one, I, one), is(B));
+        // 1 * B + 1 * B = 2 * B
+        assertThat(EdwardsPoint.vartimeDoubleScalarMultiplyBasepoint(one, B, one), is(B.dbl()));
+        // 1 * B + 2 * B = 3 * B
+        assertThat(EdwardsPoint.vartimeDoubleScalarMultiplyBasepoint(one, B, two), is(B.dbl().add(B)));
+        // 2 * B + 2 * B = 4 * B
+        assertThat(EdwardsPoint.vartimeDoubleScalarMultiplyBasepoint(two, B, two), is(B.dbl().dbl()));
+
+        // 0 * B + a * B = A
+        assertThat(EdwardsPoint.vartimeDoubleScalarMultiplyBasepoint(zero, B, a), is(A));
+        // a * B + 0 * B = A
+        assertThat(EdwardsPoint.vartimeDoubleScalarMultiplyBasepoint(a, B, zero), is(A));
+        // a * B + a * B = 2 * A
+        assertThat(EdwardsPoint.vartimeDoubleScalarMultiplyBasepoint(a, B, a), is(A.dbl()));
+    }
+
+    @Test
+    public void doubleScalarMulBasepointVsEd25519py() {
+        EdwardsPoint A = A_TIMES_BASEPOINT.decompress();
+        EdwardsPoint result = EdwardsPoint.vartimeDoubleScalarMultiplyBasepoint(A_SCALAR, A, B_SCALAR);
+        assertThat(result.compress(), is(DOUBLE_SCALAR_MULT_RESULT));
     }
 
     @Test

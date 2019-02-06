@@ -263,7 +263,38 @@ public class EdwardsPoint {
      */
     public static EdwardsPoint vartimeDoubleScalarMultiplyBasepoint(final Scalar a, final EdwardsPoint A,
             final Scalar b) {
-        throw new UnsupportedOperationException();
+        final byte[] aNaf = a.nonAdjacentForm();
+        final byte[] bNaf = b.nonAdjacentForm();
+
+        ProjectiveNielsPoint.NafLookupTable tableA = ProjectiveNielsPoint.buildNafLookupTable(A);
+        AffineNielsPoint.NafLookupTable tableB = AffineNielsPoint.buildNafLookupTable(Constants.ED25519_BASEPOINT);
+
+        int i;
+        for (i = 255; i >= 0; --i) {
+            if (aNaf[i] != 0 || bNaf[i] != 0)
+                break;
+        }
+
+        ProjectivePoint r = EdwardsPoint.IDENTITY.toProjective();
+        for (; i >= 0; --i) {
+            CompletedPoint t = r.dbl();
+
+            if (aNaf[i] > 0) {
+                t = t.toExtended().add(tableA.select(aNaf[i]));
+            } else if (aNaf[i] < 0) {
+                t = t.toExtended().subtract(tableA.select(-aNaf[i]));
+            }
+
+            if (bNaf[i] > 0) {
+                t = t.toExtended().add(tableB.select(bNaf[i]));
+            } else if (bNaf[i] < 0) {
+                t = t.toExtended().subtract(tableB.select(-bNaf[i]));
+            }
+
+            r = t.toProjective();
+        }
+
+        return r.toExtended();
     }
 
     /**

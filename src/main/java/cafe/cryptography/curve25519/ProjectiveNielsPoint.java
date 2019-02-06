@@ -93,4 +93,43 @@ class ProjectiveNielsPoint {
             return t.ctSelect(tminus, xNegative);
         }
     }
+
+    /**
+     * Construct a lookup table of $[P, [3]P, [5]P, [7]P, [9]P, [11]P, [13]P,
+     * [15]P]$.
+     *
+     * @param P the point to calculate multiples for.
+     * @return the lookup table.
+     */
+    static NafLookupTable buildNafLookupTable(EdwardsPoint P) {
+        ProjectiveNielsPoint[] points = new ProjectiveNielsPoint[8];
+        points[0] = P.toProjectiveNiels();
+        EdwardsPoint P2 = P.dbl();
+        for (int i = 0; i < 7; i++) {
+            points[i + 1] = P2.add(points[i]).toExtended().toProjectiveNiels();
+        }
+        return new ProjectiveNielsPoint.NafLookupTable(points);
+    }
+
+    static class NafLookupTable {
+        private final ProjectiveNielsPoint[] table;
+
+        NafLookupTable(ProjectiveNielsPoint[] table) {
+            this.table = table;
+        }
+
+        /**
+         * Given public, odd $x$ with $0 < x < 2^4$, return $[x]A$.
+         *
+         * @param x the index.
+         * @return the pre-computed point.
+         */
+        ProjectiveNielsPoint select(final int x) {
+            if ((x % 2 == 0) || x >= 16) {
+                throw new IllegalArgumentException("invalid x");
+            }
+
+            return this.table[x / 2];
+        }
+    }
 }

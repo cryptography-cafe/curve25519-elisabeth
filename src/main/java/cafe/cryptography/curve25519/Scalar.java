@@ -774,4 +774,45 @@ public class Scalar {
         /* each e[i] is between -8 and 7 */
         return e;
     }
+
+    /**
+     * Compute a width-$w$ "Non-Adjacent Form" of this scalar.
+     *
+     * @return The byte array $naf$ in the above described form.
+     */
+    byte[] nonAdjacentForm() {
+        byte[] naf = new byte[256];
+
+        // Put each bit of this into a separate byte, 0 or 1
+        for (int i = 0; i < 256; ++i) {
+            naf[i] = (byte) (1 & (this.s[i >> 3] >> (i & 7)));
+        }
+
+        // Note: naf[i] will always be odd.
+        for (int i = 0; i < 256; ++i) {
+            if (naf[i] != 0) {
+                for (int b = 1; b <= 6 && i + b < 256; ++b) {
+                    // Accumulate bits if possible
+                    if (naf[i + b] != 0) {
+                        if (naf[i] + (naf[i + b] << b) <= 15) {
+                            naf[i] += naf[i + b] << b;
+                            naf[i + b] = 0;
+                        } else if (naf[i] - (naf[i + b] << b) >= -15) {
+                            naf[i] -= naf[i + b] << b;
+                            for (int k = i + b; k < 256; ++k) {
+                                if (naf[k] == 0) {
+                                    naf[k] = 1;
+                                    break;
+                                }
+                                naf[k] = 0;
+                            }
+                        } else
+                            break;
+                    }
+                }
+            }
+        }
+
+        return naf;
+    }
 }
