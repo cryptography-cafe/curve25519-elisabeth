@@ -1226,4 +1226,19 @@ class FieldElement {
         // 2^252 - 3
         return multiply(t0);
     }
+
+    /**
+     * For debugging.
+     */
+    String printInternalRepresentation() {
+        String ir = "FieldElement([";
+        for (int i = 0; i < this.t.length; i++) {
+            if (i > 0) {
+                ir += ", ";
+            }
+            ir += t[i];
+        }
+        ir += "])";
+        return ir;
+    }
 }

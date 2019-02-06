@@ -297,4 +297,17 @@ public class EdwardsPoint {
     public boolean isTorsionFree() {
         throw new UnsupportedOperationException();
     }
+
+    /**
+     * For debugging.
+     */
+    String printInternalRepresentation() {
+        String ir = "EdwardsPoint(\n";
+        ir += "    X: " + this.X.printInternalRepresentation() + ",\n";
+        ir += "    Y: " + this.Y.printInternalRepresentation() + ",\n";
+        ir += "    Z: " + this.Z.printInternalRepresentation() + ",\n";
+        ir += "    T: " + this.T.printInternalRepresentation() + ",\n";
+        ir += ")";
+        return ir;
+    }
 }
