@@ -319,7 +319,7 @@ public class EdwardsPoint {
      *         prime-order subgroup, false otherwise.
      */
     public boolean isTorsionFree() {
-        throw new UnsupportedOperationException();
+        return this.multiply(Constants.BASEPOINT_ORDER).isIdentity();
     }
 
     /**

@@ -147,4 +147,21 @@ public class EdwardsPointTest {
             assertTrue(EIGHT_TORSION_COMPRESSED[i].decompress().isSmallOrder());
         }
     }
+
+    @Test
+    public void isTorsionFree() {
+        // The basepoint is torsion-free.
+        assertTrue(Constants.ED25519_BASEPOINT.isTorsionFree());
+
+        // Adding the identity leaves it torsion-free.
+        assertTrue(Constants.ED25519_BASEPOINT.add(EdwardsPoint.IDENTITY).isTorsionFree());
+
+        // Adding any of the 8-torsion points to it (except the identity) affects the
+        // result.
+        assertThat(EdwardsPoint.IDENTITY.compress(), is(EIGHT_TORSION_COMPRESSED[0]));
+        for (int i = 1; i < EIGHT_TORSION_COMPRESSED.length; i++) {
+            EdwardsPoint withTorsion = Constants.ED25519_BASEPOINT.add(EIGHT_TORSION_COMPRESSED[i].decompress());
+            assertFalse(withTorsion.isTorsionFree());
+        }
+    }
 }

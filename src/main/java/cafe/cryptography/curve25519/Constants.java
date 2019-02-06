@@ -5,6 +5,19 @@ package cafe.cryptography.curve25519;
  */
 public final class Constants {
     /**
+     * The order of the Ed25519 basepoint, $\ell = 2^{252} +
+     * 27742317777372353535851937790883648493$.
+     */
+    public static final Scalar BASEPOINT_ORDER = new Scalar(new byte[] {
+        // @formatter:off
+        (byte) 0xed, (byte) 0xd3, (byte) 0xf5, 0x5c, 0x1a, 0x63, 0x12, 0x58,
+        (byte) 0xd6, (byte) 0x9c, (byte) 0xf7, (byte) 0xa2, (byte) 0xde, (byte) 0xf9, (byte) 0xde, 0x14,
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x10,
+        // @formatter:on
+    });
+
+    /**
      * Edwards $d$ value, equal to $-121665/121666 \bmod p$.
      */
     public static final FieldElement EDWARDS_D = new FieldElement(new int[] {
