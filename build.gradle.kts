@@ -1,6 +1,7 @@
 plugins {
     `java-library`
     jacoco
+    id("me.champeau.gradle.jmh") version "0.4.8"
 }
 
 repositories {
@@ -25,6 +26,11 @@ tasks.jacocoTestReport {
 }
 tasks.check {
     dependsOn(tasks.jacocoTestReport)
+}
+
+jmh {
+    // Uncomment to disable SIMD optimizations
+    // jvmArgsAppend = listOf("-XX:-UseSuperWord")
 }
 
 val mathJax = "<script type='text/x-mathjax-config'>MathJax.Hub.Config({ tex2jax: { inlineMath: [ ['$','$'] ], processEscapes: true } });</script><script type='text/javascript' src='https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML'></script>"
