@@ -3,6 +3,7 @@ package cafe.cryptography.curve25519;
 import org.junit.*;
 
 import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 
@@ -94,7 +95,14 @@ public class RistrettoElementTest {
     }
 
     @Test
-    public void generatorMultiples() {
+    public void equalityRequiresSameClass() {
+        RistrettoElement B = RISTRETTO_GENERATOR_COMPRESSED.decompress();
+        EdwardsPoint P = B.repr;
+        assertFalse(B.equals(P));
+    }
+
+    @Test
+    public void generatorMultiplesAdd() {
         RistrettoElement P = RistrettoElement.IDENTITY;
         for (int i = 0; i < GENERATOR_MULTIPLES.length; i++) {
             CompressedRistretto compressed = new CompressedRistretto(Utils.hexToBytes(GENERATOR_MULTIPLES[i]));
@@ -102,6 +110,38 @@ public class RistrettoElementTest {
             assertThat(compressed.decompress(), is(P));
             P = P.add(Constants.RISTRETTO_GENERATOR);
         }
+    }
+
+    @Test
+    public void generatorMultiplesSubtract() {
+        RistrettoElement P = Constants.RISTRETTO_GENERATOR.dbl().dbl().dbl().dbl();
+        for (int i = GENERATOR_MULTIPLES.length - 1; i >= 0; i--) {
+            P = P.subtract(Constants.RISTRETTO_GENERATOR);
+            CompressedRistretto compressed = new CompressedRistretto(Utils.hexToBytes(GENERATOR_MULTIPLES[i]));
+            assertThat(P.compress(), is(compressed));
+            assertThat(compressed.decompress(), is(P));
+        }
+    }
+
+    @Test
+    public void generatorNegateVsIdentityMinusGenerator() {
+        assertThat(Constants.RISTRETTO_GENERATOR.negate(),
+                is(RistrettoElement.IDENTITY.subtract(Constants.RISTRETTO_GENERATOR)));
+    }
+
+    @Test
+    public void generatorDblVsGenerator2() {
+        RistrettoElement expected = new CompressedRistretto(Utils.hexToBytes(GENERATOR_MULTIPLES[2])).decompress();
+        assertThat(Constants.RISTRETTO_GENERATOR.dbl(), is(expected));
+    }
+
+    @Test
+    public void generatorTimesTwelveVsGenerator12() {
+        byte[] s = new byte[32];
+        s[0] = 12;
+        Scalar twelve = new Scalar(s);
+        RistrettoElement expected = new CompressedRistretto(Utils.hexToBytes(GENERATOR_MULTIPLES[12])).decompress();
+        assertThat(Constants.RISTRETTO_GENERATOR.multiply(twelve), is(expected));
     }
 
     @Test
