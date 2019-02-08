@@ -41,7 +41,7 @@ public class CompressedEdwardsY {
         // v = dy²+1
         FieldElement v = YY.multiply(Constants.EDWARDS_D).add(FieldElement.ONE);
 
-        FieldElement.SqrtRatioM1 sqrt = FieldElement.sqrtRatioM1(u, v);
+        FieldElement.SqrtRatioM1Result sqrt = FieldElement.sqrtRatioM1(u, v);
         if (sqrt.wasSquare != 1) {
             throw new IllegalArgumentException("not a valid EdwardsPoint");
         }

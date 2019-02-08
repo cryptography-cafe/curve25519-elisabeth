@@ -1232,11 +1232,11 @@ class FieldElement {
     /**
      * The result of calling {@link #sqrtRatioM1(FieldElement, FieldElement)}.
      */
-    static class SqrtRatioM1 {
+    static class SqrtRatioM1Result {
         int wasSquare;
         FieldElement result;
 
-        SqrtRatioM1(int wasSquare, FieldElement result) {
+        SqrtRatioM1Result(int wasSquare, FieldElement result) {
             this.wasSquare = wasSquare;
             this.result = result;
         }
@@ -1258,7 +1258,7 @@ class FieldElement {
      *         <li>(false, +$\sqrt{i * u / v}$) if $u / v$ is non-square (so $i * u
      *         / v$ is square).
      */
-    static SqrtRatioM1 sqrtRatioM1(FieldElement u, FieldElement v) {
+    static SqrtRatioM1Result sqrtRatioM1(FieldElement u, FieldElement v) {
         FieldElement v3 = v.square().multiply(v);
         FieldElement v7 = v3.square().multiply(v);
         FieldElement r = u.multiply(v3).multiply(u.multiply(v7).powP58());
@@ -1276,7 +1276,7 @@ class FieldElement {
         int rIsNegative = r.isNegative();
         r = r.ctSelect(r.negate(), rIsNegative);
 
-        return new SqrtRatioM1(correctSignSqrt | flippedSignSqrt, r);
+        return new SqrtRatioM1Result(correctSignSqrt | flippedSignSqrt, r);
     }
 
     /**

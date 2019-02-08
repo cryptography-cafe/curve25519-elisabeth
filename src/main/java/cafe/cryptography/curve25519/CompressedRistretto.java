@@ -50,7 +50,7 @@ public class CompressedRistretto {
 
         final FieldElement v = Constants.EDWARDS_D.negate().multiply(u1.square()).subtract(u2Sqr);
 
-        final FieldElement.SqrtRatioM1 invsqrt = FieldElement.sqrtRatioM1(FieldElement.ONE, v.multiply(u2Sqr));
+        final FieldElement.SqrtRatioM1Result invsqrt = FieldElement.sqrtRatioM1(FieldElement.ONE, v.multiply(u2Sqr));
 
         final FieldElement denX = invsqrt.result.multiply(u2);
         final FieldElement denY = invsqrt.result.multiply(denX).multiply(v);

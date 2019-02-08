@@ -72,7 +72,7 @@ public class FieldElementTest {
         FieldElement i = Constants.SQRT_M1;
         FieldElement two = one.add(one); // 2 is nonsquare mod p.
         FieldElement four = two.add(two); // 4 is square mod p.
-        FieldElement.SqrtRatioM1 sqrt;
+        FieldElement.SqrtRatioM1Result sqrt;
 
         // 0/0 should return (1, 0) since u is 0
         sqrt = FieldElement.sqrtRatioM1(zero, zero);

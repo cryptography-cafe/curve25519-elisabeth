@@ -29,7 +29,7 @@ public class RistrettoElement {
         FieldElement c = FieldElement.MINUS_ONE;
         final FieldElement v = c.subtract(r.multiply(Constants.EDWARDS_D)).multiply(r.add(Constants.EDWARDS_D));
 
-        final FieldElement.SqrtRatioM1 sqrt = FieldElement.sqrtRatioM1(u, v);
+        final FieldElement.SqrtRatioM1Result sqrt = FieldElement.sqrtRatioM1(u, v);
         FieldElement s = sqrt.result;
 
         FieldElement sPrime = s.multiply(t);
@@ -90,7 +90,8 @@ public class RistrettoElement {
         final FieldElement u2 = this.repr.X.multiply(this.repr.Y);
 
         // Ignore was_square since this is always square
-        final FieldElement.SqrtRatioM1 invsqrt = FieldElement.sqrtRatioM1(FieldElement.ONE, u1.multiply(u2.square()));
+        final FieldElement.SqrtRatioM1Result invsqrt = FieldElement.sqrtRatioM1(FieldElement.ONE,
+                u1.multiply(u2.square()));
 
         final FieldElement den1 = invsqrt.result.multiply(u1);
         final FieldElement den2 = invsqrt.result.multiply(u2);
