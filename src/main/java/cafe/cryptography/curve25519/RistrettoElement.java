@@ -4,6 +4,8 @@ package cafe.cryptography.curve25519;
  * An element of the prime-order ristretto255 group.
  */
 public class RistrettoElement {
+    public static final RistrettoElement IDENTITY = new RistrettoElement(EdwardsPoint.IDENTITY);
+
     /**
      * The internal representation. Not canonical.
      */
@@ -27,11 +29,42 @@ public class RistrettoElement {
 
     /**
      * Compress this element using the Ristretto encoding.
+     * <p>
+     * This is the ristretto255 ENCODE function.
      *
      * @return the encoded element.
      */
     public CompressedRistretto compress() {
-        throw new UnsupportedOperationException();
+        // 1. Process the internal representation into a field element s as follows:
+        final FieldElement u1 = this.repr.Z.add(this.repr.Y).multiply(this.repr.Z.subtract(this.repr.Y));
+        final FieldElement u2 = this.repr.X.multiply(this.repr.Y);
+
+        // Ignore was_square since this is always square
+        final FieldElement.SqrtRatioM1 invsqrt = FieldElement.sqrtRatioM1(FieldElement.ONE, u1.multiply(u2.square()));
+
+        final FieldElement den1 = invsqrt.result.multiply(u1);
+        final FieldElement den2 = invsqrt.result.multiply(u2);
+        final FieldElement zInv = den1.multiply(den2).multiply(this.repr.T);
+
+        final FieldElement ix = this.repr.X.multiply(Constants.SQRT_M1);
+        final FieldElement iy = this.repr.Y.multiply(Constants.SQRT_M1);
+        final FieldElement enchantedDenominator = den1.multiply(Constants.INVSQRT_A_MINUS_D);
+
+        final int rotate = this.repr.T.multiply(zInv).isNegative();
+
+        final FieldElement x = this.repr.X.ctSelect(iy, rotate);
+        FieldElement y = this.repr.Y.ctSelect(ix, rotate);
+        final FieldElement z = this.repr.Z;
+        final FieldElement denInv = den2.ctSelect(enchantedDenominator, rotate);
+
+        y = y.ctSelect(y.negate(), x.multiply(zInv).isNegative());
+
+        FieldElement s = denInv.multiply(z.subtract(y));
+        final int sIsNegative = s.isNegative();
+        s = s.ctSelect(s.negate(), sIsNegative);
+
+        // 2. Return the canonical little-endian encoding of s.
+        return new CompressedRistretto(s.toByteArray());
     }
 
     /**

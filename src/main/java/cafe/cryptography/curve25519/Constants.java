@@ -38,6 +38,17 @@ public final class Constants {
     });
 
     /**
+     * $= 1/\sqrt{a-d}$, where $a = -1 \bmod p$, $d$ are the Edwards curve
+     * parameters.
+     */
+    public static final FieldElement INVSQRT_A_MINUS_D = new FieldElement(new int[] {
+        // @formatter:off
+        6111485,  4156064, -27798727, 12243468, -25904040,
+         120897, 20826367,  -7060776,  6093568,  -1986012,
+        // @formatter:on
+    });
+
+    /**
      * Precomputed value of one of the square roots of -1 (mod p).
      */
     public static final FieldElement SQRT_M1 = new FieldElement(new int[] {
@@ -67,4 +78,9 @@ public final class Constants {
         })
     // @formatter:on
     );
+
+    /**
+     * The ristretto255 generator, as a RistrettoElement.
+     */
+    public static final RistrettoElement RISTRETTO_GENERATOR = new RistrettoElement(ED25519_BASEPOINT);
 }
