@@ -1,5 +1,7 @@
 package cafe.cryptography.curve25519;
 
+import java.util.Arrays;
+
 /**
  * An element of the prime-order ristretto255 group.
  */
@@ -19,12 +21,60 @@ public class RistrettoElement {
     }
 
     /**
+     * The function MAP(t) from section 3.2.4 of the ristretto255 ID.
+     */
+    static RistrettoElement map(final FieldElement t) {
+        final FieldElement r = t.square().multiply(Constants.SQRT_M1);
+        final FieldElement u = r.add(FieldElement.ONE).multiply(Constants.ONE_MINUS_D_SQ);
+        FieldElement c = FieldElement.MINUS_ONE;
+        final FieldElement v = c.subtract(r.multiply(Constants.EDWARDS_D)).multiply(r.add(Constants.EDWARDS_D));
+
+        final FieldElement.SqrtRatioM1 sqrt = FieldElement.sqrtRatioM1(u, v);
+        FieldElement s = sqrt.result;
+
+        FieldElement sPrime = s.multiply(t);
+        final int sPrimeIsNegative = sPrime.isNegative();
+        sPrime = sPrime.negate().ctSelect(sPrime, sPrimeIsNegative);
+
+        s = sPrime.ctSelect(s, sqrt.wasSquare);
+        c = r.ctSelect(c, sqrt.wasSquare);
+
+        final FieldElement N = c.multiply(r.subtract(FieldElement.ONE)).multiply(Constants.D_MINUS_ONE_SQ).subtract(v);
+        final FieldElement sSq = s.square();
+
+        final FieldElement w0 = s.add(s).multiply(v);
+        final FieldElement w1 = N.multiply(Constants.SQRT_AD_MINUS_ONE);
+        final FieldElement w2 = FieldElement.ONE.subtract(sSq);
+        final FieldElement w3 = FieldElement.ONE.add(sSq);
+
+        return new RistrettoElement(
+                new EdwardsPoint(w0.multiply(w3), w2.multiply(w1), w1.multiply(w3), w0.multiply(w2)));
+    }
+
+    /**
      * Construct a ristretto255 element from a uniformly-distributed 64-byte string.
+     * <p>
+     * This is the ristretto255 FROM_UNIFORM_BYTES function.
      *
      * @return the resulting element.
      */
     public static RistrettoElement fromUniformBytes(final byte[] b) {
-        throw new UnsupportedOperationException();
+        // 1. Set r0 to the low 255 bits of b[ 0..32], taken mod p
+        final byte[] b0 = Arrays.copyOfRange(b, 0, 32);
+        final FieldElement r0 = FieldElement.fromByteArray(b0);
+
+        // 2. Set r1 to the low 255 bits of b[32..64], taken mod p
+        final byte[] b1 = Arrays.copyOfRange(b, 32, 64);
+        final FieldElement r1 = FieldElement.fromByteArray(b1);
+
+        // 3. Compute group element P1 as MAP(r0)
+        final RistrettoElement P1 = RistrettoElement.map(r0);
+
+        // 4. Compute group element P2 as MAP(r1).
+        final RistrettoElement P2 = RistrettoElement.map(r1);
+
+        // 5. Return the group element P1 + P2.
+        return P1.add(P2);
     }
 
     /**

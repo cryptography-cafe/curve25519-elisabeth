@@ -10,6 +10,7 @@ import cafe.cryptography.subtle.ConstantTime;
 class FieldElement {
     public static final FieldElement ZERO = new FieldElement(new int[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 });
     public static final FieldElement ONE = new FieldElement(new int[] { 1, 0, 0, 0, 0, 0, 0, 0, 0, 0 });
+    public static final FieldElement MINUS_ONE = ZERO.subtract(ONE);
 
     /**
      * An element $t$, entries $t[0] \dots t[9]$, represents the integer $t[0] +

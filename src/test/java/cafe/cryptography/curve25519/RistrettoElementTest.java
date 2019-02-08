@@ -68,6 +68,24 @@ public class RistrettoElementTest {
             // s = -1, which causes y = 0.
             "ecffffff ffffffff ffffffff ffffffff ffffffff ffffffff ffffffff ffffff7f" };
 
+    static final String[] FROM_UNIFORM_BYTES_INPUTS = new String[] {
+            "5d1be09e3d0c82fc538112490e35701979d99e06ca3e2b5b54bffe8b4dc772c14d98b696a1bbfb5ca32c436cc61c16563790306c79eaca7705668b47dffe5bb6",
+            "f116b34b8f17ceb56e8732a60d913dd10cce47a6d53bee9204be8b44f6678b270102a56902e2488c46120e9276cfe54638286b9e4b3cdb470b542d46c2068d38",
+            "8422e1bbdaab52938b81fd602effb6f89110e1e57208ad12d9ad767e2e25510c27140775f9337088b982d83d7fcf0b2fa1edffe51952cbe7365e95c86eaf325c",
+            "ac22415129b61427bf464e17baee8db65940c233b98afce8d17c57beeb7876c2150d15af1cb1fb824bbd14955f2b57d08d388aab431a391cfc33d5bafb5dbbaf",
+            "165d697a1ef3d5cf3c38565beefcf88c0f282b8e7dbd28544c483432f1cec7675debea8ebb4e5fe7d6f6e5db15f15587ac4d4d4a1de7191e0c1ca6664abcc413",
+            "a836e6c9a9ca9f1e8d486273ad56a78c70cf18f0ce10abb1c7172ddd605d7fd2979854f47ae1ccf204a33102095b4200e5befc0465accc263175485f0e17ea5c",
+            "2cdc11eaeb95daf01189417cdddbf95952993aa9cb9c640eb5058d09702c74622c9965a697a3b345ec24ee56335b556e677b30e6f90ac77d781064f866a3c982" };
+
+    static final String[] FROM_UNIFORM_BYTES_OUTPUTS = new String[] {
+            "3066f82a 1a747d45 120d1740 f1435853 1a8f04bb ffe6a819 f86dfe50 f44a0a46",
+            "f26e5b6f 7d362d2d 2a94c5d0 e7602cb4 773c95a2 e5c31a64 f133189f a76ed61b",
+            "006ccd2a 9e6867e6 a2c5cea8 3d3302cc 9de128dd 2a9a57dd 8ee7b9d7 ffe02826",
+            "f8f0c87c f237953c 5890aec3 99816900 5dae3eca 1fbb0454 8c635953 c817f92a",
+            "ae81e7de df20a497 e10c304a 765c1767 a42d6e06 029758d2 d7e8ef7c c4c41179",
+            "e2705652 ff9f5e44 d3e841bf 1c251cf7 dddb77d1 40870d1a b2ed64f1 a9ce8628",
+            "80bd0726 2511cdde 4863f8a7 434cef69 6750681c b9510eea 557088f7 6d9e5065" };
+
     @Test
     public void generatorDecompressionCompression() {
         RistrettoElement B = RISTRETTO_GENERATOR_COMPRESSED.decompress();
@@ -96,6 +114,15 @@ public class RistrettoElementTest {
             } catch (IllegalArgumentException expected) {
                 // Woohoo!
             }
+        }
+    }
+
+    @Test
+    public void fromUniformBytes() {
+        assertThat(FROM_UNIFORM_BYTES_INPUTS.length, is(FROM_UNIFORM_BYTES_OUTPUTS.length));
+        for (int i = 0; i < FROM_UNIFORM_BYTES_INPUTS.length; i++) {
+            RistrettoElement P = RistrettoElement.fromUniformBytes(Utils.hexToBytes(FROM_UNIFORM_BYTES_INPUTS[i]));
+            assertThat(P.compress(), is(new CompressedRistretto(Utils.hexToBytes(FROM_UNIFORM_BYTES_OUTPUTS[i]))));
         }
     }
 }
