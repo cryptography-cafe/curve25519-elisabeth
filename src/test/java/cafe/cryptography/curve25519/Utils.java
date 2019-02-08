@@ -2,12 +2,17 @@ package cafe.cryptography.curve25519;
 
 class Utils {
     /**
-     * Converts a hex string to bytes.
+     * Converts a hex string to bytes. The string may contain whitespace for
+     * readability.
      *
      * @param s the hex string to be converted.
      * @return the byte[]
      */
     public static byte[] hexToBytes(String s) {
+        // Strip any internal whitespace
+        s = s.replaceAll(" ", "");
+
+        // Now parse as hex
         int len = s.length();
         if (len % 2 != 0) {
             throw new IllegalArgumentException("Hex string must have an even length");

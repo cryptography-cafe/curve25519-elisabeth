@@ -25,12 +25,51 @@ public class CompressedRistretto {
 
     /**
      * Attempts to decompress to a RistrettoElement.
+     * <p>
+     * This is the ristretto255 DECODE function.
      *
      * @return a RistrettoElement, if this is the canonical encoding of an element
      *         of the ristretto255 group.
      */
     public RistrettoElement decompress() {
-        throw new UnsupportedOperationException();
+        // 1. First, interpret the string as an integer s in little-endian
+        // representation. If the resulting value is >= p, decoding fails.
+        // 2. If IS_NEGATIVE(s) returns TRUE, decoding fails.
+        final FieldElement s = FieldElement.fromByteArray(this.data);
+        final byte[] sBytes = s.toByteArray();
+        final int sIsCanonical = ConstantTime.equal(this.data, sBytes);
+        if (sIsCanonical == 0 || s.isNegative() == 1) {
+            throw new IllegalArgumentException("Invalid ristretto255 encoding");
+        }
+
+        // 3. Process s as follows:
+        final FieldElement ss = s.square();
+        final FieldElement u1 = FieldElement.ONE.subtract(ss);
+        final FieldElement u2 = FieldElement.ONE.add(ss);
+        final FieldElement u2Sqr = u2.square();
+
+        final FieldElement v = Constants.EDWARDS_D.negate().multiply(u1.square()).subtract(u2Sqr);
+
+        final FieldElement.SqrtRatioM1 invsqrt = FieldElement.sqrtRatioM1(FieldElement.ONE, v.multiply(u2Sqr));
+
+        final FieldElement denX = invsqrt.result.multiply(u2);
+        final FieldElement denY = invsqrt.result.multiply(denX).multiply(v);
+
+        FieldElement x = s.add(s).multiply(denX);
+        final int xIsNegative = x.isNegative();
+        x = x.ctSelect(x.negate(), xIsNegative);
+
+        final FieldElement y = u1.multiply(denY);
+        final FieldElement t = x.multiply(y);
+
+        // 4. If was_square is FALSE, or IS_NEGATIVE(t) returns TRUE, or y = 0, decoding
+        // fails. Otherwise, return the internal representation in extended coordinates
+        // (x, y, 1, t).
+        if (invsqrt.wasSquare == 0 || t.isNegative() == 1 || y.isZero() == 1) {
+            throw new IllegalArgumentException("Invalid ristretto255 encoding");
+        } else {
+            return new RistrettoElement(new EdwardsPoint(x, y, FieldElement.ONE, t));
+        }
     }
 
     /**
