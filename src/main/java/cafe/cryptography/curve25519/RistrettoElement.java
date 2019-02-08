@@ -69,11 +69,17 @@ public class RistrettoElement {
 
     /**
      * Constant-time equality check.
+     * <p>
+     * This is the ristretto255 EQUALS function.
      *
      * @return 1 if this and other are equal, 0 otherwise.
      */
     public int ctEquals(final RistrettoElement other) {
-        throw new UnsupportedOperationException();
+        FieldElement X1Y2 = this.repr.X.multiply(other.repr.Y);
+        FieldElement Y1X2 = this.repr.Y.multiply(other.repr.X);
+        FieldElement Y1Y2 = this.repr.Y.multiply(other.repr.Y);
+        FieldElement X1X2 = this.repr.X.multiply(other.repr.X);
+        return X1Y2.ctEquals(Y1X2) | Y1Y2.ctEquals(X1X2);
     }
 
     /**

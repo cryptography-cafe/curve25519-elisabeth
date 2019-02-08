@@ -71,6 +71,7 @@ public class RistrettoElementTest {
     @Test
     public void generatorDecompressionCompression() {
         RistrettoElement B = RISTRETTO_GENERATOR_COMPRESSED.decompress();
+        assertThat(B, is(Constants.RISTRETTO_GENERATOR));
         assertThat(B.compress(), is(RISTRETTO_GENERATOR_COMPRESSED));
     }
 
@@ -78,7 +79,9 @@ public class RistrettoElementTest {
     public void generatorMultiples() {
         RistrettoElement P = RistrettoElement.IDENTITY;
         for (int i = 0; i < GENERATOR_MULTIPLES.length; i++) {
-            assertThat(P.compress(), is(new CompressedRistretto(Utils.hexToBytes(GENERATOR_MULTIPLES[i]))));
+            CompressedRistretto compressed = new CompressedRistretto(Utils.hexToBytes(GENERATOR_MULTIPLES[i]));
+            assertThat(P.compress(), is(compressed));
+            assertThat(compressed.decompress(), is(P));
             P = P.add(Constants.RISTRETTO_GENERATOR);
         }
     }
