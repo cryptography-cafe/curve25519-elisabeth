@@ -1016,73 +1016,71 @@ class FieldElement {
      * @return The inverse of this field element.
      */
     public FieldElement invert() {
-        FieldElement t0, t1, t2, t3;
-
         // 2 == 2 * 1
-        t0 = square();
+        final FieldElement t0 = square();
 
         // 8 == 2 * 2 * 2
-        t1 = t0.pow2k(2);
+        final FieldElement t1 = t0.pow2k(2);
 
         // 9 == 8 + 1
-        t1 = multiply(t1);
+        final FieldElement t2 = multiply(t1);
 
         // 11 == 9 + 2
-        t0 = t0.multiply(t1);
+        final FieldElement t3 = t0.multiply(t2);
 
         // 22 == 2 * 11
-        t2 = t0.square();
+        final FieldElement t4 = t3.square();
 
         // 31 == 22 + 9
-        t1 = t1.multiply(t2);
+        final FieldElement t5 = t2.multiply(t4);
 
         // 2^10 - 2^5
-        t2 = t1.pow2k(5);
+        final FieldElement t6 = t5.pow2k(5);
 
         // 2^10 - 2^0
-        t1 = t2.multiply(t1);
+        final FieldElement t7 = t6.multiply(t5);
 
         // 2^20 - 2^10
-        t2 = t1.pow2k(10);
+        final FieldElement t8 = t7.pow2k(10);
 
         // 2^20 - 2^0
-        t2 = t2.multiply(t1);
+        final FieldElement t9 = t8.multiply(t7);
 
         // 2^40 - 2^20
-        t3 = t2.pow2k(20);
+        final FieldElement t10 = t9.pow2k(20);
 
         // 2^40 - 2^0
-        t2 = t3.multiply(t2);
+        final FieldElement t11 = t10.multiply(t9);
 
         // 2^50 - 2^10
-        t2 = t2.pow2k(10);
+        final FieldElement t12 = t11.pow2k(10);
 
         // 2^50 - 2^0
-        t1 = t2.multiply(t1);
+        final FieldElement t13 = t12.multiply(t7);
 
         // 2^100 - 2^50
-        t2 = t1.pow2k(50);
+        final FieldElement t14 = t13.pow2k(50);
 
         // 2^100 - 2^0
-        t2 = t2.multiply(t1);
+        final FieldElement t15 = t14.multiply(t13);
 
         // 2^200 - 2^100
-        t3 = t2.pow2k(100);
+        final FieldElement t16 = t15.pow2k(100);
 
         // 2^200 - 2^0
-        t2 = t3.multiply(t2);
+        final FieldElement t17 = t16.multiply(t15);
 
         // 2^250 - 2^50
-        t2 = t2.pow2k(50);
+        final FieldElement t18 = t17.pow2k(50);
 
         // 2^250 - 2^0
-        t1 = t2.multiply(t1);
+        final FieldElement t19 = t18.multiply(t13);
 
         // 2^255 - 2^5
-        t1 = t1.pow2k(5);
+        final FieldElement t20 = t19.pow2k(5);
 
         // 2^255 - 21
-        return t1.multiply(t0);
+        return t20.multiply(t3);
     }
 
     /**
@@ -1093,73 +1091,71 @@ class FieldElement {
      * @return $\text{this}^{(p-5)/8}$.
      */
     FieldElement powP58() {
-        FieldElement t0, t1, t2;
-
         // 2 == 2 * 1
-        t0 = square();
+        final FieldElement t0 = square();
 
         // 8 == 2 * 2 * 2
-        t1 = t0.pow2k(2);
+        final FieldElement t1 = t0.pow2k(2);
 
         // z9 = z1*z8
-        t1 = multiply(t1);
+        final FieldElement t2 = multiply(t1);
 
         // 11 == 9 + 2
-        t0 = t0.multiply(t1);
+        final FieldElement t3 = t0.multiply(t2);
 
         // 22 == 2 * 11
-        t0 = t0.square();
+        final FieldElement t4 = t3.square();
 
         // 31 == 22 + 9
-        t0 = t1.multiply(t0);
+        final FieldElement t5 = t2.multiply(t4);
 
         // 2^10 - 2^5
-        t1 = t0.pow2k(5);
+        final FieldElement t6 = t5.pow2k(5);
 
         // 2^10 - 2^0
-        t0 = t1.multiply(t0);
+        final FieldElement t7 = t6.multiply(t5);
 
         // 2^20 - 2^10
-        t1 = t0.pow2k(10);
+        final FieldElement t8 = t7.pow2k(10);
 
         // 2^20 - 2^0
-        t1 = t1.multiply(t0);
+        final FieldElement t9 = t8.multiply(t7);
 
         // 2^40 - 2^20
-        t2 = t1.pow2k(20);
+        final FieldElement t10 = t9.pow2k(20);
 
         // 2^40 - 2^0
-        t1 = t2.multiply(t1);
+        final FieldElement t11 = t10.multiply(t9);
 
         // 2^50 - 2^10
-        t1 = t1.pow2k(10);
+        final FieldElement t12 = t11.pow2k(10);
 
         // 2^50 - 2^0
-        t0 = t1.multiply(t0);
+        final FieldElement t13 = t12.multiply(t7);
 
         // 2^100 - 2^50
-        t1 = t0.pow2k(50);
+        final FieldElement t14 = t13.pow2k(50);
 
         // 2^100 - 2^0
-        t1 = t1.multiply(t0);
+        final FieldElement t15 = t14.multiply(t13);
 
         // 2^200 - 2^100
-        t2 = t1.pow2k(100);
+        final FieldElement t16 = t15.pow2k(100);
 
         // 2^200 - 2^0
-        t1 = t2.multiply(t1);
+        final FieldElement t17 = t16.multiply(t15);
 
         // 2^250 - 2^50
-        t1 = t1.pow2k(50);
+        final FieldElement t18 = t17.pow2k(50);
 
         // 2^250 - 2^0
-        t0 = t1.multiply(t0);
+        final FieldElement t19 = t18.multiply(t13);
 
         // 2^252 - 2^2
-        t0 = t0.pow2k(2);
+        final FieldElement t20 = t19.pow2k(2);
 
         // 2^252 - 3
-        return multiply(t0);
+        return this.multiply(t20);
     }
 
     /**
