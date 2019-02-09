@@ -30,6 +30,50 @@ class FieldElement {
         this.t = t;
     }
 
+    /**
+     * Given unreduced coefficients $h0, ..., h9$ of any size, carry and reduce them
+     * mod p to obtain a FieldElement whose coefficients have excess $b < 0.007$.
+     *
+     * @return the reasonably-reduced FieldElement.
+     */
+    static FieldElement reduce(long h0, long h1, long h2, long h3, long h4, long h5, long h6, long h7, long h8,
+            long h9) {
+        // Carry holder
+        long c;
+
+        // Carry the value from limbs h_i to h_{i+1}, for i = [0, 8].
+        // Perform two halves of the carry chain in parallel.
+        // @formatter:off
+        c = (h0 + (long) (1<<25)) >> 26; h1 += c; h0 -= c << 26; c = (h4 + (long) (1<<25)) >> 26; h5 += c; h4 -= c << 26;
+        c = (h1 + (long) (1<<24)) >> 25; h2 += c; h1 -= c << 25; c = (h5 + (long) (1<<24)) >> 25; h6 += c; h5 -= c << 25;
+        c = (h2 + (long) (1<<25)) >> 26; h3 += c; h2 -= c << 26; c = (h6 + (long) (1<<25)) >> 26; h7 += c; h6 -= c << 26;
+        c = (h3 + (long) (1<<24)) >> 25; h4 += c; h3 -= c << 25; c = (h7 + (long) (1<<24)) >> 25; h8 += c; h7 -= c << 25;
+
+        // Since h3 < 2^64 originally, c < 2^(64 - 25) = 2^39
+        // Thus h4 + c < 2^26 + 2^39 < 2^39.0002, and we need to reduce it again
+        c = (h4 + (long) (1<<25)) >> 26; h5 += c; h4 -= c << 26; c = (h8 + (long) (1<<25)) >> 26; h9 += c; h8 -= c << 26;
+        // Now h4 < 2^26, and c < 2^(39.0002 - 26) = 2^13.0002
+        // Thus h5 + c < 2^25 + 2^13.0002 < 2^25.0004 which is within our desired bounds
+        // @formatter:on
+
+        // Last carry has a multiplication by 19:
+        c = (h9 + (long) (1 << 24)) >> 25;
+        h0 += c * 19;
+        h9 -= c << 25;
+
+        // Since h9 < 2^64 originally, c < 2^(64 - 25) = 2^39
+        // Thus h0 + 19*c < 2^26 + 2^43.248 < 2^43.249, and we need to reduce it again
+        c = (h0 + (long) (1 << 25)) >> 26;
+        h1 += c;
+        h0 -= c << 26;
+        // Now h0 < 2^26, and c < 2^(43.249 - 26) = 2^17.249
+        // Thus h1 + c < 2^25 + 2^17.249 < 2^25.007 which is within our desired bounds
+
+        // Convert to an int[], which is now lossless.
+        return new FieldElement(new int[] { (int) h0, (int) h1, (int) h2, (int) h3, (int) h4, (int) h5, (int) h6,
+                (int) h7, (int) h8, (int) h9 });
+    }
+
     static int load_3(byte[] in, int offset) {
         int result = in[offset++] & 0xff;
         result |= (in[offset++] & 0xff) << 8;
@@ -62,44 +106,8 @@ class FieldElement {
         long h7 = load_3(in, 23) << 5;
         long h8 = load_3(in, 26) << 4;
         long h9 = (load_3(in, 29) & 0x7FFFFF) << 2;
-        long carry0;
-        long carry1;
-        long carry2;
-        long carry3;
-        long carry4;
-        long carry5;
-        long carry6;
-        long carry7;
-        long carry8;
-        long carry9;
 
-        // Remember: 2^255 congruent 19 modulo p
-        // @formatter:off
-        carry9 = (h9 + (long) (1<<24)) >> 25; h0 += carry9 * 19; h9 -= carry9 << 25;
-        carry1 = (h1 + (long) (1<<24)) >> 25; h2 += carry1; h1 -= carry1 << 25;
-        carry3 = (h3 + (long) (1<<24)) >> 25; h4 += carry3; h3 -= carry3 << 25;
-        carry5 = (h5 + (long) (1<<24)) >> 25; h6 += carry5; h5 -= carry5 << 25;
-        carry7 = (h7 + (long) (1<<24)) >> 25; h8 += carry7; h7 -= carry7 << 25;
-
-        carry0 = (h0 + (long) (1<<25)) >> 26; h1 += carry0; h0 -= carry0 << 26;
-        carry2 = (h2 + (long) (1<<25)) >> 26; h3 += carry2; h2 -= carry2 << 26;
-        carry4 = (h4 + (long) (1<<25)) >> 26; h5 += carry4; h4 -= carry4 << 26;
-        carry6 = (h6 + (long) (1<<25)) >> 26; h7 += carry6; h6 -= carry6 << 26;
-        carry8 = (h8 + (long) (1<<25)) >> 26; h9 += carry8; h8 -= carry8 << 26;
-        // @formatter:on
-
-        int[] h = new int[10];
-        h[0] = (int) h0;
-        h[1] = (int) h1;
-        h[2] = (int) h2;
-        h[3] = (int) h3;
-        h[4] = (int) h4;
-        h[5] = (int) h5;
-        h[6] = (int) h6;
-        h[7] = (int) h7;
-        h[8] = (int) h8;
-        h[9] = (int) h9;
-        return new FieldElement(h);
+        return FieldElement.reduce(h0, h1, h2, h3, h4, h5, h6, h7, h8, h9);
     }
 
     /**
@@ -584,81 +592,8 @@ class FieldElement {
         long h8 = f0g8 + f1g7_2  + f2g6    + f3g5_2  + f4g4    + f5g3_2  + f6g2    + f7g1_2  + f8g0    + f9g9_38;
         long h9 = f0g9 + f1g8    + f2g7    + f3g6    + f4g5    + f5g4    + f6g3    + f7g2    + f8g1    + f9g0;
         // @formatter:on
-        long carry0;
-        long carry1;
-        long carry2;
-        long carry3;
-        long carry4;
-        long carry5;
-        long carry6;
-        long carry7;
-        long carry8;
-        long carry9;
 
-        /*
-         * |h0| <= (1.65*1.65*2^52*(1+19+19+19+19)+1.65*1.65*2^50*(38+38+38+38+38)) i.e.
-         * |h0| <= 1.4*2^60; narrower ranges for h2, h4, h6, h8 |h1| <=
-         * (1.65*1.65*2^51*(1+1+19+19+19+19+19+19+19+19)) i.e. |h1| <= 1.7*2^59;
-         * narrower ranges for h3, h5, h7, h9
-         */
-
-        // @formatter:off
-        carry0 = (h0 + (long) (1<<25)) >> 26; h1 += carry0; h0 -= carry0 << 26;
-        carry4 = (h4 + (long) (1<<25)) >> 26; h5 += carry4; h4 -= carry4 << 26;
-        /* |h0| <= 2^25 */
-        /* |h4| <= 2^25 */
-        /* |h1| <= 1.71*2^59 */
-        /* |h5| <= 1.71*2^59 */
-
-        carry1 = (h1 + (long) (1<<24)) >> 25; h2 += carry1; h1 -= carry1 << 25;
-        carry5 = (h5 + (long) (1<<24)) >> 25; h6 += carry5; h5 -= carry5 << 25;
-        /* |h1| <= 2^24; from now on fits into int32 */
-        /* |h5| <= 2^24; from now on fits into int32 */
-        /* |h2| <= 1.41*2^60 */
-        /* |h6| <= 1.41*2^60 */
-
-        carry2 = (h2 + (long) (1<<25)) >> 26; h3 += carry2; h2 -= carry2 << 26;
-        carry6 = (h6 + (long) (1<<25)) >> 26; h7 += carry6; h6 -= carry6 << 26;
-        /* |h2| <= 2^25; from now on fits into int32 unchanged */
-        /* |h6| <= 2^25; from now on fits into int32 unchanged */
-        /* |h3| <= 1.71*2^59 */
-        /* |h7| <= 1.71*2^59 */
-
-        carry3 = (h3 + (long) (1<<24)) >> 25; h4 += carry3; h3 -= carry3 << 25;
-        carry7 = (h7 + (long) (1<<24)) >> 25; h8 += carry7; h7 -= carry7 << 25;
-        /* |h3| <= 2^24; from now on fits into int32 unchanged */
-        /* |h7| <= 2^24; from now on fits into int32 unchanged */
-        /* |h4| <= 1.72*2^34 */
-        /* |h8| <= 1.41*2^60 */
-
-        carry4 = (h4 + (long) (1<<25)) >> 26; h5 += carry4; h4 -= carry4 << 26;
-        carry8 = (h8 + (long) (1<<25)) >> 26; h9 += carry8; h8 -= carry8 << 26;
-        /* |h4| <= 2^25; from now on fits into int32 unchanged */
-        /* |h8| <= 2^25; from now on fits into int32 unchanged */
-        /* |h5| <= 1.01*2^24 */
-        /* |h9| <= 1.71*2^59 */
-
-        carry9 = (h9 + (long) (1<<24)) >> 25; h0 += carry9 * 19; h9 -= carry9 << 25;
-        /* |h9| <= 2^24; from now on fits into int32 unchanged */
-        /* |h0| <= 1.1*2^39 */
-
-        carry0 = (h0 + (long) (1<<25)) >> 26; h1 += carry0; h0 -= carry0 << 26;
-        /* |h0| <= 2^25; from now on fits into int32 unchanged */
-        /* |h1| <= 1.01*2^24 */
-        // @formatter:on
-
-        int[] h = new int[10];
-        h[0] = (int) h0;
-        h[1] = (int) h1;
-        h[2] = (int) h2;
-        h[3] = (int) h3;
-        h[4] = (int) h4;
-        h[5] = (int) h5;
-        h[6] = (int) h6;
-        h[7] = (int) h7;
-        h[8] = (int) h8;
-        h[9] = (int) h9;
-        return new FieldElement(h);
+        return FieldElement.reduce(h0, h1, h2, h3, h4, h5, h6, h7, h8, h9);
     }
 
     /**
@@ -778,50 +713,8 @@ class FieldElement {
         long h8 = f0f8_2 + f1f7_4  + f2f6_2  + f3f5_4  + f4f4    + f9f9_38;
         long h9 = f0f9_2 + f1f8_2  + f2f7_2  + f3f6_2  + f4f5_2;
         // @formatter:on
-        long carry0;
-        long carry1;
-        long carry2;
-        long carry3;
-        long carry4;
-        long carry5;
-        long carry6;
-        long carry7;
-        long carry8;
-        long carry9;
 
-        // @formatter:off
-        carry0 = (h0 + (long) (1<<25)) >> 26; h1 += carry0; h0 -= carry0 << 26;
-        carry4 = (h4 + (long) (1<<25)) >> 26; h5 += carry4; h4 -= carry4 << 26;
-
-        carry1 = (h1 + (long) (1<<24)) >> 25; h2 += carry1; h1 -= carry1 << 25;
-        carry5 = (h5 + (long) (1<<24)) >> 25; h6 += carry5; h5 -= carry5 << 25;
-
-        carry2 = (h2 + (long) (1<<25)) >> 26; h3 += carry2; h2 -= carry2 << 26;
-        carry6 = (h6 + (long) (1<<25)) >> 26; h7 += carry6; h6 -= carry6 << 26;
-
-        carry3 = (h3 + (long) (1<<24)) >> 25; h4 += carry3; h3 -= carry3 << 25;
-        carry7 = (h7 + (long) (1<<24)) >> 25; h8 += carry7; h7 -= carry7 << 25;
-
-        carry4 = (h4 + (long) (1<<25)) >> 26; h5 += carry4; h4 -= carry4 << 26;
-        carry8 = (h8 + (long) (1<<25)) >> 26; h9 += carry8; h8 -= carry8 << 26;
-
-        carry9 = (h9 + (long) (1<<24)) >> 25; h0 += carry9 * 19; h9 -= carry9 << 25;
-
-        carry0 = (h0 + (long) (1<<25)) >> 26; h1 += carry0; h0 -= carry0 << 26;
-        // @formatter:on
-
-        int[] h = new int[10];
-        h[0] = (int) h0;
-        h[1] = (int) h1;
-        h[2] = (int) h2;
-        h[3] = (int) h3;
-        h[4] = (int) h4;
-        h[5] = (int) h5;
-        h[6] = (int) h6;
-        h[7] = (int) h7;
-        h[8] = (int) h8;
-        h[9] = (int) h9;
-        return new FieldElement(h);
+        return FieldElement.reduce(h0, h1, h2, h3, h4, h5, h6, h7, h8, h9);
     }
 
     /**
@@ -933,16 +826,6 @@ class FieldElement {
         long h8 = f0f8_2 + f1f7_4  + f2f6_2  + f3f5_4  + f4f4    + f9f9_38;
         long h9 = f0f9_2 + f1f8_2  + f2f7_2  + f3f6_2  + f4f5_2;
         // @formatter:on
-        long carry0;
-        long carry1;
-        long carry2;
-        long carry3;
-        long carry4;
-        long carry5;
-        long carry6;
-        long carry7;
-        long carry8;
-        long carry9;
 
         h0 += h0;
         h1 += h1;
@@ -955,39 +838,7 @@ class FieldElement {
         h8 += h8;
         h9 += h9;
 
-        // @formatter:off
-        carry0 = (h0 + (long) (1<<25)) >> 26; h1 += carry0; h0 -= carry0 << 26;
-        carry4 = (h4 + (long) (1<<25)) >> 26; h5 += carry4; h4 -= carry4 << 26;
-
-        carry1 = (h1 + (long) (1<<24)) >> 25; h2 += carry1; h1 -= carry1 << 25;
-        carry5 = (h5 + (long) (1<<24)) >> 25; h6 += carry5; h5 -= carry5 << 25;
-
-        carry2 = (h2 + (long) (1<<25)) >> 26; h3 += carry2; h2 -= carry2 << 26;
-        carry6 = (h6 + (long) (1<<25)) >> 26; h7 += carry6; h6 -= carry6 << 26;
-
-        carry3 = (h3 + (long) (1<<24)) >> 25; h4 += carry3; h3 -= carry3 << 25;
-        carry7 = (h7 + (long) (1<<24)) >> 25; h8 += carry7; h7 -= carry7 << 25;
-
-        carry4 = (h4 + (long) (1<<25)) >> 26; h5 += carry4; h4 -= carry4 << 26;
-        carry8 = (h8 + (long) (1<<25)) >> 26; h9 += carry8; h8 -= carry8 << 26;
-
-        carry9 = (h9 + (long) (1<<24)) >> 25; h0 += carry9 * 19; h9 -= carry9 << 25;
-
-        carry0 = (h0 + (long) (1<<25)) >> 26; h1 += carry0; h0 -= carry0 << 26;
-        // @formatter:on
-
-        int[] h = new int[10];
-        h[0] = (int) h0;
-        h[1] = (int) h1;
-        h[2] = (int) h2;
-        h[3] = (int) h3;
-        h[4] = (int) h4;
-        h[5] = (int) h5;
-        h[6] = (int) h6;
-        h[7] = (int) h7;
-        h[8] = (int) h8;
-        h[9] = (int) h9;
-        return new FieldElement(h);
+        return FieldElement.reduce(h0, h1, h2, h3, h4, h5, h6, h7, h8, h9);
     }
 
     /**
