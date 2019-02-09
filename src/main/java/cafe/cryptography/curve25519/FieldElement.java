@@ -991,6 +991,23 @@ class FieldElement {
     }
 
     /**
+     * Compute $\text{this}^{2^k}$ by successive squarings.
+     *
+     * @param k the exponent of 2. Must be positive and non-zero.
+     * @return $\text{this}^{2^k}$
+     */
+    FieldElement pow2k(int k) {
+        if (!(k > 0)) {
+            throw new IllegalArgumentException("Exponent must be positive and non-zero");
+        }
+        FieldElement z = this.square();
+        for (int i = 1; i < k; i++) {
+            z = z.square();
+        }
+        return z;
+    }
+
+    /**
      * Invert this field element.
      * <p>
      * The inverse is found via Fermat's little theorem:<br>
@@ -1004,11 +1021,8 @@ class FieldElement {
         // 2 == 2 * 1
         t0 = square();
 
-        // 4 == 2 * 2
-        t1 = t0.square();
-
-        // 8 == 2 * 4
-        t1 = t1.square();
+        // 8 == 2 * 2 * 2
+        t1 = t0.pow2k(2);
 
         // 9 == 8 + 1
         t1 = multiply(t1);
@@ -1022,90 +1036,50 @@ class FieldElement {
         // 31 == 22 + 9
         t1 = t1.multiply(t2);
 
-        // 2^6 - 2^1
-        t2 = t1.square();
-
         // 2^10 - 2^5
-        for (int i = 1; i < 5; ++i) {
-            t2 = t2.square();
-        }
+        t2 = t1.pow2k(5);
 
         // 2^10 - 2^0
         t1 = t2.multiply(t1);
 
-        // 2^11 - 2^1
-        t2 = t1.square();
-
         // 2^20 - 2^10
-        for (int i = 1; i < 10; ++i) {
-            t2 = t2.square();
-        }
+        t2 = t1.pow2k(10);
 
         // 2^20 - 2^0
         t2 = t2.multiply(t1);
 
-        // 2^21 - 2^1
-        t3 = t2.square();
-
         // 2^40 - 2^20
-        for (int i = 1; i < 20; ++i) {
-            t3 = t3.square();
-        }
+        t3 = t2.pow2k(20);
 
         // 2^40 - 2^0
         t2 = t3.multiply(t2);
 
-        // 2^41 - 2^1
-        t2 = t2.square();
-
         // 2^50 - 2^10
-        for (int i = 1; i < 10; ++i) {
-            t2 = t2.square();
-        }
+        t2 = t2.pow2k(10);
 
         // 2^50 - 2^0
         t1 = t2.multiply(t1);
 
-        // 2^51 - 2^1
-        t2 = t1.square();
-
         // 2^100 - 2^50
-        for (int i = 1; i < 50; ++i) {
-            t2 = t2.square();
-        }
+        t2 = t1.pow2k(50);
 
         // 2^100 - 2^0
         t2 = t2.multiply(t1);
 
-        // 2^101 - 2^1
-        t3 = t2.square();
-
         // 2^200 - 2^100
-        for (int i = 1; i < 100; ++i) {
-            t3 = t3.square();
-        }
+        t3 = t2.pow2k(100);
 
         // 2^200 - 2^0
         t2 = t3.multiply(t2);
 
-        // 2^201 - 2^1
-        t2 = t2.square();
-
         // 2^250 - 2^50
-        for (int i = 1; i < 50; ++i) {
-            t2 = t2.square();
-        }
+        t2 = t2.pow2k(50);
 
         // 2^250 - 2^0
         t1 = t2.multiply(t1);
 
-        // 2^251 - 2^1
-        t1 = t1.square();
-
         // 2^255 - 2^5
-        for (int i = 1; i < 5; ++i) {
-            t1 = t1.square();
-        }
+        t1 = t1.pow2k(5);
 
         // 2^255 - 21
         return t1.multiply(t0);
@@ -1124,11 +1098,8 @@ class FieldElement {
         // 2 == 2 * 1
         t0 = square();
 
-        // 4 == 2 * 2
-        t1 = t0.square();
-
-        // 8 == 2 * 4
-        t1 = t1.square();
+        // 8 == 2 * 2 * 2
+        t1 = t0.pow2k(2);
 
         // z9 = z1*z8
         t1 = multiply(t1);
@@ -1142,88 +1113,50 @@ class FieldElement {
         // 31 == 22 + 9
         t0 = t1.multiply(t0);
 
-        // 2^6 - 2^1
-        t1 = t0.square();
-
         // 2^10 - 2^5
-        for (int i = 1; i < 5; ++i) {
-            t1 = t1.square();
-        }
+        t1 = t0.pow2k(5);
 
         // 2^10 - 2^0
         t0 = t1.multiply(t0);
 
-        // 2^11 - 2^1
-        t1 = t0.square();
-
         // 2^20 - 2^10
-        for (int i = 1; i < 10; ++i) {
-            t1 = t1.square();
-        }
+        t1 = t0.pow2k(10);
 
         // 2^20 - 2^0
         t1 = t1.multiply(t0);
 
-        // 2^21 - 2^1
-        t2 = t1.square();
-
         // 2^40 - 2^20
-        for (int i = 1; i < 20; ++i) {
-            t2 = t2.square();
-        }
+        t2 = t1.pow2k(20);
 
         // 2^40 - 2^0
         t1 = t2.multiply(t1);
 
-        // 2^41 - 2^1
-        t1 = t1.square();
-
         // 2^50 - 2^10
-        for (int i = 1; i < 10; ++i) {
-            t1 = t1.square();
-        }
+        t1 = t1.pow2k(10);
 
         // 2^50 - 2^0
         t0 = t1.multiply(t0);
 
-        // 2^51 - 2^1
-        t1 = t0.square();
-
         // 2^100 - 2^50
-        for (int i = 1; i < 50; ++i) {
-            t1 = t1.square();
-        }
+        t1 = t0.pow2k(50);
 
         // 2^100 - 2^0
         t1 = t1.multiply(t0);
 
-        // 2^101 - 2^1
-        t2 = t1.square();
-
         // 2^200 - 2^100
-        for (int i = 1; i < 100; ++i) {
-            t2 = t2.square();
-        }
+        t2 = t1.pow2k(100);
 
         // 2^200 - 2^0
         t1 = t2.multiply(t1);
 
-        // 2^201 - 2^1
-        t1 = t1.square();
-
         // 2^250 - 2^50
-        for (int i = 1; i < 50; ++i) {
-            t1 = t1.square();
-        }
+        t1 = t1.pow2k(50);
 
         // 2^250 - 2^0
         t0 = t1.multiply(t0);
 
-        // 2^251 - 2^1
-        t0 = t0.square();
-
         // 2^252 - 2^2
-        t0 = t0.square();
+        t0 = t0.pow2k(2);
 
         // 2^252 - 3
         return multiply(t0);
