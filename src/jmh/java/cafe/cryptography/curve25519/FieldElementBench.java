@@ -56,7 +56,7 @@ public class FieldElementBench {
     }
 
     @Benchmark
-    public FieldElement pow22523() {
-        return this.a.pow22523();
+    public FieldElement.SqrtRatioM1Result sqrtRatioM1() {
+        return FieldElement.sqrtRatioM1(this.a, this.b);
     }
 }
