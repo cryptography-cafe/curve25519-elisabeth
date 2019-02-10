@@ -24,7 +24,7 @@ class FieldElement {
      *
      * @param t The $2^{25.5}$ bit representation of the field element.
      */
-    public FieldElement(int[] t) {
+    public FieldElement(final int[] t) {
         if (t.length != 10)
             throw new IllegalArgumentException("Invalid radix-2^25.5 representation");
         this.t = t;
@@ -74,14 +74,14 @@ class FieldElement {
                 (int) h7, (int) h8, (int) h9 });
     }
 
-    static int load_3(byte[] in, int offset) {
+    static int load_3(final byte[] in, int offset) {
         int result = in[offset++] & 0xff;
         result |= (in[offset++] & 0xff) << 8;
         result |= (in[offset] & 0xff) << 16;
         return result;
     }
 
-    static long load_4(byte[] in, int offset) {
+    static long load_4(final byte[] in, int offset) {
         int result = in[offset++] & 0xff;
         result |= (in[offset++] & 0xff) << 8;
         result |= (in[offset++] & 0xff) << 16;
@@ -95,17 +95,17 @@ class FieldElement {
      * @param in The 32-byte representation.
      * @return The field element in its $2^{25.5}$ bit representation.
      */
-    public static FieldElement fromByteArray(byte[] in) {
-        long h0 = load_4(in, 0);
-        long h1 = load_3(in, 4) << 6;
-        long h2 = load_3(in, 7) << 5;
-        long h3 = load_3(in, 10) << 3;
-        long h4 = load_3(in, 13) << 2;
-        long h5 = load_4(in, 16);
-        long h6 = load_3(in, 20) << 7;
-        long h7 = load_3(in, 23) << 5;
-        long h8 = load_3(in, 26) << 4;
-        long h9 = (load_3(in, 29) & 0x7FFFFF) << 2;
+    public static FieldElement fromByteArray(final byte[] in) {
+        final long h0 = load_4(in, 0);
+        final long h1 = load_3(in, 4) << 6;
+        final long h2 = load_3(in, 7) << 5;
+        final long h3 = load_3(in, 10) << 3;
+        final long h4 = load_3(in, 13) << 2;
+        final long h5 = load_4(in, 16);
+        final long h6 = load_3(in, 20) << 7;
+        final long h7 = load_3(in, 23) << 5;
+        final long h8 = load_3(in, 26) << 4;
+        final long h9 = (load_3(in, 29) & 0x7FFFFF) << 2;
 
         return FieldElement.reduce(h0, h1, h2, h3, h4, h5, h6, h7, h8, h9);
     }
@@ -164,7 +164,7 @@ class FieldElement {
      * @return the 32-byte encoding of this FieldElement.
      */
     byte[] toByteArray() {
-        int[] h = this.t; // avoid getfield opcode
+        final int[] h = this.t; // avoid getfield opcode
         int h0 = h[0];
         int h1 = h[1];
         int h2 = h[2];
@@ -219,7 +219,7 @@ class FieldElement {
         // @formatter:on
 
         // Step 2 (straight forward conversion):
-        byte[] s = new byte[32];
+        final byte[] s = new byte[32];
         s[0] = (byte) h0;
         s[1] = (byte) (h0 >> 8);
         s[2] = (byte) (h0 >> 16);
@@ -262,7 +262,7 @@ class FieldElement {
      *
      * @return 1 if self and other are equal, 0 otherwise.
      */
-    public int ctEquals(FieldElement other) {
+    public int ctEquals(final FieldElement other) {
         return ConstantTime.equal(toByteArray(), other.toByteArray());
     }
 
@@ -279,11 +279,11 @@ class FieldElement {
      *      "https://github.com/floodyberry/supercop/blob/master/crypto_sign/ed25519/ref10/fe_cmov.c"
      *      target="_top">SUPERCOP</a>
      */
-    public FieldElement ctSelect(FieldElement that, int b) {
-        int[] f = this.t; // avoid getfield opcode
-        int[] g = that.t; // avoid getfield opcode
+    public FieldElement ctSelect(final FieldElement that, int b) {
+        final int[] f = this.t; // avoid getfield opcode
+        final int[] g = that.t; // avoid getfield opcode
         b = -b;
-        int[] result = new int[10];
+        final int[] result = new int[10];
         for (int i = 0; i < 10; i++) {
             result[i] = f[i];
             int x = f[i] ^ g[i];
@@ -361,10 +361,10 @@ class FieldElement {
      * @param val The field element to add.
      * @return The field element this + val.
      */
-    public FieldElement add(FieldElement val) {
-        int[] f = this.t; // avoid getfield opcode
-        int[] g = val.t;  // avoid getfield opcode
-        int[] h = new int[10];
+    public FieldElement add(final FieldElement val) {
+        final int[] f = this.t; // avoid getfield opcode
+        final int[] g = val.t; // avoid getfield opcode
+        final int[] h = new int[10];
         for (int i = 0; i < 10; i++) {
             h[i] = f[i] + g[i];
         }
@@ -388,10 +388,10 @@ class FieldElement {
      * @param val The field element to subtract.
      * @return The field element this - val.
      **/
-    public FieldElement subtract(FieldElement val) {
-        int[] f = this.t; // avoid getfield opcode
-        int[] g = val.t;  // avoid getfield opcode
-        int[] h = new int[10];
+    public FieldElement subtract(final FieldElement val) {
+        final int[] f = this.t; // avoid getfield opcode
+        final int[] g = val.t; // avoid getfield opcode
+        final int[] h = new int[10];
         for (int i = 0; i < 10; i++) {
             h[i] = f[i] - g[i];
         }
@@ -412,8 +412,8 @@ class FieldElement {
      * @return The field element (-1) * this.
      */
     public FieldElement negate() {
-        int[] f = this.t; // avoid getfield opcode
-        int[] h = new int[10];
+        final int[] f = this.t; // avoid getfield opcode
+        final int[] h = new int[10];
         for (int i = 0; i < 10; i++) {
             h[i] = -f[i];
         }
@@ -462,25 +462,25 @@ class FieldElement {
      * @param val The field element to multiply.
      * @return The (reasonably reduced) field element this * val.
      */
-    public FieldElement multiply(FieldElement val) {
-        int[] f = this.t; // avoid getfield opcode
-        int[] g = val.t;  // avoid getfield opcode
+    public FieldElement multiply(final FieldElement val) {
+        final int[] f = this.t; // avoid getfield opcode
+        final int[] g = val.t; // avoid getfield opcode
 
-        int g1_19 = 19 * g[1]; /* 1.959375*2^29 */
-        int g2_19 = 19 * g[2]; /* 1.959375*2^30; still ok */
-        int g3_19 = 19 * g[3];
-        int g4_19 = 19 * g[4];
-        int g5_19 = 19 * g[5];
-        int g6_19 = 19 * g[6];
-        int g7_19 = 19 * g[7];
-        int g8_19 = 19 * g[8];
-        int g9_19 = 19 * g[9];
+        final int g1_19 = 19 * g[1]; /* 1.959375*2^29 */
+        final int g2_19 = 19 * g[2]; /* 1.959375*2^30; still ok */
+        final int g3_19 = 19 * g[3];
+        final int g4_19 = 19 * g[4];
+        final int g5_19 = 19 * g[5];
+        final int g6_19 = 19 * g[6];
+        final int g7_19 = 19 * g[7];
+        final int g8_19 = 19 * g[8];
+        final int g9_19 = 19 * g[9];
 
-        int f1_2 = 2 * f[1];
-        int f3_2 = 2 * f[3];
-        int f5_2 = 2 * f[5];
-        int f7_2 = 2 * f[7];
-        int f9_2 = 2 * f[9];
+        final int f1_2 = 2 * f[1];
+        final int f3_2 = 2 * f[3];
+        final int f5_2 = 2 * f[5];
+        final int f7_2 = 2 * f[7];
+        final int f9_2 = 2 * f[9];
 
         /**
          * Remember: 2^255 congruent 19 modulo p. h = h0 * 2^0 + h1 * 2^26 + h2 *
@@ -495,16 +495,16 @@ class FieldElement {
          * p. and so on...
          */
         // @formatter:off
-        long h0 = m(f[0],g[0]) + m(f1_2,g9_19) + m(f[2],g8_19) + m(f3_2,g7_19) + m(f[4],g6_19) + m(f5_2,g5_19) + m(f[6],g4_19) + m(f7_2,g3_19) + m(f[8],g2_19) + m(f9_2,g1_19);
-        long h1 = m(f[0],g[1]) + m(f[1],g[0])  + m(f[2],g9_19) + m(f[3],g8_19) + m(f[4],g7_19) + m(f[5],g6_19) + m(f[6],g5_19) + m(f[7],g4_19) + m(f[8],g3_19) + m(f[9],g2_19);
-        long h2 = m(f[0],g[2]) + m(f1_2,g[1])  + m(f[2],g[0])  + m(f3_2,g9_19) + m(f[4],g8_19) + m(f5_2,g7_19) + m(f[6],g6_19) + m(f7_2,g5_19) + m(f[8],g4_19) + m(f9_2,g3_19);
-        long h3 = m(f[0],g[3]) + m(f[1],g[2])  + m(f[2],g[1])  + m(f[3],g[0])  + m(f[4],g9_19) + m(f[5],g8_19) + m(f[6],g7_19) + m(f[7],g6_19) + m(f[8],g5_19) + m(f[9],g4_19);
-        long h4 = m(f[0],g[4]) + m(f1_2,g[3])  + m(f[2],g[2])  + m(f3_2,g[1])  + m(f[4],g[0])  + m(f5_2,g9_19) + m(f[6],g8_19) + m(f7_2,g7_19) + m(f[8],g6_19) + m(f9_2,g5_19);
-        long h5 = m(f[0],g[5]) + m(f[1],g[4])  + m(f[2],g[3])  + m(f[3],g[2])  + m(f[4],g[1])  + m(f[5],g[0])  + m(f[6],g9_19) + m(f[7],g8_19) + m(f[8],g7_19) + m(f[9],g6_19);
-        long h6 = m(f[0],g[6]) + m(f1_2,g[5])  + m(f[2],g[4])  + m(f3_2,g[3])  + m(f[4],g[2])  + m(f5_2,g[1])  + m(f[6],g[0])  + m(f7_2,g9_19) + m(f[8],g8_19) + m(f9_2,g7_19);
-        long h7 = m(f[0],g[7]) + m(f[1],g[6])  + m(f[2],g[5])  + m(f[3],g[4])  + m(f[4],g[3])  + m(f[5],g[2])  + m(f[6],g[1])  + m(f[7],g[0])  + m(f[8],g9_19) + m(f[9],g8_19);
-        long h8 = m(f[0],g[8]) + m(f1_2,g[7])  + m(f[2],g[6])  + m(f3_2,g[5])  + m(f[4],g[4])  + m(f5_2,g[3])  + m(f[6],g[2])  + m(f7_2,g[1])  + m(f[8],g[0])  + m(f9_2,g9_19);
-        long h9 = m(f[0],g[9]) + m(f[1],g[8])  + m(f[2],g[7])  + m(f[3],g[6])  + m(f[4],g[5])  + m(f[5],g[4])  + m(f[6],g[3])  + m(f[7],g[2])  + m(f[8],g[1])  + m(f[9],g[0]);
+        final long h0 = m(f[0],g[0]) + m(f1_2,g9_19) + m(f[2],g8_19) + m(f3_2,g7_19) + m(f[4],g6_19) + m(f5_2,g5_19) + m(f[6],g4_19) + m(f7_2,g3_19) + m(f[8],g2_19) + m(f9_2,g1_19);
+        final long h1 = m(f[0],g[1]) + m(f[1],g[0])  + m(f[2],g9_19) + m(f[3],g8_19) + m(f[4],g7_19) + m(f[5],g6_19) + m(f[6],g5_19) + m(f[7],g4_19) + m(f[8],g3_19) + m(f[9],g2_19);
+        final long h2 = m(f[0],g[2]) + m(f1_2,g[1])  + m(f[2],g[0])  + m(f3_2,g9_19) + m(f[4],g8_19) + m(f5_2,g7_19) + m(f[6],g6_19) + m(f7_2,g5_19) + m(f[8],g4_19) + m(f9_2,g3_19);
+        final long h3 = m(f[0],g[3]) + m(f[1],g[2])  + m(f[2],g[1])  + m(f[3],g[0])  + m(f[4],g9_19) + m(f[5],g8_19) + m(f[6],g7_19) + m(f[7],g6_19) + m(f[8],g5_19) + m(f[9],g4_19);
+        final long h4 = m(f[0],g[4]) + m(f1_2,g[3])  + m(f[2],g[2])  + m(f3_2,g[1])  + m(f[4],g[0])  + m(f5_2,g9_19) + m(f[6],g8_19) + m(f7_2,g7_19) + m(f[8],g6_19) + m(f9_2,g5_19);
+        final long h5 = m(f[0],g[5]) + m(f[1],g[4])  + m(f[2],g[3])  + m(f[3],g[2])  + m(f[4],g[1])  + m(f[5],g[0])  + m(f[6],g9_19) + m(f[7],g8_19) + m(f[8],g7_19) + m(f[9],g6_19);
+        final long h6 = m(f[0],g[6]) + m(f1_2,g[5])  + m(f[2],g[4])  + m(f3_2,g[3])  + m(f[4],g[2])  + m(f5_2,g[1])  + m(f[6],g[0])  + m(f7_2,g9_19) + m(f[8],g8_19) + m(f9_2,g7_19);
+        final long h7 = m(f[0],g[7]) + m(f[1],g[6])  + m(f[2],g[5])  + m(f[3],g[4])  + m(f[4],g[3])  + m(f[5],g[2])  + m(f[6],g[1])  + m(f[7],g[0])  + m(f[8],g9_19) + m(f[9],g8_19);
+        final long h8 = m(f[0],g[8]) + m(f1_2,g[7])  + m(f[2],g[6])  + m(f3_2,g[5])  + m(f[4],g[4])  + m(f5_2,g[3])  + m(f[6],g[2])  + m(f7_2,g[1])  + m(f[8],g[0])  + m(f9_2,g9_19);
+        final long h9 = m(f[0],g[9]) + m(f[1],g[8])  + m(f[2],g[7])  + m(f[3],g[6])  + m(f[4],g[5])  + m(f[5],g[4])  + m(f[6],g[3])  + m(f[7],g[2])  + m(f[8],g[1])  + m(f[9],g[0]);
         // @formatter:on
 
         return FieldElement.reduce(h0, h1, h2, h3, h4, h5, h6, h7, h8, h9);
@@ -529,39 +529,39 @@ class FieldElement {
      * @return The (reasonably reduced) square of this field element.
      */
     public FieldElement square() {
-        int[] f = this.t; // avoid getfield opcode
+        final int[] f = this.t; // avoid getfield opcode
 
-        int f0_2 = 2 * f[0];
-        int f1_2 = 2 * f[1];
-        int f2_2 = 2 * f[2];
-        int f3_2 = 2 * f[3];
-        int f4_2 = 2 * f[4];
-        int f5_2 = 2 * f[5];
-        int f6_2 = 2 * f[6];
-        int f7_2 = 2 * f[7];
+        final int f0_2 = 2 * f[0];
+        final int f1_2 = 2 * f[1];
+        final int f2_2 = 2 * f[2];
+        final int f3_2 = 2 * f[3];
+        final int f4_2 = 2 * f[4];
+        final int f5_2 = 2 * f[5];
+        final int f6_2 = 2 * f[6];
+        final int f7_2 = 2 * f[7];
 
-        int f5_38 = 38 * f[5]; /* 1.959375*2^30 */
-        int f6_19 = 19 * f[6]; /* 1.959375*2^30 */
-        int f7_38 = 38 * f[7]; /* 1.959375*2^30 */
-        int f8_19 = 19 * f[8]; /* 1.959375*2^30 */
-        int f9_38 = 38 * f[9]; /* 1.959375*2^30 */
+        final int f5_38 = 38 * f[5]; /* 1.959375*2^30 */
+        final int f6_19 = 19 * f[6]; /* 1.959375*2^30 */
+        final int f7_38 = 38 * f[7]; /* 1.959375*2^30 */
+        final int f8_19 = 19 * f[8]; /* 1.959375*2^30 */
+        final int f9_38 = 38 * f[9]; /* 1.959375*2^30 */
 
         /**
          * Same procedure as in multiply, but this time we have a higher symmetry
-         * leading to less summands. e.g. m(f1_2,f9_38) really stands for f1 * 2^26 * f9 *
-         * 2^230 + f9 * 2^230 + f1 * 2^26 congruent 2 * 2 * 19 * f1 * f9 2^0 modulo p.
+         * leading to less summands. e.g. m(f1_2,f9_38) really stands for f1 * 2^26 * f9
+         * * 2^230 + f9 * 2^230 + f1 * 2^26 congruent 2 * 2 * 19 * f1 * f9 2^0 modulo p.
          */
         // @formatter:off
-        long h0 = m(f[0],f[0]) + m(f1_2,f9_38) + m(f2_2,f8_19) + m(f3_2,f7_38) + m(f4_2,f6_19) + m(f[5],f5_38);
-        long h1 = m(f0_2,f[1]) + m(f[2],f9_38) + m(f3_2,f8_19) + m(f[4],f7_38) + m(f5_2,f6_19);
-        long h2 = m(f0_2,f[2]) + m(f1_2,f[1])  + m(f3_2,f9_38) + m(f4_2,f8_19) + m(f5_2,f7_38) + m(f[6],f6_19);
-        long h3 = m(f0_2,f[3]) + m(f1_2,f[2])  + m(f[4],f9_38) + m(f5_2,f8_19) + m(f[6],f7_38);
-        long h4 = m(f0_2,f[4]) + m(f1_2,f3_2)  + m(f[2],f[2])  + m(f5_2,f9_38) + m(f6_2,f8_19) + m(f[7],f7_38);
-        long h5 = m(f0_2,f[5]) + m(f1_2,f[4])  + m(f2_2,f[3])  + m(f[6],f9_38) + m(f7_2,f8_19);
-        long h6 = m(f0_2,f[6]) + m(f1_2,f5_2)  + m(f2_2,f[4])  + m(f3_2,f[3])  + m(f7_2,f9_38) + m(f[8],f8_19);
-        long h7 = m(f0_2,f[7]) + m(f1_2,f[6])  + m(f2_2,f[5])  + m(f3_2,f[4])  + m(f[8],f9_38);
-        long h8 = m(f0_2,f[8]) + m(f1_2,f7_2)  + m(f2_2,f[6])  + m(f3_2,f5_2)  + m(f[4],f[4])  + m(f[9],f9_38);
-        long h9 = m(f0_2,f[9]) + m(f1_2,f[8])  + m(f2_2,f[7])  + m(f3_2,f[6])  + m(f4_2,f[5]);
+        final long h0 = m(f[0],f[0]) + m(f1_2,f9_38) + m(f2_2,f8_19) + m(f3_2,f7_38) + m(f4_2,f6_19) + m(f[5],f5_38);
+        final long h1 = m(f0_2,f[1]) + m(f[2],f9_38) + m(f3_2,f8_19) + m(f[4],f7_38) + m(f5_2,f6_19);
+        final long h2 = m(f0_2,f[2]) + m(f1_2,f[1])  + m(f3_2,f9_38) + m(f4_2,f8_19) + m(f5_2,f7_38) + m(f[6],f6_19);
+        final long h3 = m(f0_2,f[3]) + m(f1_2,f[2])  + m(f[4],f9_38) + m(f5_2,f8_19) + m(f[6],f7_38);
+        final long h4 = m(f0_2,f[4]) + m(f1_2,f3_2)  + m(f[2],f[2])  + m(f5_2,f9_38) + m(f6_2,f8_19) + m(f[7],f7_38);
+        final long h5 = m(f0_2,f[5]) + m(f1_2,f[4])  + m(f2_2,f[3])  + m(f[6],f9_38) + m(f7_2,f8_19);
+        final long h6 = m(f0_2,f[6]) + m(f1_2,f5_2)  + m(f2_2,f[4])  + m(f3_2,f[3])  + m(f7_2,f9_38) + m(f[8],f8_19);
+        final long h7 = m(f0_2,f[7]) + m(f1_2,f[6])  + m(f2_2,f[5])  + m(f3_2,f[4])  + m(f[8],f9_38);
+        final long h8 = m(f0_2,f[8]) + m(f1_2,f7_2)  + m(f2_2,f[6])  + m(f3_2,f5_2)  + m(f[4],f[4])  + m(f[9],f9_38);
+        final long h9 = m(f0_2,f[9]) + m(f1_2,f[8])  + m(f2_2,f[7])  + m(f3_2,f[6])  + m(f4_2,f[5]);
         // @formatter:on
 
         return FieldElement.reduce(h0, h1, h2, h3, h4, h5, h6, h7, h8, h9);
@@ -586,22 +586,22 @@ class FieldElement {
      * @return The (reasonably reduced) square of this field element times 2.
      */
     public FieldElement squareAndDouble() {
-        int[] f = this.t; // avoid getfield opcode
+        final int[] f = this.t; // avoid getfield opcode
 
-        int f0_2 = 2 * f[0];
-        int f1_2 = 2 * f[1];
-        int f2_2 = 2 * f[2];
-        int f3_2 = 2 * f[3];
-        int f4_2 = 2 * f[4];
-        int f5_2 = 2 * f[5];
-        int f6_2 = 2 * f[6];
-        int f7_2 = 2 * f[7];
+        final int f0_2 = 2 * f[0];
+        final int f1_2 = 2 * f[1];
+        final int f2_2 = 2 * f[2];
+        final int f3_2 = 2 * f[3];
+        final int f4_2 = 2 * f[4];
+        final int f5_2 = 2 * f[5];
+        final int f6_2 = 2 * f[6];
+        final int f7_2 = 2 * f[7];
 
-        int f5_38 = 38 * f[5]; /* 1.959375*2^30 */
-        int f6_19 = 19 * f[6]; /* 1.959375*2^30 */
-        int f7_38 = 38 * f[7]; /* 1.959375*2^30 */
-        int f8_19 = 19 * f[8]; /* 1.959375*2^30 */
-        int f9_38 = 38 * f[9]; /* 1.959375*2^30 */
+        final int f5_38 = 38 * f[5]; /* 1.959375*2^30 */
+        final int f6_19 = 19 * f[6]; /* 1.959375*2^30 */
+        final int f7_38 = 38 * f[7]; /* 1.959375*2^30 */
+        final int f8_19 = 19 * f[8]; /* 1.959375*2^30 */
+        final int f9_38 = 38 * f[9]; /* 1.959375*2^30 */
 
         // @formatter:off
         long h0 = m(f[0],f[0]) + m(f1_2,f9_38) + m(f2_2,f8_19) + m(f3_2,f7_38) + m(f4_2,f6_19) + m(f[5],f5_38);
@@ -636,7 +636,7 @@ class FieldElement {
      * @param k the exponent of 2. Must be positive and non-zero.
      * @return $\text{this}^{2^k}$
      */
-    FieldElement pow2k(int k) {
+    FieldElement pow2k(final int k) {
         if (!(k > 0)) {
             throw new IllegalArgumentException("Exponent must be positive and non-zero");
         }
@@ -805,7 +805,7 @@ class FieldElement {
         int wasSquare;
         FieldElement result;
 
-        SqrtRatioM1Result(int wasSquare, FieldElement result) {
+        SqrtRatioM1Result(final int wasSquare, final FieldElement result) {
             this.wasSquare = wasSquare;
             this.result = result;
         }
@@ -827,22 +827,22 @@ class FieldElement {
      *         <li>(false, +$\sqrt{i * u / v}$) if $u / v$ is non-square (so $i * u
      *         / v$ is square).
      */
-    static SqrtRatioM1Result sqrtRatioM1(FieldElement u, FieldElement v) {
-        FieldElement v3 = v.square().multiply(v);
-        FieldElement v7 = v3.square().multiply(v);
+    static SqrtRatioM1Result sqrtRatioM1(final FieldElement u, final FieldElement v) {
+        final FieldElement v3 = v.square().multiply(v);
+        final FieldElement v7 = v3.square().multiply(v);
         FieldElement r = u.multiply(v3).multiply(u.multiply(v7).powP58());
-        FieldElement check = v.multiply(r.square());
+        final FieldElement check = v.multiply(r.square());
 
-        FieldElement uNeg = u.negate();
-        int correctSignSqrt = check.ctEquals(u);
-        int flippedSignSqrt = check.ctEquals(uNeg);
-        int flippedSignSqrtM1 = check.ctEquals(uNeg.multiply(Constants.SQRT_M1));
+        final FieldElement uNeg = u.negate();
+        final int correctSignSqrt = check.ctEquals(u);
+        final int flippedSignSqrt = check.ctEquals(uNeg);
+        final int flippedSignSqrtM1 = check.ctEquals(uNeg.multiply(Constants.SQRT_M1));
 
-        FieldElement rPrime = r.multiply(Constants.SQRT_M1);
+        final FieldElement rPrime = r.multiply(Constants.SQRT_M1);
         r = r.ctSelect(rPrime, flippedSignSqrt | flippedSignSqrtM1);
 
         // Choose the non-negative square root.
-        int rIsNegative = r.isNegative();
+        final int rIsNegative = r.isNegative();
         r = r.ctSelect(r.negate(), rIsNegative);
 
         return new SqrtRatioM1Result(correctSignSqrt | flippedSignSqrt, r);
