@@ -415,6 +415,13 @@ class FieldElement {
     }
 
     /**
+     * i32 * i32 -> i64
+     */
+    private static long m(final int x, final int y) {
+        return ((long) x) * ((long) y);
+    }
+
+    /**
      * $h = f * g$
      * <p>
      * Can overlap $h$ with $f$ or $g$.
@@ -450,7 +457,9 @@ class FieldElement {
      * @return The (reasonably reduced) field element this * val.
      */
     public FieldElement multiply(FieldElement val) {
-        int[] g = val.t;
+        int[] f = this.t; // avoid getfield opcode
+        int[] g = val.t;  // avoid getfield opcode
+
         int g1_19 = 19 * g[1]; /* 1.959375*2^29 */
         int g2_19 = 19 * g[2]; /* 1.959375*2^30; still ok */
         int g3_19 = 19 * g[3];
@@ -460,113 +469,12 @@ class FieldElement {
         int g7_19 = 19 * g[7];
         int g8_19 = 19 * g[8];
         int g9_19 = 19 * g[9];
-        int f1_2 = 2 * t[1];
-        int f3_2 = 2 * t[3];
-        int f5_2 = 2 * t[5];
-        int f7_2 = 2 * t[7];
-        int f9_2 = 2 * t[9];
-        // @formatter:off
-        long f0g0    = t[0] * (long) g[0];
-        long f0g1    = t[0] * (long) g[1];
-        long f0g2    = t[0] * (long) g[2];
-        long f0g3    = t[0] * (long) g[3];
-        long f0g4    = t[0] * (long) g[4];
-        long f0g5    = t[0] * (long) g[5];
-        long f0g6    = t[0] * (long) g[6];
-        long f0g7    = t[0] * (long) g[7];
-        long f0g8    = t[0] * (long) g[8];
-        long f0g9    = t[0] * (long) g[9];
-        long f1g0    = t[1] * (long) g[0];
-        long f1g1_2  = f1_2 * (long) g[1];
-        long f1g2    = t[1] * (long) g[2];
-        long f1g3_2  = f1_2 * (long) g[3];
-        long f1g4    = t[1] * (long) g[4];
-        long f1g5_2  = f1_2 * (long) g[5];
-        long f1g6    = t[1] * (long) g[6];
-        long f1g7_2  = f1_2 * (long) g[7];
-        long f1g8    = t[1] * (long) g[8];
-        long f1g9_38 = f1_2 * (long) g9_19;
-        long f2g0    = t[2] * (long) g[0];
-        long f2g1    = t[2] * (long) g[1];
-        long f2g2    = t[2] * (long) g[2];
-        long f2g3    = t[2] * (long) g[3];
-        long f2g4    = t[2] * (long) g[4];
-        long f2g5    = t[2] * (long) g[5];
-        long f2g6    = t[2] * (long) g[6];
-        long f2g7    = t[2] * (long) g[7];
-        long f2g8_19 = t[2] * (long) g8_19;
-        long f2g9_19 = t[2] * (long) g9_19;
-        long f3g0    = t[3] * (long) g[0];
-        long f3g1_2  = f3_2 * (long) g[1];
-        long f3g2    = t[3] * (long) g[2];
-        long f3g3_2  = f3_2 * (long) g[3];
-        long f3g4    = t[3] * (long) g[4];
-        long f3g5_2  = f3_2 * (long) g[5];
-        long f3g6    = t[3] * (long) g[6];
-        long f3g7_38 = f3_2 * (long) g7_19;
-        long f3g8_19 = t[3] * (long) g8_19;
-        long f3g9_38 = f3_2 * (long) g9_19;
-        long f4g0    = t[4] * (long) g[0];
-        long f4g1    = t[4] * (long) g[1];
-        long f4g2    = t[4] * (long) g[2];
-        long f4g3    = t[4] * (long) g[3];
-        long f4g4    = t[4] * (long) g[4];
-        long f4g5    = t[4] * (long) g[5];
-        long f4g6_19 = t[4] * (long) g6_19;
-        long f4g7_19 = t[4] * (long) g7_19;
-        long f4g8_19 = t[4] * (long) g8_19;
-        long f4g9_19 = t[4] * (long) g9_19;
-        long f5g0    = t[5] * (long) g[0];
-        long f5g1_2  = f5_2 * (long) g[1];
-        long f5g2    = t[5] * (long) g[2];
-        long f5g3_2  = f5_2 * (long) g[3];
-        long f5g4    = t[5] * (long) g[4];
-        long f5g5_38 = f5_2 * (long) g5_19;
-        long f5g6_19 = t[5] * (long) g6_19;
-        long f5g7_38 = f5_2 * (long) g7_19;
-        long f5g8_19 = t[5] * (long) g8_19;
-        long f5g9_38 = f5_2 * (long) g9_19;
-        long f6g0    = t[6] * (long) g[0];
-        long f6g1    = t[6] * (long) g[1];
-        long f6g2    = t[6] * (long) g[2];
-        long f6g3    = t[6] * (long) g[3];
-        long f6g4_19 = t[6] * (long) g4_19;
-        long f6g5_19 = t[6] * (long) g5_19;
-        long f6g6_19 = t[6] * (long) g6_19;
-        long f6g7_19 = t[6] * (long) g7_19;
-        long f6g8_19 = t[6] * (long) g8_19;
-        long f6g9_19 = t[6] * (long) g9_19;
-        long f7g0    = t[7] * (long) g[0];
-        long f7g1_2  = f7_2 * (long) g[1];
-        long f7g2    = t[7] * (long) g[2];
-        long f7g3_38 = f7_2 * (long) g3_19;
-        long f7g4_19 = t[7] * (long) g4_19;
-        long f7g5_38 = f7_2 * (long) g5_19;
-        long f7g6_19 = t[7] * (long) g6_19;
-        long f7g7_38 = f7_2 * (long) g7_19;
-        long f7g8_19 = t[7] * (long) g8_19;
-        long f7g9_38 = f7_2 * (long) g9_19;
-        long f8g0    = t[8] * (long) g[0];
-        long f8g1    = t[8] * (long) g[1];
-        long f8g2_19 = t[8] * (long) g2_19;
-        long f8g3_19 = t[8] * (long) g3_19;
-        long f8g4_19 = t[8] * (long) g4_19;
-        long f8g5_19 = t[8] * (long) g5_19;
-        long f8g6_19 = t[8] * (long) g6_19;
-        long f8g7_19 = t[8] * (long) g7_19;
-        long f8g8_19 = t[8] * (long) g8_19;
-        long f8g9_19 = t[8] * (long) g9_19;
-        long f9g0    = t[9] * (long) g[0];
-        long f9g1_38 = f9_2 * (long) g1_19;
-        long f9g2_19 = t[9] * (long) g2_19;
-        long f9g3_38 = f9_2 * (long) g3_19;
-        long f9g4_19 = t[9] * (long) g4_19;
-        long f9g5_38 = f9_2 * (long) g5_19;
-        long f9g6_19 = t[9] * (long) g6_19;
-        long f9g7_38 = f9_2 * (long) g7_19;
-        long f9g8_19 = t[9] * (long) g8_19;
-        long f9g9_38 = f9_2 * (long) g9_19;
-        // @formatter:on
+
+        int f1_2 = 2 * f[1];
+        int f3_2 = 2 * f[3];
+        int f5_2 = 2 * f[5];
+        int f7_2 = 2 * f[7];
+        int f9_2 = 2 * f[9];
 
         /**
          * Remember: 2^255 congruent 19 modulo p. h = h0 * 2^0 + h1 * 2^26 + h2 *
@@ -581,16 +489,16 @@ class FieldElement {
          * p. and so on...
          */
         // @formatter:off
-        long h0 = f0g0 + f1g9_38 + f2g8_19 + f3g7_38 + f4g6_19 + f5g5_38 + f6g4_19 + f7g3_38 + f8g2_19 + f9g1_38;
-        long h1 = f0g1 + f1g0    + f2g9_19 + f3g8_19 + f4g7_19 + f5g6_19 + f6g5_19 + f7g4_19 + f8g3_19 + f9g2_19;
-        long h2 = f0g2 + f1g1_2  + f2g0    + f3g9_38 + f4g8_19 + f5g7_38 + f6g6_19 + f7g5_38 + f8g4_19 + f9g3_38;
-        long h3 = f0g3 + f1g2    + f2g1    + f3g0    + f4g9_19 + f5g8_19 + f6g7_19 + f7g6_19 + f8g5_19 + f9g4_19;
-        long h4 = f0g4 + f1g3_2  + f2g2    + f3g1_2  + f4g0    + f5g9_38 + f6g8_19 + f7g7_38 + f8g6_19 + f9g5_38;
-        long h5 = f0g5 + f1g4    + f2g3    + f3g2    + f4g1    + f5g0    + f6g9_19 + f7g8_19 + f8g7_19 + f9g6_19;
-        long h6 = f0g6 + f1g5_2  + f2g4    + f3g3_2  + f4g2    + f5g1_2  + f6g0    + f7g9_38 + f8g8_19 + f9g7_38;
-        long h7 = f0g7 + f1g6    + f2g5    + f3g4    + f4g3    + f5g2    + f6g1    + f7g0    + f8g9_19 + f9g8_19;
-        long h8 = f0g8 + f1g7_2  + f2g6    + f3g5_2  + f4g4    + f5g3_2  + f6g2    + f7g1_2  + f8g0    + f9g9_38;
-        long h9 = f0g9 + f1g8    + f2g7    + f3g6    + f4g5    + f5g4    + f6g3    + f7g2    + f8g1    + f9g0;
+        long h0 = m(f[0],g[0]) + m(f1_2,g9_19) + m(f[2],g8_19) + m(f3_2,g7_19) + m(f[4],g6_19) + m(f5_2,g5_19) + m(f[6],g4_19) + m(f7_2,g3_19) + m(f[8],g2_19) + m(f9_2,g1_19);
+        long h1 = m(f[0],g[1]) + m(f[1],g[0])  + m(f[2],g9_19) + m(f[3],g8_19) + m(f[4],g7_19) + m(f[5],g6_19) + m(f[6],g5_19) + m(f[7],g4_19) + m(f[8],g3_19) + m(f[9],g2_19);
+        long h2 = m(f[0],g[2]) + m(f1_2,g[1])  + m(f[2],g[0])  + m(f3_2,g9_19) + m(f[4],g8_19) + m(f5_2,g7_19) + m(f[6],g6_19) + m(f7_2,g5_19) + m(f[8],g4_19) + m(f9_2,g3_19);
+        long h3 = m(f[0],g[3]) + m(f[1],g[2])  + m(f[2],g[1])  + m(f[3],g[0])  + m(f[4],g9_19) + m(f[5],g8_19) + m(f[6],g7_19) + m(f[7],g6_19) + m(f[8],g5_19) + m(f[9],g4_19);
+        long h4 = m(f[0],g[4]) + m(f1_2,g[3])  + m(f[2],g[2])  + m(f3_2,g[1])  + m(f[4],g[0])  + m(f5_2,g9_19) + m(f[6],g8_19) + m(f7_2,g7_19) + m(f[8],g6_19) + m(f9_2,g5_19);
+        long h5 = m(f[0],g[5]) + m(f[1],g[4])  + m(f[2],g[3])  + m(f[3],g[2])  + m(f[4],g[1])  + m(f[5],g[0])  + m(f[6],g9_19) + m(f[7],g8_19) + m(f[8],g7_19) + m(f[9],g6_19);
+        long h6 = m(f[0],g[6]) + m(f1_2,g[5])  + m(f[2],g[4])  + m(f3_2,g[3])  + m(f[4],g[2])  + m(f5_2,g[1])  + m(f[6],g[0])  + m(f7_2,g9_19) + m(f[8],g8_19) + m(f9_2,g7_19);
+        long h7 = m(f[0],g[7]) + m(f[1],g[6])  + m(f[2],g[5])  + m(f[3],g[4])  + m(f[4],g[3])  + m(f[5],g[2])  + m(f[6],g[1])  + m(f[7],g[0])  + m(f[8],g9_19) + m(f[9],g8_19);
+        long h8 = m(f[0],g[8]) + m(f1_2,g[7])  + m(f[2],g[6])  + m(f3_2,g[5])  + m(f[4],g[4])  + m(f5_2,g[3])  + m(f[6],g[2])  + m(f7_2,g[1])  + m(f[8],g[0])  + m(f9_2,g9_19);
+        long h9 = m(f[0],g[9]) + m(f[1],g[8])  + m(f[2],g[7])  + m(f[3],g[6])  + m(f[4],g[5])  + m(f[5],g[4])  + m(f[6],g[3])  + m(f[7],g[2])  + m(f[8],g[1])  + m(f[9],g[0]);
         // @formatter:on
 
         return FieldElement.reduce(h0, h1, h2, h3, h4, h5, h6, h7, h8, h9);
@@ -615,103 +523,39 @@ class FieldElement {
      * @return The (reasonably reduced) square of this field element.
      */
     public FieldElement square() {
-        int f0 = t[0];
-        int f1 = t[1];
-        int f2 = t[2];
-        int f3 = t[3];
-        int f4 = t[4];
-        int f5 = t[5];
-        int f6 = t[6];
-        int f7 = t[7];
-        int f8 = t[8];
-        int f9 = t[9];
-        int f0_2 = 2 * f0;
-        int f1_2 = 2 * f1;
-        int f2_2 = 2 * f2;
-        int f3_2 = 2 * f3;
-        int f4_2 = 2 * f4;
-        int f5_2 = 2 * f5;
-        int f6_2 = 2 * f6;
-        int f7_2 = 2 * f7;
-        int f5_38 = 38 * f5; /* 1.959375*2^30 */
-        int f6_19 = 19 * f6; /* 1.959375*2^30 */
-        int f7_38 = 38 * f7; /* 1.959375*2^30 */
-        int f8_19 = 19 * f8; /* 1.959375*2^30 */
-        int f9_38 = 38 * f9; /* 1.959375*2^30 */
-        // @formatter:off
-        long f0f0    = f0   * (long) f0;
-        long f0f1_2  = f0_2 * (long) f1;
-        long f0f2_2  = f0_2 * (long) f2;
-        long f0f3_2  = f0_2 * (long) f3;
-        long f0f4_2  = f0_2 * (long) f4;
-        long f0f5_2  = f0_2 * (long) f5;
-        long f0f6_2  = f0_2 * (long) f6;
-        long f0f7_2  = f0_2 * (long) f7;
-        long f0f8_2  = f0_2 * (long) f8;
-        long f0f9_2  = f0_2 * (long) f9;
-        long f1f1_2  = f1_2 * (long) f1;
-        long f1f2_2  = f1_2 * (long) f2;
-        long f1f3_4  = f1_2 * (long) f3_2;
-        long f1f4_2  = f1_2 * (long) f4;
-        long f1f5_4  = f1_2 * (long) f5_2;
-        long f1f6_2  = f1_2 * (long) f6;
-        long f1f7_4  = f1_2 * (long) f7_2;
-        long f1f8_2  = f1_2 * (long) f8;
-        long f1f9_76 = f1_2 * (long) f9_38;
-        long f2f2    = f2   * (long) f2;
-        long f2f3_2  = f2_2 * (long) f3;
-        long f2f4_2  = f2_2 * (long) f4;
-        long f2f5_2  = f2_2 * (long) f5;
-        long f2f6_2  = f2_2 * (long) f6;
-        long f2f7_2  = f2_2 * (long) f7;
-        long f2f8_38 = f2_2 * (long) f8_19;
-        long f2f9_38 = f2   * (long) f9_38;
-        long f3f3_2  = f3_2 * (long) f3;
-        long f3f4_2  = f3_2 * (long) f4;
-        long f3f5_4  = f3_2 * (long) f5_2;
-        long f3f6_2  = f3_2 * (long) f6;
-        long f3f7_76 = f3_2 * (long) f7_38;
-        long f3f8_38 = f3_2 * (long) f8_19;
-        long f3f9_76 = f3_2 * (long) f9_38;
-        long f4f4    = f4   * (long) f4;
-        long f4f5_2  = f4_2 * (long) f5;
-        long f4f6_38 = f4_2 * (long) f6_19;
-        long f4f7_38 = f4   * (long) f7_38;
-        long f4f8_38 = f4_2 * (long) f8_19;
-        long f4f9_38 = f4   * (long) f9_38;
-        long f5f5_38 = f5   * (long) f5_38;
-        long f5f6_38 = f5_2 * (long) f6_19;
-        long f5f7_76 = f5_2 * (long) f7_38;
-        long f5f8_38 = f5_2 * (long) f8_19;
-        long f5f9_76 = f5_2 * (long) f9_38;
-        long f6f6_19 = f6   * (long) f6_19;
-        long f6f7_38 = f6   * (long) f7_38;
-        long f6f8_38 = f6_2 * (long) f8_19;
-        long f6f9_38 = f6   * (long) f9_38;
-        long f7f7_38 = f7   * (long) f7_38;
-        long f7f8_38 = f7_2 * (long) f8_19;
-        long f7f9_76 = f7_2 * (long) f9_38;
-        long f8f8_19 = f8   * (long) f8_19;
-        long f8f9_38 = f8   * (long) f9_38;
-        long f9f9_38 = f9   * (long) f9_38;
-        // @formatter:on
+        int[] f = this.t; // avoid getfield opcode
+
+        int f0_2 = 2 * f[0];
+        int f1_2 = 2 * f[1];
+        int f2_2 = 2 * f[2];
+        int f3_2 = 2 * f[3];
+        int f4_2 = 2 * f[4];
+        int f5_2 = 2 * f[5];
+        int f6_2 = 2 * f[6];
+        int f7_2 = 2 * f[7];
+
+        int f5_38 = 38 * f[5]; /* 1.959375*2^30 */
+        int f6_19 = 19 * f[6]; /* 1.959375*2^30 */
+        int f7_38 = 38 * f[7]; /* 1.959375*2^30 */
+        int f8_19 = 19 * f[8]; /* 1.959375*2^30 */
+        int f9_38 = 38 * f[9]; /* 1.959375*2^30 */
 
         /**
          * Same procedure as in multiply, but this time we have a higher symmetry
-         * leading to less summands. e.g. f1f9_76 really stands for f1 * 2^26 * f9 *
+         * leading to less summands. e.g. m(f1_2,f9_38) really stands for f1 * 2^26 * f9 *
          * 2^230 + f9 * 2^230 + f1 * 2^26 congruent 2 * 2 * 19 * f1 * f9 2^0 modulo p.
          */
         // @formatter:off
-        long h0 = f0f0   + f1f9_76 + f2f8_38 + f3f7_76 + f4f6_38 + f5f5_38;
-        long h1 = f0f1_2 + f2f9_38 + f3f8_38 + f4f7_38 + f5f6_38;
-        long h2 = f0f2_2 + f1f1_2  + f3f9_76 + f4f8_38 + f5f7_76 + f6f6_19;
-        long h3 = f0f3_2 + f1f2_2  + f4f9_38 + f5f8_38 + f6f7_38;
-        long h4 = f0f4_2 + f1f3_4  + f2f2    + f5f9_76 + f6f8_38 + f7f7_38;
-        long h5 = f0f5_2 + f1f4_2  + f2f3_2  + f6f9_38 + f7f8_38;
-        long h6 = f0f6_2 + f1f5_4  + f2f4_2  + f3f3_2  + f7f9_76 + f8f8_19;
-        long h7 = f0f7_2 + f1f6_2  + f2f5_2  + f3f4_2  + f8f9_38;
-        long h8 = f0f8_2 + f1f7_4  + f2f6_2  + f3f5_4  + f4f4    + f9f9_38;
-        long h9 = f0f9_2 + f1f8_2  + f2f7_2  + f3f6_2  + f4f5_2;
+        long h0 = m(f[0],f[0]) + m(f1_2,f9_38) + m(f2_2,f8_19) + m(f3_2,f7_38) + m(f4_2,f6_19) + m(f[5],f5_38);
+        long h1 = m(f0_2,f[1]) + m(f[2],f9_38) + m(f3_2,f8_19) + m(f[4],f7_38) + m(f5_2,f6_19);
+        long h2 = m(f0_2,f[2]) + m(f1_2,f[1])  + m(f3_2,f9_38) + m(f4_2,f8_19) + m(f5_2,f7_38) + m(f[6],f6_19);
+        long h3 = m(f0_2,f[3]) + m(f1_2,f[2])  + m(f[4],f9_38) + m(f5_2,f8_19) + m(f[6],f7_38);
+        long h4 = m(f0_2,f[4]) + m(f1_2,f3_2)  + m(f[2],f[2])  + m(f5_2,f9_38) + m(f6_2,f8_19) + m(f[7],f7_38);
+        long h5 = m(f0_2,f[5]) + m(f1_2,f[4])  + m(f2_2,f[3])  + m(f[6],f9_38) + m(f7_2,f8_19);
+        long h6 = m(f0_2,f[6]) + m(f1_2,f5_2)  + m(f2_2,f[4])  + m(f3_2,f[3])  + m(f7_2,f9_38) + m(f[8],f8_19);
+        long h7 = m(f0_2,f[7]) + m(f1_2,f[6])  + m(f2_2,f[5])  + m(f3_2,f[4])  + m(f[8],f9_38);
+        long h8 = m(f0_2,f[8]) + m(f1_2,f7_2)  + m(f2_2,f[6])  + m(f3_2,f5_2)  + m(f[4],f[4])  + m(f[9],f9_38);
+        long h9 = m(f0_2,f[9]) + m(f1_2,f[8])  + m(f2_2,f[7])  + m(f3_2,f[6])  + m(f4_2,f[5]);
         // @formatter:on
 
         return FieldElement.reduce(h0, h1, h2, h3, h4, h5, h6, h7, h8, h9);
@@ -736,95 +580,34 @@ class FieldElement {
      * @return The (reasonably reduced) square of this field element times 2.
      */
     public FieldElement squareAndDouble() {
-        int f0 = t[0];
-        int f1 = t[1];
-        int f2 = t[2];
-        int f3 = t[3];
-        int f4 = t[4];
-        int f5 = t[5];
-        int f6 = t[6];
-        int f7 = t[7];
-        int f8 = t[8];
-        int f9 = t[9];
-        int f0_2 = 2 * f0;
-        int f1_2 = 2 * f1;
-        int f2_2 = 2 * f2;
-        int f3_2 = 2 * f3;
-        int f4_2 = 2 * f4;
-        int f5_2 = 2 * f5;
-        int f6_2 = 2 * f6;
-        int f7_2 = 2 * f7;
-        int f5_38 = 38 * f5; /* 1.959375*2^30 */
-        int f6_19 = 19 * f6; /* 1.959375*2^30 */
-        int f7_38 = 38 * f7; /* 1.959375*2^30 */
-        int f8_19 = 19 * f8; /* 1.959375*2^30 */
-        int f9_38 = 38 * f9; /* 1.959375*2^30 */
+        int[] f = this.t; // avoid getfield opcode
+
+        int f0_2 = 2 * f[0];
+        int f1_2 = 2 * f[1];
+        int f2_2 = 2 * f[2];
+        int f3_2 = 2 * f[3];
+        int f4_2 = 2 * f[4];
+        int f5_2 = 2 * f[5];
+        int f6_2 = 2 * f[6];
+        int f7_2 = 2 * f[7];
+
+        int f5_38 = 38 * f[5]; /* 1.959375*2^30 */
+        int f6_19 = 19 * f[6]; /* 1.959375*2^30 */
+        int f7_38 = 38 * f[7]; /* 1.959375*2^30 */
+        int f8_19 = 19 * f[8]; /* 1.959375*2^30 */
+        int f9_38 = 38 * f[9]; /* 1.959375*2^30 */
+
         // @formatter:off
-        long f0f0    = f0   * (long) f0;
-        long f0f1_2  = f0_2 * (long) f1;
-        long f0f2_2  = f0_2 * (long) f2;
-        long f0f3_2  = f0_2 * (long) f3;
-        long f0f4_2  = f0_2 * (long) f4;
-        long f0f5_2  = f0_2 * (long) f5;
-        long f0f6_2  = f0_2 * (long) f6;
-        long f0f7_2  = f0_2 * (long) f7;
-        long f0f8_2  = f0_2 * (long) f8;
-        long f0f9_2  = f0_2 * (long) f9;
-        long f1f1_2  = f1_2 * (long) f1;
-        long f1f2_2  = f1_2 * (long) f2;
-        long f1f3_4  = f1_2 * (long) f3_2;
-        long f1f4_2  = f1_2 * (long) f4;
-        long f1f5_4  = f1_2 * (long) f5_2;
-        long f1f6_2  = f1_2 * (long) f6;
-        long f1f7_4  = f1_2 * (long) f7_2;
-        long f1f8_2  = f1_2 * (long) f8;
-        long f1f9_76 = f1_2 * (long) f9_38;
-        long f2f2    = f2   * (long) f2;
-        long f2f3_2  = f2_2 * (long) f3;
-        long f2f4_2  = f2_2 * (long) f4;
-        long f2f5_2  = f2_2 * (long) f5;
-        long f2f6_2  = f2_2 * (long) f6;
-        long f2f7_2  = f2_2 * (long) f7;
-        long f2f8_38 = f2_2 * (long) f8_19;
-        long f2f9_38 = f2   * (long) f9_38;
-        long f3f3_2  = f3_2 * (long) f3;
-        long f3f4_2  = f3_2 * (long) f4;
-        long f3f5_4  = f3_2 * (long) f5_2;
-        long f3f6_2  = f3_2 * (long) f6;
-        long f3f7_76 = f3_2 * (long) f7_38;
-        long f3f8_38 = f3_2 * (long) f8_19;
-        long f3f9_76 = f3_2 * (long) f9_38;
-        long f4f4    = f4   * (long) f4;
-        long f4f5_2  = f4_2 * (long) f5;
-        long f4f6_38 = f4_2 * (long) f6_19;
-        long f4f7_38 = f4   * (long) f7_38;
-        long f4f8_38 = f4_2 * (long) f8_19;
-        long f4f9_38 = f4   * (long) f9_38;
-        long f5f5_38 = f5   * (long) f5_38;
-        long f5f6_38 = f5_2 * (long) f6_19;
-        long f5f7_76 = f5_2 * (long) f7_38;
-        long f5f8_38 = f5_2 * (long) f8_19;
-        long f5f9_76 = f5_2 * (long) f9_38;
-        long f6f6_19 = f6   * (long) f6_19;
-        long f6f7_38 = f6   * (long) f7_38;
-        long f6f8_38 = f6_2 * (long) f8_19;
-        long f6f9_38 = f6   * (long) f9_38;
-        long f7f7_38 = f7   * (long) f7_38;
-        long f7f8_38 = f7_2 * (long) f8_19;
-        long f7f9_76 = f7_2 * (long) f9_38;
-        long f8f8_19 = f8   * (long) f8_19;
-        long f8f9_38 = f8   * (long) f9_38;
-        long f9f9_38 = f9   * (long) f9_38;
-        long h0 = f0f0   + f1f9_76 + f2f8_38 + f3f7_76 + f4f6_38 + f5f5_38;
-        long h1 = f0f1_2 + f2f9_38 + f3f8_38 + f4f7_38 + f5f6_38;
-        long h2 = f0f2_2 + f1f1_2  + f3f9_76 + f4f8_38 + f5f7_76 + f6f6_19;
-        long h3 = f0f3_2 + f1f2_2  + f4f9_38 + f5f8_38 + f6f7_38;
-        long h4 = f0f4_2 + f1f3_4  + f2f2    + f5f9_76 + f6f8_38 + f7f7_38;
-        long h5 = f0f5_2 + f1f4_2  + f2f3_2  + f6f9_38 + f7f8_38;
-        long h6 = f0f6_2 + f1f5_4  + f2f4_2  + f3f3_2  + f7f9_76 + f8f8_19;
-        long h7 = f0f7_2 + f1f6_2  + f2f5_2  + f3f4_2  + f8f9_38;
-        long h8 = f0f8_2 + f1f7_4  + f2f6_2  + f3f5_4  + f4f4    + f9f9_38;
-        long h9 = f0f9_2 + f1f8_2  + f2f7_2  + f3f6_2  + f4f5_2;
+        long h0 = m(f[0],f[0]) + m(f1_2,f9_38) + m(f2_2,f8_19) + m(f3_2,f7_38) + m(f4_2,f6_19) + m(f[5],f5_38);
+        long h1 = m(f0_2,f[1]) + m(f[2],f9_38) + m(f3_2,f8_19) + m(f[4],f7_38) + m(f5_2,f6_19);
+        long h2 = m(f0_2,f[2]) + m(f1_2,f[1])  + m(f3_2,f9_38) + m(f4_2,f8_19) + m(f5_2,f7_38) + m(f[6],f6_19);
+        long h3 = m(f0_2,f[3]) + m(f1_2,f[2])  + m(f[4],f9_38) + m(f5_2,f8_19) + m(f[6],f7_38);
+        long h4 = m(f0_2,f[4]) + m(f1_2,f3_2)  + m(f[2],f[2])  + m(f5_2,f9_38) + m(f6_2,f8_19) + m(f[7],f7_38);
+        long h5 = m(f0_2,f[5]) + m(f1_2,f[4])  + m(f2_2,f[3])  + m(f[6],f9_38) + m(f7_2,f8_19);
+        long h6 = m(f0_2,f[6]) + m(f1_2,f5_2)  + m(f2_2,f[4])  + m(f3_2,f[3])  + m(f7_2,f9_38) + m(f[8],f8_19);
+        long h7 = m(f0_2,f[7]) + m(f1_2,f[6])  + m(f2_2,f[5])  + m(f3_2,f[4])  + m(f[8],f9_38);
+        long h8 = m(f0_2,f[8]) + m(f1_2,f7_2)  + m(f2_2,f[6])  + m(f3_2,f5_2)  + m(f[4],f[4])  + m(f[9],f9_38);
+        long h9 = m(f0_2,f[9]) + m(f1_2,f[8])  + m(f2_2,f[7])  + m(f3_2,f[6])  + m(f4_2,f[5]);
         // @formatter:on
 
         h0 += h0;
