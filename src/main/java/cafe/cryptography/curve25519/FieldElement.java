@@ -164,16 +164,17 @@ class FieldElement {
      * @return the 32-byte encoding of this FieldElement.
      */
     byte[] toByteArray() {
-        int h0 = t[0];
-        int h1 = t[1];
-        int h2 = t[2];
-        int h3 = t[3];
-        int h4 = t[4];
-        int h5 = t[5];
-        int h6 = t[6];
-        int h7 = t[7];
-        int h8 = t[8];
-        int h9 = t[9];
+        int[] h = this.t; // avoid getfield opcode
+        int h0 = h[0];
+        int h1 = h[1];
+        int h2 = h[2];
+        int h3 = h[3];
+        int h4 = h[4];
+        int h5 = h[5];
+        int h6 = h[6];
+        int h7 = h[7];
+        int h8 = h[8];
+        int h9 = h[9];
         int q;
         int carry0;
         int carry1;
@@ -279,11 +280,13 @@ class FieldElement {
      *      target="_top">SUPERCOP</a>
      */
     public FieldElement ctSelect(FieldElement that, int b) {
+        int[] f = this.t; // avoid getfield opcode
+        int[] g = that.t; // avoid getfield opcode
         b = -b;
         int[] result = new int[10];
         for (int i = 0; i < 10; i++) {
-            result[i] = this.t[i];
-            int x = this.t[i] ^ that.t[i];
+            result[i] = f[i];
+            int x = f[i] ^ g[i];
             x &= b;
             result[i] ^= x;
         }
@@ -359,10 +362,11 @@ class FieldElement {
      * @return The field element this + val.
      */
     public FieldElement add(FieldElement val) {
-        int[] g = val.t;
+        int[] f = this.t; // avoid getfield opcode
+        int[] g = val.t;  // avoid getfield opcode
         int[] h = new int[10];
         for (int i = 0; i < 10; i++) {
-            h[i] = t[i] + g[i];
+            h[i] = f[i] + g[i];
         }
         return new FieldElement(h);
     }
@@ -385,10 +389,11 @@ class FieldElement {
      * @return The field element this - val.
      **/
     public FieldElement subtract(FieldElement val) {
-        int[] g = val.t;
+        int[] f = this.t; // avoid getfield opcode
+        int[] g = val.t;  // avoid getfield opcode
         int[] h = new int[10];
         for (int i = 0; i < 10; i++) {
-            h[i] = t[i] - g[i];
+            h[i] = f[i] - g[i];
         }
         return new FieldElement(h);
     }
@@ -407,9 +412,10 @@ class FieldElement {
      * @return The field element (-1) * this.
      */
     public FieldElement negate() {
+        int[] f = this.t; // avoid getfield opcode
         int[] h = new int[10];
         for (int i = 0; i < 10; i++) {
-            h[i] = -t[i];
+            h[i] = -f[i];
         }
         return new FieldElement(h);
     }
