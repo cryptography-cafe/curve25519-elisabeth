@@ -15,11 +15,18 @@ sourceSets {
         java.srcDir("src/main/java9")
         compileClasspath += sourceSets.main.get().output
     }
+    create("testJar") {
+        runtimeClasspath += sourceSets.test.get().output
+    }
 }
 
 dependencies {
     testImplementation("junit:junit:4.12")
     testImplementation("org.hamcrest:hamcrest-all:1.3")
+
+    "testJarImplementation"(files(tasks.jar.get().archivePath) { builtBy(tasks.jar) })
+    "testJarImplementation"("junit:junit:4.12")
+    "testJarImplementation"("org.hamcrest:hamcrest-all:1.3")
 }
 
 java {
@@ -41,6 +48,13 @@ tasks.jar {
             "Multi-Release" to "true"
         )
     }
+}
+
+tasks.register<Test>("testJar") {
+    classpath = sourceSets["testJar"].runtimeClasspath
+}
+tasks.check {
+    dependsOn(tasks["testJar"])
 }
 
 tasks.jacocoTestReport {
