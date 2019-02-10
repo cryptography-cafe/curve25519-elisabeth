@@ -10,6 +10,13 @@ repositories {
     jcenter()
 }
 
+sourceSets {
+    create("java9") {
+        java.srcDir("src/main/java9")
+        compileClasspath += sourceSets.main.get().output
+    }
+}
+
 dependencies {
     testImplementation("junit:junit:4.12")
     testImplementation("org.hamcrest:hamcrest-all:1.3")
@@ -18,6 +25,22 @@ dependencies {
 java {
     sourceCompatibility = JavaVersion.VERSION_1_7
     targetCompatibility = JavaVersion.VERSION_1_7
+}
+
+tasks.named<JavaCompile>("compileJava9Java") {
+    sourceCompatibility = "9"
+    targetCompatibility = "9"
+}
+
+tasks.jar {
+    into("META-INF/versions/9") {
+        from(sourceSets["java9"].output)
+    }
+    manifest {
+        attributes(
+            "Multi-Release" to "true"
+        )
+    }
 }
 
 tasks.jacocoTestReport {
