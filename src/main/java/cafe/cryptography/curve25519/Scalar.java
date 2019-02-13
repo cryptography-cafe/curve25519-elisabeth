@@ -8,7 +8,7 @@ import static cafe.cryptography.curve25519.FieldElement.load_3;
 import static cafe.cryptography.curve25519.FieldElement.load_4;
 
 /**
- * An integer $s < 2^{255}$ which represents an element of the field $\mathbb{Z}
+ * An integer $s \lt 2^{255}$ which represents an element of the field $\mathbb{Z}
  * / \ell$.
  */
 public class Scalar {
