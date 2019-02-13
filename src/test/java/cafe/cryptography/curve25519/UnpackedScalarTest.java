@@ -83,6 +83,11 @@ public class UnpackedScalarTest {
     }
 
     @Test
+    public void addLToZero() {
+        assertThat(UnpackedScalar.ZERO.add(Constants.L).s, is(UnpackedScalar.ZERO.s));
+    }
+
+    @Test
     public void add() {
         assertThat(A.add(B).s, is(UnpackedScalar.ZERO.s));
     }
