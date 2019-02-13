@@ -1,6 +1,7 @@
 package cafe.cryptography.curve25519;
 
 import org.junit.*;
+import org.junit.rules.ExpectedException;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
@@ -56,6 +57,9 @@ public class ScalarTest {
             0, 0, 0, 0, 15, 0, 0, 0, 0, 0, -9, 0, 0, 0, 0, 0, 0, 0, -1, 0, 0, 0, 0, 0, 0, 0, 7, 0, 0, 0, 0, 0, -15, 0,
             0, 0, 0, 0, 15, 0, 0, 0, 0, 15, 0, 0, 0, 0, 15, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0 };
 
+    @Rule
+    public ExpectedException expectedEx = ExpectedException.none();
+
     @Test
     public void packageConstructorDoesNotThrowOnValid() {
         byte[] s = new byte[32];
@@ -81,10 +85,62 @@ public class ScalarTest {
     }
 
     @Test
+    public void reduce() {
+        Scalar biggest = Scalar.fromBytesModOrder(
+                Utils.hexToBytes("ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"));
+        assertThat(biggest, is(CANONICAL_2_256_MINUS_1));
+    }
+
+    @Test
     public void reduceWide() {
         Scalar biggest = Scalar.fromBytesModOrderWide(Utils.hexToBytes(
                 "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff0000000000000000000000000000000000000000000000000000000000000000"));
         assertThat(biggest, is(CANONICAL_2_256_MINUS_1));
+    }
+
+    @Test
+    public void canonicalDecoding() {
+        // Canonical encoding of 1667457891
+        byte[] canonicalBytes = Utils.hexToBytes("6363636300000000000000000000000000000000000000000000000000000000");
+
+        Scalar.fromCanonicalBytes(canonicalBytes);
+    }
+
+    @Test
+    public void nonCanonicalDecodingUnreduced() {
+        // Encoding of
+        // 7265385991361016183439748078976496179028704920197054998554201349516117938192
+        // = 28380414028753969466561515933501938171588560817147392552250411230663687203
+        // (mod l)
+        // Non-canonical because unreduced mod l
+        byte[] nonCanonicalBytesBecauseUnreduced = new byte[32];
+        for (int i = 0; i < 32; i++) {
+            nonCanonicalBytesBecauseUnreduced[i] = 16;
+        }
+
+        expectedEx.expect(IllegalArgumentException.class);
+        expectedEx.expectMessage("Non-canonical scalar representation");
+        Scalar.fromCanonicalBytes(nonCanonicalBytesBecauseUnreduced);
+    }
+
+    @Test
+    public void nonCanonicalDecodingHighbit() {
+        // Encoding with high bit set, to check that the parser isn't pre-masking the
+        // high bit
+        byte[] nonCanonicalBytesBecauseHighbit = new byte[32];
+        nonCanonicalBytesBecauseHighbit[31] = (byte) 0x80;
+
+        expectedEx.expect(IllegalArgumentException.class);
+        expectedEx.expectMessage("Invalid scalar representation");
+        Scalar.fromCanonicalBytes(nonCanonicalBytesBecauseHighbit);
+    }
+
+    @Test
+    public void fromBitsClearsHighbit() {
+        Scalar exact = Scalar
+                .fromBits(Utils.hexToBytes("ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"));
+        assertThat(exact.toByteArray(),
+                is(Utils.hexToBytes("ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff7f")));
     }
 
     @Test

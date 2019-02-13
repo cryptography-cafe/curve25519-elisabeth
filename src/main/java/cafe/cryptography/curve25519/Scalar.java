@@ -8,8 +8,8 @@ import static cafe.cryptography.curve25519.FieldElement.load_3;
 import static cafe.cryptography.curve25519.FieldElement.load_4;
 
 /**
- * An integer $s \lt 2^{255}$ which represents an element of the field $\mathbb{Z}
- * / \ell$.
+ * An integer $s \lt 2^{255}$ which represents an element of the field
+ * $\mathbb{Z} / \ell$.
  */
 public class Scalar {
     public static final Scalar ZERO = new Scalar(new byte[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -30,6 +30,18 @@ public class Scalar {
             throw new IllegalArgumentException("Invalid scalar representation");
         }
         this.s = s;
+    }
+
+    /**
+     * Construct a Scalar by reducing a 256-bit little-endian integer modulo the
+     * group order $\ell$.
+     */
+    public static Scalar fromBytesModOrder(final byte[] input) {
+        if (input.length != 32) {
+            throw new IllegalArgumentException("Input must by 32 bytes");
+        }
+
+        return Scalar.reduce(input);
     }
 
     /**
@@ -337,6 +349,31 @@ public class Scalar {
     }
 
     /**
+     * Attempt to construct a Scalar from a canonical byte representation.
+     *
+     * @return the Scalar if the input was its canonical representation.
+     */
+    public static Scalar fromCanonicalBytes(byte[] input) throws IllegalArgumentException {
+        Scalar s = new Scalar(input);
+        if (!s.isCanonical()) {
+            throw new IllegalArgumentException("Non-canonical scalar representation");
+        }
+        return s;
+    }
+
+    /**
+     * Construct a Scalar from the low 255 bits of a 256-bit integer.
+     * <p>
+     * This function is intended for applications like X25519 which require specific
+     * bit-patterns when performing scalar multiplication.
+     */
+    public static Scalar fromBits(byte[] input) {
+        // Ensure that s < 2^255 by masking the high bit
+        input[31] &= 0x7f;
+        return new Scalar(input);
+    }
+
+    /**
      * Convert this Scalar to its underlying sequence of bytes.
      *
      * @return the 32-byte little-endian encoding of this Scalar.
@@ -376,6 +413,23 @@ public class Scalar {
     @Override
     public int hashCode() {
         return Arrays.hashCode(s);
+    }
+
+    /**
+     * Check whether this Scalar is the canonical representative mod $\ell$.
+     */
+    boolean isCanonical() {
+        return this.ctEquals(Scalar.reduce(this.s)) == 1;
+    }
+
+    /**
+     * Reduce this Scalar modulo $\ell$.
+     *
+     * @return the reduced Scalar.
+     */
+    static Scalar reduce(byte[] x) {
+        long[] xR = UnpackedScalar.fromByteArray(x).mulInternal(Constants.R);
+        return new Scalar(UnpackedScalar.montgomeryReduce(xR).toByteArray());
     }
 
     /**
