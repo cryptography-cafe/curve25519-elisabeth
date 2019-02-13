@@ -9,6 +9,53 @@ import static org.hamcrest.Matchers.lessThanOrEqualTo;
 import static org.junit.Assert.assertThat;
 
 public class ScalarTest {
+    /**
+     * x =
+     * 2238329342913194256032495932344128051776374960164957527413114840482143558222
+     */
+    static final Scalar X = new Scalar(
+            Utils.hexToBytes("4e5ab4345d4708845913b4641bc27d5252a585101bcc4244d449f4a879d9f204"));
+
+    /**
+     * 1/x =
+     * 6859937278830797291664592131120606308688036382723378951768035303146619657244
+     */
+    static final Scalar XINV = new Scalar(
+            Utils.hexToBytes("1cdc17fce0e9a5bbd9247e56bb016347bbba31edd5a9bb96d50bcd7a3f962a0f"));
+
+    /**
+     * y =
+     * 2592331292931086675770238855846338635550719849568364935475441891787804997264
+     */
+    static final Scalar Y = new Scalar(
+            Utils.hexToBytes("907633fe1c4b66a4a28d2dd7678386c353d0de5455d4fc9de8ef7ac31f35bb05"));
+
+    /**
+     * x*y =
+     * 5690045403673944803228348699031245560686958845067437804563560795922180092780
+     */
+    static final Scalar X_TIMES_Y = new Scalar(
+            Utils.hexToBytes("6c3374a1894f62210aaa2fe186a6f92ce0aa75c2779581c295fc08179a73940c"));
+
+    /**
+     * sage: l = 2^252 + 27742317777372353535851937790883648493 sage: big = 2^256 -
+     * 1 sage: repr((big % l).digits(256))
+     */
+    static final Scalar CANONICAL_2_256_MINUS_1 = new Scalar(
+            Utils.hexToBytes("1c95988d7431ecd670cf7d73f45befc6feffffffffffffffffffffffffffff0f"));
+
+    static final Scalar A_SCALAR = new Scalar(
+            Utils.hexToBytes("1a0e978a90f6622d3747023f8ad8264da758aa1b88e040d1589e7b7f2376ef09"));
+
+    static final byte[] A_NAF = new byte[] { 0, 13, 0, 0, 0, 0, 0, 0, 0, 7, 0, 0, 0, 0, 0, 0, -9, 0, 0, 0, 0, -11, 0, 0,
+            0, 0, 3, 0, 0, 0, 0, 1, 0, 0, 0, 0, 9, 0, 0, 0, 0, -5, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 11, 0, 0, 0, 0, 11,
+            0, 0, 0, 0, 0, -9, 0, 0, 0, 0, 0, -3, 0, 0, 0, 0, 9, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, -1, 0, 0, 0, 0, 0,
+            9, 0, 0, 0, 0, -15, 0, 0, 0, 0, -7, 0, 0, 0, 0, -9, 0, 0, 0, 0, 0, 5, 0, 0, 0, 0, 13, 0, 0, 0, 0, 0, -3, 0,
+            0, 0, 0, -11, 0, 0, 0, 0, -7, 0, 0, 0, 0, -13, 0, 0, 0, 0, 11, 0, 0, 0, 0, -9, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0,
+            0, -15, 0, 0, 0, 0, 1, 0, 0, 0, 0, 7, 0, 0, 0, 0, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 13, 0, 0, 0, 0, 0, 0, 11, 0,
+            0, 0, 0, 0, 15, 0, 0, 0, 0, 0, -9, 0, 0, 0, 0, 0, 0, 0, -1, 0, 0, 0, 0, 0, 0, 0, 7, 0, 0, 0, 0, 0, -15, 0,
+            0, 0, 0, 0, 15, 0, 0, 0, 0, 15, 0, 0, 0, 0, 15, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0 };
+
     @Test
     public void packageConstructorDoesNotThrowOnValid() {
         byte[] s = new byte[32];
@@ -31,6 +78,25 @@ public class ScalarTest {
     @Test(expected = IllegalArgumentException.class)
     public void packageConstructorThrowsOnTooLong() {
         new Scalar(new byte[33]);
+    }
+
+    @Test
+    public void reduceWide() {
+        Scalar biggest = Scalar.fromBytesModOrderWide(Utils.hexToBytes(
+                "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff0000000000000000000000000000000000000000000000000000000000000000"));
+        assertThat(biggest, is(CANONICAL_2_256_MINUS_1));
+    }
+
+    @Test
+    public void multiply() {
+        assertThat(X.multiply(Y), is(X_TIMES_Y));
+        assertThat(X_TIMES_Y.multiply(XINV), is(Y));
+    }
+
+    @Test
+    public void nonAdjacentForm() {
+        byte[] naf = A_SCALAR.nonAdjacentForm();
+        assertThat(naf, is(A_NAF));
     }
 
     // Example from RFC 8032 test case 1
