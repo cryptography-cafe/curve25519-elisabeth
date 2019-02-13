@@ -3,18 +3,24 @@ val mathJax = "<script type='text/x-mathjax-config'>MathJax.Hub.Config({ tex2jax
 tasks.named<Javadoc>("javadoc") {
     options.header("")
         .bottom(mathJax)
-    // Add --allow-script-in-comments if available (since 1.8.0_121).
-    // See https://github.com/gradle/gradle/issues/1393
-    try {
-        var clazz = Class.forName("com.sun.tools.doclets.formats.html.ConfigurationImpl")
-        var optionLength = clazz.getDeclaredMethod("optionLength", String::class.java)
-        var result = optionLength.invoke(clazz.newInstance(), "--allow-script-in-comments") as Int
-        if (result > 0) {
-            options.header("")
-                .addBooleanOption("-allow-script-in-comments", true)
+
+    if (JavaVersion.current().isJava9Compatible()) {
+        options.header("")
+            .addBooleanOption("-allow-script-in-comments", true)
+    } else {
+        // Add --allow-script-in-comments if available (since 1.8.0_121).
+        // See https://github.com/gradle/gradle/issues/1393
+        try {
+            var clazz = Class.forName("com.sun.tools.doclets.formats.html.ConfigurationImpl")
+            var optionLength = clazz.getDeclaredMethod("optionLength", String::class.java)
+            var result = optionLength.invoke(clazz.newInstance(), "--allow-script-in-comments") as Int
+            if (result > 0) {
+                options.header("")
+                    .addBooleanOption("-allow-script-in-comments", true)
+            }
+        } catch (ignored: ClassNotFoundException) {
+        } catch (ignored: NoSuchMethodException) {
         }
-    } catch (ignored: ClassNotFoundException) {
-    } catch (ignored: NoSuchMethodException) {
     }
 }
 
@@ -31,16 +37,21 @@ tasks.register<Javadoc>("internalDocs") {
         .addBooleanOption("private", true)
     options.header("")
         .bottom(mathJax)
-    // Add --allow-script-in-comments if available (since 1.8.0_121)
-    try {
-        var clazz = Class.forName("com.sun.tools.doclets.formats.html.ConfigurationImpl")
-        var optionLength = clazz.getDeclaredMethod("optionLength", String::class.java)
-        var result = optionLength.invoke(clazz.newInstance(), "--allow-script-in-comments") as Int
-        if (result > 0) {
-            options.header("")
-                .addBooleanOption("-allow-script-in-comments", true)
+    if (JavaVersion.current().isJava9Compatible()) {
+        options.header("")
+            .addBooleanOption("-allow-script-in-comments", true)
+    } else {
+        // Add --allow-script-in-comments if available (since 1.8.0_121).
+        try {
+            var clazz = Class.forName("com.sun.tools.doclets.formats.html.ConfigurationImpl")
+            var optionLength = clazz.getDeclaredMethod("optionLength", String::class.java)
+            var result = optionLength.invoke(clazz.newInstance(), "--allow-script-in-comments") as Int
+            if (result > 0) {
+                options.header("")
+                    .addBooleanOption("-allow-script-in-comments", true)
+            }
+        } catch (ignored: ClassNotFoundException) {
+        } catch (ignored: NoSuchMethodException) {
         }
-    } catch (ignored: ClassNotFoundException) {
-    } catch (ignored: NoSuchMethodException) {
     }
 }
