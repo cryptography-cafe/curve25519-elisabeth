@@ -379,6 +379,38 @@ public class Scalar {
     }
 
     /**
+     * Compute $a + b \bmod \ell$.
+     *
+     * @param b the Scalar to add to this.
+     * @return $a + b \bmod \ell$
+     */
+    public Scalar add(final Scalar b) {
+        return new Scalar(UnpackedScalar.fromByteArray(this.s).add(UnpackedScalar.fromByteArray(b.s)).toByteArray());
+    }
+
+    /**
+     * Compute $a - b \bmod \ell$.
+     *
+     * @param b the Scalar to subtract from this.
+     * @return $a - b \bmod \ell$
+     */
+    public Scalar subtract(final Scalar b) {
+        return new Scalar(
+                UnpackedScalar.fromByteArray(this.s).subtract(UnpackedScalar.fromByteArray(b.s)).toByteArray());
+    }
+
+    /**
+     * Compute $a * b \bmod \ell$.
+     *
+     * @param b the Scalar to multiply with this.
+     * @return $a * b \bmod \ell$
+     */
+    public Scalar multiply(final Scalar b) {
+        return new Scalar(
+                UnpackedScalar.fromByteArray(this.s).multiply(UnpackedScalar.fromByteArray(b.s)).toByteArray());
+    }
+
+    /**
      * Compute $a * b + c \bmod \ell$.
      *
      * @param b the Scalar to multiply this by.

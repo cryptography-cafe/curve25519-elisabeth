@@ -53,6 +53,8 @@ public class ScalarTest {
         Scalar r = new Scalar(TV1_R);
         Scalar S = new Scalar(TV1_S);
         assertThat(h.multiplyAndAdd(a, r), is(equalTo(S)));
+        assertThat(h.multiply(a).add(r), is(equalTo(S)));
+        assertThat(h.multiply(a), is(equalTo(S.subtract(r))));
     }
 
     @Test(expected = IllegalArgumentException.class)
