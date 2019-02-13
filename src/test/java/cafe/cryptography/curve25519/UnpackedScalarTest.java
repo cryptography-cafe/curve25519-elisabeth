@@ -75,6 +75,14 @@ public class UnpackedScalarTest {
             0x14f0555c, 0x0c4c4a4a, 0x19fb727f, 0x07eae31a, 0x000a65b5 });
 
     @Test
+    public void unpackThenPack() {
+        assertThat(UnpackedScalar.fromByteArray(ScalarTest.TV1_R).toByteArray(), is(ScalarTest.TV1_R));
+        assertThat(UnpackedScalar.fromByteArray(ScalarTest.TV1_H).toByteArray(), is(ScalarTest.TV1_H));
+        assertThat(UnpackedScalar.fromByteArray(ScalarTest.TV1_A).toByteArray(), is(ScalarTest.TV1_A));
+        assertThat(UnpackedScalar.fromByteArray(ScalarTest.TV1_S).toByteArray(), is(ScalarTest.TV1_S));
+    }
+
+    @Test
     public void add() {
         assertThat(A.add(B).s, is(UnpackedScalar.ZERO.s));
     }
