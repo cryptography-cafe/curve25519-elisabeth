@@ -406,8 +406,7 @@ public class Scalar {
      * @return $a * b \bmod \ell$
      */
     public Scalar multiply(final Scalar b) {
-        return new Scalar(
-                UnpackedScalar.fromByteArray(this.s).multiply(UnpackedScalar.fromByteArray(b.s)).toByteArray());
+        return this.multiplyAndAdd(b, Scalar.ZERO);
     }
 
     /**
