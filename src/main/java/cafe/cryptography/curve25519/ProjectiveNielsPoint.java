@@ -119,7 +119,7 @@ class ProjectiveNielsPoint {
         }
 
         /**
-         * Given public, odd $x$ with $0 < x < 2^4$, return $[x]A$.
+         * Given public, odd $x$ with $0 \lt x \lt 2^4$, return $[x]A$.
          *
          * @param x the index.
          * @return the pre-computed point.

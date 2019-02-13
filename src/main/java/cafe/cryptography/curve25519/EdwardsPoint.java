@@ -143,8 +143,8 @@ public class EdwardsPoint {
     /**
      * Point addition.
      *
-     * @param Q the point to add to this one, in affine "Niels coordinates".
-     * @return $P + Q$
+     * @param q the point to add to this one, in affine "Niels coordinates".
+     * @return $P + q$
      */
     CompletedPoint add(AffineNielsPoint q) {
         FieldElement YPlusX = this.Y.add(this.X);
@@ -187,8 +187,8 @@ public class EdwardsPoint {
     /**
      * Point subtraction.
      *
-     * @param Q the point to subtract from this one, in affine "Niels coordinates".
-     * @return $P - Q$
+     * @param q the point to subtract from this one, in affine "Niels coordinates".
+     * @return $P - q$
      */
     CompletedPoint subtract(AffineNielsPoint q) {
         FieldElement YPlusX = this.Y.add(this.X);
