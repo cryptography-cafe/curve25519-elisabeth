@@ -46,10 +46,8 @@ public class CompressedEdwardsY {
             throw new IllegalArgumentException("not a valid EdwardsPoint");
         }
 
-        FieldElement X = sqrt.result;
-        if (sqrt.result.isNegative() != ConstantTime.bit(data, 255)) {
-            X = X.negate();
-        }
+        FieldElement X = sqrt.result.negate().ctSelect(sqrt.result,
+                ConstantTime.equal(sqrt.result.isNegative(), ConstantTime.bit(data, 255)));
 
         return new EdwardsPoint(X, Y, FieldElement.ONE, X.multiply(Y));
     }
