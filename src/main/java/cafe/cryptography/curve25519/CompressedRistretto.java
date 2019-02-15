@@ -55,10 +55,7 @@ public class CompressedRistretto {
         final FieldElement denX = invsqrt.result.multiply(u2);
         final FieldElement denY = invsqrt.result.multiply(denX).multiply(v);
 
-        FieldElement x = s.add(s).multiply(denX);
-        final int xIsNegative = x.isNegative();
-        x = x.ctSelect(x.negate(), xIsNegative);
-
+        final FieldElement x = s.add(s).multiply(denX).ctAbs();
         final FieldElement y = u1.multiply(denY);
         final FieldElement t = x.multiply(y);
 

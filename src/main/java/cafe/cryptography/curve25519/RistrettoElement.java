@@ -32,10 +32,7 @@ public class RistrettoElement {
         final FieldElement.SqrtRatioM1Result sqrt = FieldElement.sqrtRatioM1(u, v);
         FieldElement s = sqrt.result;
 
-        FieldElement sPrime = s.multiply(t);
-        final int sPrimeIsNegative = sPrime.isNegative();
-        sPrime = sPrime.negate().ctSelect(sPrime, sPrimeIsNegative);
-
+        final FieldElement sPrime = s.multiply(t).ctAbs().negate();
         s = sPrime.ctSelect(s, sqrt.wasSquare);
         c = r.ctSelect(c, sqrt.wasSquare);
 

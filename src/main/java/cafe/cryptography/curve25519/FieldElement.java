@@ -283,6 +283,15 @@ class FieldElement {
     }
 
     /**
+     * Compute the absolute value of this FieldElement in constant time.
+     *
+     * @return $|\text{this}|$.
+     */
+    FieldElement ctAbs() {
+        return this.ctSelect(this.negate(), this.isNegative());
+    }
+
+    /**
      * Equality check overridden to be constant-time.
      * <p>
      * Fails fast if the objects are of different types.
@@ -1273,8 +1282,7 @@ class FieldElement {
         r = r.ctSelect(rPrime, flippedSignSqrt | flippedSignSqrtM1);
 
         // Choose the non-negative square root.
-        int rIsNegative = r.isNegative();
-        r = r.ctSelect(r.negate(), rIsNegative);
+        r = r.ctAbs();
 
         return new SqrtRatioM1Result(correctSignSqrt | flippedSignSqrt, r);
     }
