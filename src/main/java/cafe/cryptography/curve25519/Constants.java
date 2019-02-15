@@ -28,6 +28,11 @@ public final class Constants {
     });
 
     /**
+     * Edwards $-d$ value, equal to $121665/121666 \bmod p$.
+     */
+    public static final FieldElement NEG_EDWARDS_D = EDWARDS_D.negate();
+
+    /**
      * Edwards $2*d$ value, equal to $2*(-121665/121666) \bmod p$.
      */
     public static final FieldElement EDWARDS_2D = new FieldElement(new int[] {
