@@ -1,6 +1,7 @@
 package cafe.cryptography.curve25519;
 
 import org.junit.*;
+import org.junit.rules.ExpectedException;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
@@ -9,6 +10,56 @@ import static org.hamcrest.Matchers.lessThanOrEqualTo;
 import static org.junit.Assert.assertThat;
 
 public class ScalarTest {
+    /**
+     * x =
+     * 2238329342913194256032495932344128051776374960164957527413114840482143558222
+     */
+    static final Scalar X = new Scalar(
+            Utils.hexToBytes("4e5ab4345d4708845913b4641bc27d5252a585101bcc4244d449f4a879d9f204"));
+
+    /**
+     * 1/x =
+     * 6859937278830797291664592131120606308688036382723378951768035303146619657244
+     */
+    static final Scalar XINV = new Scalar(
+            Utils.hexToBytes("1cdc17fce0e9a5bbd9247e56bb016347bbba31edd5a9bb96d50bcd7a3f962a0f"));
+
+    /**
+     * y =
+     * 2592331292931086675770238855846338635550719849568364935475441891787804997264
+     */
+    static final Scalar Y = new Scalar(
+            Utils.hexToBytes("907633fe1c4b66a4a28d2dd7678386c353d0de5455d4fc9de8ef7ac31f35bb05"));
+
+    /**
+     * x*y =
+     * 5690045403673944803228348699031245560686958845067437804563560795922180092780
+     */
+    static final Scalar X_TIMES_Y = new Scalar(
+            Utils.hexToBytes("6c3374a1894f62210aaa2fe186a6f92ce0aa75c2779581c295fc08179a73940c"));
+
+    /**
+     * sage: l = 2^252 + 27742317777372353535851937790883648493 sage: big = 2^256 -
+     * 1 sage: repr((big % l).digits(256))
+     */
+    static final Scalar CANONICAL_2_256_MINUS_1 = new Scalar(
+            Utils.hexToBytes("1c95988d7431ecd670cf7d73f45befc6feffffffffffffffffffffffffffff0f"));
+
+    static final Scalar A_SCALAR = new Scalar(
+            Utils.hexToBytes("1a0e978a90f6622d3747023f8ad8264da758aa1b88e040d1589e7b7f2376ef09"));
+
+    static final byte[] A_NAF = new byte[] { 0, 13, 0, 0, 0, 0, 0, 0, 0, 7, 0, 0, 0, 0, 0, 0, -9, 0, 0, 0, 0, -11, 0, 0,
+            0, 0, 3, 0, 0, 0, 0, 1, 0, 0, 0, 0, 9, 0, 0, 0, 0, -5, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 11, 0, 0, 0, 0, 11,
+            0, 0, 0, 0, 0, -9, 0, 0, 0, 0, 0, -3, 0, 0, 0, 0, 9, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, -1, 0, 0, 0, 0, 0,
+            9, 0, 0, 0, 0, -15, 0, 0, 0, 0, -7, 0, 0, 0, 0, -9, 0, 0, 0, 0, 0, 5, 0, 0, 0, 0, 13, 0, 0, 0, 0, 0, -3, 0,
+            0, 0, 0, -11, 0, 0, 0, 0, -7, 0, 0, 0, 0, -13, 0, 0, 0, 0, 11, 0, 0, 0, 0, -9, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0,
+            0, -15, 0, 0, 0, 0, 1, 0, 0, 0, 0, 7, 0, 0, 0, 0, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 13, 0, 0, 0, 0, 0, 0, 11, 0,
+            0, 0, 0, 0, 15, 0, 0, 0, 0, 0, -9, 0, 0, 0, 0, 0, 0, 0, -1, 0, 0, 0, 0, 0, 0, 0, 7, 0, 0, 0, 0, 0, -15, 0,
+            0, 0, 0, 0, 15, 0, 0, 0, 0, 15, 0, 0, 0, 0, 15, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0 };
+
+    @Rule
+    public ExpectedException expectedEx = ExpectedException.none();
+
     @Test
     public void packageConstructorDoesNotThrowOnValid() {
         byte[] s = new byte[32];
@@ -33,6 +84,77 @@ public class ScalarTest {
         new Scalar(new byte[33]);
     }
 
+    @Test
+    public void reduce() {
+        Scalar biggest = Scalar.fromBytesModOrder(
+                Utils.hexToBytes("ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"));
+        assertThat(biggest, is(CANONICAL_2_256_MINUS_1));
+    }
+
+    @Test
+    public void reduceWide() {
+        Scalar biggest = Scalar.fromBytesModOrderWide(Utils.hexToBytes(
+                "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff0000000000000000000000000000000000000000000000000000000000000000"));
+        assertThat(biggest, is(CANONICAL_2_256_MINUS_1));
+    }
+
+    @Test
+    public void canonicalDecoding() {
+        // Canonical encoding of 1667457891
+        byte[] canonicalBytes = Utils.hexToBytes("6363636300000000000000000000000000000000000000000000000000000000");
+
+        Scalar.fromCanonicalBytes(canonicalBytes);
+    }
+
+    @Test
+    public void nonCanonicalDecodingUnreduced() {
+        // Encoding of
+        // 7265385991361016183439748078976496179028704920197054998554201349516117938192
+        // = 28380414028753969466561515933501938171588560817147392552250411230663687203
+        // (mod l)
+        // Non-canonical because unreduced mod l
+        byte[] nonCanonicalBytesBecauseUnreduced = new byte[32];
+        for (int i = 0; i < 32; i++) {
+            nonCanonicalBytesBecauseUnreduced[i] = 16;
+        }
+
+        expectedEx.expect(IllegalArgumentException.class);
+        expectedEx.expectMessage("Non-canonical scalar representation");
+        Scalar.fromCanonicalBytes(nonCanonicalBytesBecauseUnreduced);
+    }
+
+    @Test
+    public void nonCanonicalDecodingHighbit() {
+        // Encoding with high bit set, to check that the parser isn't pre-masking the
+        // high bit
+        byte[] nonCanonicalBytesBecauseHighbit = new byte[32];
+        nonCanonicalBytesBecauseHighbit[31] = (byte) 0x80;
+
+        expectedEx.expect(IllegalArgumentException.class);
+        expectedEx.expectMessage("Invalid scalar representation");
+        Scalar.fromCanonicalBytes(nonCanonicalBytesBecauseHighbit);
+    }
+
+    @Test
+    public void fromBitsClearsHighbit() {
+        Scalar exact = Scalar
+                .fromBits(Utils.hexToBytes("ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"));
+        assertThat(exact.toByteArray(),
+                is(Utils.hexToBytes("ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff7f")));
+    }
+
+    @Test
+    public void multiply() {
+        assertThat(X.multiply(Y), is(X_TIMES_Y));
+        assertThat(X_TIMES_Y.multiply(XINV), is(Y));
+    }
+
+    @Test
+    public void nonAdjacentForm() {
+        byte[] naf = A_SCALAR.nonAdjacentForm();
+        assertThat(naf, is(A_NAF));
+    }
+
     // Example from RFC 8032 test case 1
     static final byte[] TV1_R_INPUT = Utils.hexToBytes(
             "b6b19cd8e0426f5983fa112d89a143aa97dab8bc5deb8d5b6253c928b65272f4044098c2a990039cde5b6a4818df0bfb6e40dc5dee54248032962323e701352d");
@@ -53,6 +175,8 @@ public class ScalarTest {
         Scalar r = new Scalar(TV1_R);
         Scalar S = new Scalar(TV1_S);
         assertThat(h.multiplyAndAdd(a, r), is(equalTo(S)));
+        assertThat(h.multiply(a).add(r), is(equalTo(S)));
+        assertThat(h.multiply(a), is(equalTo(S.subtract(r))));
     }
 
     @Test(expected = IllegalArgumentException.class)
