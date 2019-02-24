@@ -415,6 +415,11 @@ public class Scalar {
         return Arrays.hashCode(s);
     }
 
+    @Override
+    public String toString() {
+        return "Scalar(" + StrUtils.bytesToHex(this.s) + ")";
+    }
+
     /**
      * Check whether this Scalar is the canonical representative mod $\ell$.
      */
