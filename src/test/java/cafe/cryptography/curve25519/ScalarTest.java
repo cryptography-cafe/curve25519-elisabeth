@@ -144,6 +144,22 @@ public class ScalarTest {
     }
 
     @Test
+    public void addReduces() {
+        Scalar largestEd25519Scalar = Scalar
+                .fromBits(Utils.hexToBytes("f8ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff7f"));
+        assertThat(largestEd25519Scalar.add(Scalar.ONE), is(Scalar.fromCanonicalBytes(
+                Utils.hexToBytes("7e344775474a7f9723b63a8be92ae76dffffffffffffffffffffffffffffff0f"))));
+    }
+
+    @Test
+    public void subtractReduces() {
+        Scalar largestEd25519Scalar = Scalar
+                .fromBits(Utils.hexToBytes("f8ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff7f"));
+        assertThat(largestEd25519Scalar.subtract(Scalar.ONE), is(Scalar.fromCanonicalBytes(
+                Utils.hexToBytes("7c344775474a7f9723b63a8be92ae76dffffffffffffffffffffffffffffff0f"))));
+    }
+
+    @Test
     public void multiply() {
         assertThat(X.multiply(Y), is(X_TIMES_Y));
         assertThat(X_TIMES_Y.multiply(XINV), is(Y));
