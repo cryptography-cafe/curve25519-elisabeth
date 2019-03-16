@@ -35,7 +35,8 @@ public class Scalar {
         if (s.length != 32 || (((s[31] >> 7) & 0x01) != 0)) {
             throw new IllegalArgumentException("Invalid scalar representation");
         }
-        this.s = s;
+        // Store a copy to prevent interior mutability
+        this.s = Arrays.copyOf(s, s.length);
     }
 
     /**
@@ -385,7 +386,8 @@ public class Scalar {
      * @return the 32-byte little-endian encoding of this Scalar.
      */
     public byte[] toByteArray() {
-        return s;
+        // Return a copy to prevent interior mutability
+        return Arrays.copyOf(this.s, this.s.length);
     }
 
     /**
