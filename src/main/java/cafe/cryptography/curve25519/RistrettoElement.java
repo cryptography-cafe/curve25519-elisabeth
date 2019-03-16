@@ -55,11 +55,13 @@ public class RistrettoElement {
      * @return the resulting element.
      */
     public static RistrettoElement fromUniformBytes(final byte[] b) {
-        // 1. Set r0 to the low 255 bits of b[ 0..32], taken mod p
+        // 1. Interpret the low 255 bits of b[ 0..32] as an integer r0 in
+        //    little-endian representation. Reduce r0 modulo p.
         final byte[] b0 = Arrays.copyOfRange(b, 0, 32);
         final FieldElement r0 = FieldElement.fromByteArray(b0);
 
-        // 2. Set r1 to the low 255 bits of b[32..64], taken mod p
+        // 2. Interpret the low 255 bits of b[32..64] as an integer r1 in
+        //    little-endian representation. Reduce r1 modulo p.
         final byte[] b1 = Arrays.copyOfRange(b, 32, 64);
         final FieldElement r1 = FieldElement.fromByteArray(b1);
 
