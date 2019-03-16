@@ -37,9 +37,9 @@ public class EdwardsPointBench {
     @Setup
     public void prepare() {
         Random r = new Random();
-        this.P = Constants.ED25519_BASEPOINT.multiply(randomScalar(r));
+        this.P = Constants.ED25519_BASEPOINT_TABLE.multiply(randomScalar(r));
         this.Pt = new EdwardsBasepointTable(this.P);
-        this.Q = Constants.ED25519_BASEPOINT.multiply(randomScalar(r));
+        this.Q = Constants.ED25519_BASEPOINT_TABLE.multiply(randomScalar(r));
         this.a = randomScalar(r);
         this.b = randomScalar(r);
     }

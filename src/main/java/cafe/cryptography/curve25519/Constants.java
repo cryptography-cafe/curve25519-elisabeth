@@ -134,6 +134,11 @@ public final class Constants {
     );
 
     /**
+     * Table containing pre-computed multiples of the Ed25519 basepoint.
+     */
+    public static final EdwardsBasepointTable ED25519_BASEPOINT_TABLE = new EdwardsBasepointTable(ED25519_BASEPOINT);
+
+    /**
      * The ristretto255 generator, as a RistrettoElement.
      */
     public static final RistrettoElement RISTRETTO_GENERATOR = new RistrettoElement(ED25519_BASEPOINT);
