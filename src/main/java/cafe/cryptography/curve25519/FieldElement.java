@@ -16,6 +16,7 @@ import cafe.cryptography.subtle.ConstantTime;
 class FieldElement {
     public static final FieldElement ZERO = new FieldElement(new int[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 });
     public static final FieldElement ONE = new FieldElement(new int[] { 1, 0, 0, 0, 0, 0, 0, 0, 0, 0 });
+    public static final FieldElement MINUS_ONE = ZERO.subtract(ONE);
 
     /**
      * An element $t$, entries $t[0] \dots t[9]$, represents the integer $t[0] +
@@ -285,6 +286,15 @@ class FieldElement {
             result[i] ^= x;
         }
         return new FieldElement(result);
+    }
+
+    /**
+     * Compute the absolute value of this FieldElement in constant time.
+     *
+     * @return $|\text{this}|$.
+     */
+    FieldElement ctAbs() {
+        return this.ctSelect(this.negate(), this.isNegative());
     }
 
     /**
@@ -1117,12 +1127,13 @@ class FieldElement {
     }
 
     /**
-     * Gets this field element to the power of $(2^{252} - 3)$. This is a helper
-     * function for calculating the square root.
+     * Raises this field element to the power $(p-5)/8 = 2^{252} - 3$.
+     * <p>
+     * Helper for {@link #sqrtRatioM1(FieldElement, FieldElement)}.
      *
-     * @return This field element to the power of $(2^{252} - 3)$.
+     * @return $\text{this}^{(p-5)/8}$.
      */
-    public FieldElement pow22523() {
+    FieldElement powP58() {
         FieldElement t0, t1, t2;
 
         // 2 == 2 * 1
@@ -1231,6 +1242,55 @@ class FieldElement {
 
         // 2^252 - 3
         return multiply(t0);
+    }
+
+    /**
+     * The result of calling {@link #sqrtRatioM1(FieldElement, FieldElement)}.
+     */
+    static class SqrtRatioM1Result {
+        int wasSquare;
+        FieldElement result;
+
+        SqrtRatioM1Result(int wasSquare, FieldElement result) {
+            this.wasSquare = wasSquare;
+            this.result = result;
+        }
+    }
+
+    /**
+     * Given FieldElements $u$ and $v$, compute either $\sqrt{u / v}$ or $\sqrt{i *
+     * u / v}$ in constant time.
+     * <p>
+     * This function always returns the non-negative square root.
+     *
+     * @param u the numerator.
+     * @param v the denominator.
+     * @return
+     *         <ul>
+     *         <li>(true, +$\sqrt{u / v}$) if $v$ is non-zero and $u / v$ is square.
+     *         <li>(true, zero) if $u$ is zero.
+     *         <li>(false, zero) if $v$ is zero and $u$ is non-zero.
+     *         <li>(false, +$\sqrt{i * u / v}$) if $u / v$ is non-square (so $i * u
+     *         / v$ is square).
+     */
+    static SqrtRatioM1Result sqrtRatioM1(FieldElement u, FieldElement v) {
+        FieldElement v3 = v.square().multiply(v);
+        FieldElement v7 = v3.square().multiply(v);
+        FieldElement r = u.multiply(v3).multiply(u.multiply(v7).powP58());
+        FieldElement check = v.multiply(r.square());
+
+        FieldElement uNeg = u.negate();
+        int correctSignSqrt = check.ctEquals(u);
+        int flippedSignSqrt = check.ctEquals(uNeg);
+        int flippedSignSqrtM1 = check.ctEquals(uNeg.multiply(Constants.SQRT_M1));
+
+        FieldElement rPrime = r.multiply(Constants.SQRT_M1);
+        r = r.ctSelect(rPrime, flippedSignSqrt | flippedSignSqrtM1);
+
+        // Choose the non-negative square root.
+        r = r.ctAbs();
+
+        return new SqrtRatioM1Result(correctSignSqrt | flippedSignSqrt, r);
     }
 
     /**

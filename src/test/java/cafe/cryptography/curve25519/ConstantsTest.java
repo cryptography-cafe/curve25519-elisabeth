@@ -25,6 +25,18 @@ public class ConstantsTest {
     }
 
     @Test
+    public void checkSqrtADMinusOne() {
+        System.out.println(FieldElement.fromByteArray(Constants.SQRT_AD_MINUS_ONE.toByteArray()).printInternalRepresentation());
+        assertThat(Constants.SQRT_AD_MINUS_ONE.square().add(FieldElement.ONE).negate(), is(Constants.EDWARDS_D));
+    }
+
+    @Test
+    public void checkInvSqrtAMinusD() {
+        assertThat(Constants.INVSQRT_A_MINUS_D.invert().square().add(FieldElement.ONE).negate(),
+                is(Constants.EDWARDS_D));
+    }
+
+    @Test
     public void checkSqrtM1() {
         assertThat(Constants.SQRT_M1, is(FieldElement
                 .fromByteArray(Utils.hexToBytes("b0a00e4a271beec478e42fad0618432fa7d7fb3d99004d2b0bdfc14f8024832b"))));

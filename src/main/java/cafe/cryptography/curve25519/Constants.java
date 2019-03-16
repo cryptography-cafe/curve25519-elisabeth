@@ -56,12 +56,49 @@ public final class Constants {
     });
 
     /**
+     * Edwards $-d$ value, equal to $121665/121666 \bmod p$.
+     */
+    public static final FieldElement NEG_EDWARDS_D = EDWARDS_D.negate();
+
+    /**
      * Edwards $2*d$ value, equal to $2*(-121665/121666) \bmod p$.
      */
     public static final FieldElement EDWARDS_2D = new FieldElement(new int[] {
         // @formatter:off
         -21827239,  -5839606, -30745221, 13898782,  229458,
          15978800, -12551817,  -6495438, 29715968, 9444199,
+        // @formatter:on
+    });
+
+    /**
+     * $= 1 - d^2$, where $d$ is the Edwards curve parameter.
+     */
+    public static final FieldElement ONE_MINUS_D_SQ = FieldElement.ONE.subtract(EDWARDS_D.square());
+
+    /**
+     * $= (d - 1)^2$, where $d$ is the Edwards curve parameter.
+     */
+    public static final FieldElement D_MINUS_ONE_SQ = EDWARDS_D.subtract(FieldElement.ONE).square();
+
+    /**
+     * $= \sqrt{a*d - 1}$, where $a = -1 \bmod p$, $d$ are the Edwards curve
+     * parameters.
+     */
+    public static final FieldElement SQRT_AD_MINUS_ONE = new FieldElement(new int[] {
+        // @formatter:off
+        24849947,   -153582, -23613485, 6347715, -21072328,
+         -667138, -25271143, -15367704, -870347,  14525639,
+        // @formatter:on
+    });
+
+    /**
+     * $= 1/\sqrt{a-d}$, where $a = -1 \bmod p$, $d$ are the Edwards curve
+     * parameters.
+     */
+    public static final FieldElement INVSQRT_A_MINUS_D = new FieldElement(new int[] {
+        // @formatter:off
+        6111485,  4156064, -27798727, 12243468, -25904040,
+         120897, 20826367,  -7060776,  6093568,  -1986012,
         // @formatter:on
     });
 
@@ -95,4 +132,9 @@ public final class Constants {
         })
     // @formatter:on
     );
+
+    /**
+     * The ristretto255 generator, as a RistrettoElement.
+     */
+    public static final RistrettoElement RISTRETTO_GENERATOR = new RistrettoElement(ED25519_BASEPOINT);
 }

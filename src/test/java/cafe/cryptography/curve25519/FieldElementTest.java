@@ -36,6 +36,11 @@ public class FieldElementTest {
             (byte) 0xd0, 0x4c, 0x1d, 0x7b, (byte) 0x90, 0x71, (byte) 0xd8, (byte) 0xe9, (byte) 0xb6, 0x18, (byte) 0xe6,
             0x30 };
 
+    // Byte representation of a^((p-5)/8)
+    static final byte[] AP58_BYTES = { 0x6a, 0x4f, 0x24, (byte) 0x89, 0x1f, 0x57, 0x60, 0x36, (byte) 0xd0, (byte) 0xbe,
+            0x12, 0x3c, (byte) 0x8f, (byte) 0xf5, (byte) 0xb1, 0x59, (byte) 0xe0, (byte) 0xf0, (byte) 0xb8, 0x1b, 0x20,
+            (byte) 0xd2, (byte) 0xb5, 0x1f, 0x15, 0x21, (byte) 0xf9, (byte) 0xe3, (byte) 0xe1, 0x61, 0x21, 0x55 };
+
     @Test
     public void testAMulAVsASquaredConstant() {
         final FieldElement a = FieldElement.fromByteArray(A_BYTES);
@@ -64,6 +69,53 @@ public class FieldElementTest {
         final FieldElement shouldBeInverse = a.invert();
         assertThat(shouldBeInverse, is(ainv));
         assertThat(a.multiply(shouldBeInverse), is(FieldElement.ONE));
+    }
+
+    @Test
+    public void sqrtRatioM1Behavior() {
+        FieldElement zero = FieldElement.ZERO;
+        FieldElement one = FieldElement.ONE;
+        FieldElement i = Constants.SQRT_M1;
+        FieldElement two = one.add(one); // 2 is nonsquare mod p.
+        FieldElement four = two.add(two); // 4 is square mod p.
+        FieldElement.SqrtRatioM1Result sqrt;
+
+        // 0/0 should return (1, 0) since u is 0
+        sqrt = FieldElement.sqrtRatioM1(zero, zero);
+        assertThat(sqrt.wasSquare, is(1));
+        assertThat(sqrt.result, is(zero));
+        assertThat(sqrt.result.isNegative(), is(0));
+
+        // 1/0 should return (0, 0) since v is 0, u is nonzero
+        sqrt = FieldElement.sqrtRatioM1(one, zero);
+        assertThat(sqrt.wasSquare, is(0));
+        assertThat(sqrt.result, is(zero));
+        assertThat(sqrt.result.isNegative(), is(0));
+
+        // 2/1 is nonsquare, so we expect (0, sqrt(i*2))
+        sqrt = FieldElement.sqrtRatioM1(two, one);
+        assertThat(sqrt.wasSquare, is(0));
+        assertThat(sqrt.result.square(), is(two.multiply(i)));
+        assertThat(sqrt.result.isNegative(), is(0));
+
+        // 4/1 is square, so we expect (1, sqrt(4))
+        sqrt = FieldElement.sqrtRatioM1(four, one);
+        assertThat(sqrt.wasSquare, is(1));
+        assertThat(sqrt.result.square(), is(four));
+        assertThat(sqrt.result.isNegative(), is(0));
+
+        // 1/4 is square, so we expect (1, 1/sqrt(4))
+        sqrt = FieldElement.sqrtRatioM1(one, four);
+        assertThat(sqrt.wasSquare, is(1));
+        assertThat(sqrt.result.square().multiply(four), is(one));
+        assertThat(sqrt.result.isNegative(), is(0));
+    }
+
+    @Test
+    public void testAP58VsAP58Constant() {
+        FieldElement a = FieldElement.fromByteArray(A_BYTES);
+        FieldElement ap58 = FieldElement.fromByteArray(AP58_BYTES);
+        assertThat(a.powP58(), is(ap58));
     }
 
     @Test

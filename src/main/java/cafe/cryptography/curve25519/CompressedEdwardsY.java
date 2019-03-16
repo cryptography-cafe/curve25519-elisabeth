@@ -38,41 +38,22 @@ public class CompressedEdwardsY {
      * @return an EdwardsPoint, if this is a valid encoding.
      */
     public EdwardsPoint decompress() {
-        FieldElement X, Y, YY, u, v, v3, vXX, check;
-        Y = FieldElement.fromByteArray(data);
-        YY = Y.square();
+        FieldElement Y = FieldElement.fromByteArray(data);
+        FieldElement YY = Y.square();
 
         // u = y²-1
-        u = YY.subtract(FieldElement.ONE);
+        FieldElement u = YY.subtract(FieldElement.ONE);
 
         // v = dy²+1
-        v = YY.multiply(Constants.EDWARDS_D).add(FieldElement.ONE);
+        FieldElement v = YY.multiply(Constants.EDWARDS_D).add(FieldElement.ONE);
 
-        // v3 = v³
-        v3 = v.square().multiply(v);
-
-        // x = (v3²)vu, aka x = uv⁷
-        X = v3.square().multiply(v).multiply(u);
-
-        // x = (uv⁷)^((q-5)/8)
-        X = X.pow22523();
-
-        // x = uv³(uv⁷)^((q-5)/8)
-        X = v3.multiply(u).multiply(X);
-
-        vXX = X.square().multiply(v);
-        check = vXX.subtract(u); // vx²-u
-        if (check.isZero() == 0) {
-            check = vXX.add(u); // vx²+u
-            if (check.isZero() == 0) {
-                throw new IllegalArgumentException("not a valid EdwardsPoint");
-            }
-            X = X.multiply(Constants.SQRT_M1);
+        FieldElement.SqrtRatioM1Result sqrt = FieldElement.sqrtRatioM1(u, v);
+        if (sqrt.wasSquare != 1) {
+            throw new IllegalArgumentException("not a valid EdwardsPoint");
         }
 
-        if (X.isNegative() != ConstantTime.bit(data, 255)) {
-            X = X.negate();
-        }
+        FieldElement X = sqrt.result.negate().ctSelect(sqrt.result,
+                ConstantTime.equal(sqrt.result.isNegative(), ConstantTime.bit(data, 255)));
 
         return new EdwardsPoint(X, Y, FieldElement.ONE, X.multiply(Y));
     }
