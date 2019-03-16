@@ -21,11 +21,12 @@ import org.openjdk.jmh.runner.options.OptionsBuilder;
 @Measurement(iterations = 5, time = 2, timeUnit = TimeUnit.SECONDS)
 @Fork(1)
 @State(Scope.Benchmark)
-public class EdwardsPointBench {
-    public EdwardsPoint P;
-    public CompressedEdwardsY Penc;
-    public EdwardsBasepointTable Pt;
-    public EdwardsPoint Q;
+public class RistrettoElementBench {
+    public byte[] bytesWide = new byte[64];
+    public RistrettoElement P;
+    public CompressedRistretto Penc;
+    public RistrettoGeneratorTable Pt;
+    public RistrettoElement Q;
     public Scalar a;
     public Scalar b;
 
@@ -38,46 +39,47 @@ public class EdwardsPointBench {
     @Setup
     public void prepare() {
         Random r = new Random();
-        this.P = Constants.ED25519_BASEPOINT_TABLE.multiply(randomScalar(r));
+        r.nextBytes(this.bytesWide);
+        this.P = Constants.RISTRETTO_GENERATOR.multiply(randomScalar(r));
         this.Penc = this.P.compress();
-        this.Pt = new EdwardsBasepointTable(this.P);
-        this.Q = Constants.ED25519_BASEPOINT_TABLE.multiply(randomScalar(r));
+        this.Pt = new RistrettoGeneratorTable(this.P);
+        this.Q = Constants.RISTRETTO_GENERATOR.multiply(randomScalar(r));
         this.a = randomScalar(r);
         this.b = randomScalar(r);
     }
 
     @Benchmark
-    public EdwardsPoint decompress() {
+    public RistrettoElement fromUniformBytes() {
+        return RistrettoElement.fromUniformBytes(this.bytesWide);
+    }
+
+    @Benchmark
+    public RistrettoElement decompress() {
         return this.Penc.decompress();
     }
 
     @Benchmark
-    public CompressedEdwardsY compress() {
+    public CompressedRistretto compress() {
         return this.P.compress();
     }
 
     @Benchmark
-    public EdwardsPoint add() {
+    public RistrettoElement add() {
         return this.P.add(this.Q);
     }
 
     @Benchmark
-    public EdwardsPoint dbl() {
+    public RistrettoElement dbl() {
         return this.P.dbl();
     }
 
     @Benchmark
-    public EdwardsPoint variableBaseScalarMultiply() {
+    public RistrettoElement variableBaseScalarMultiply() {
         return this.P.multiply(this.a);
     }
 
     @Benchmark
-    public EdwardsPoint fixedBaseScalarMultiply() {
+    public RistrettoElement fixedBaseScalarMultiply() {
         return this.Pt.multiply(this.a);
-    }
-
-    @Benchmark
-    public EdwardsPoint doubleScalarMultiplyBasepoint() {
-        return EdwardsPoint.vartimeDoubleScalarMultiplyBasepoint(this.a, this.P, this.b);
     }
 }
