@@ -432,6 +432,15 @@ public class Scalar {
      *
      * @return the reduced Scalar.
      */
+    public Scalar reduce() {
+        return Scalar.reduce(this.s);
+    }
+
+    /**
+     * Reduce the given scalar modulo $\ell$.
+     *
+     * @return the reduced Scalar.
+     */
     static Scalar reduce(byte[] x) {
         long[] xR = UnpackedScalar.fromByteArray(x).mulInternal(Constants.R);
         return new Scalar(UnpackedScalar.montgomeryReduce(xR).toByteArray());
@@ -439,6 +448,10 @@ public class Scalar {
 
     /**
      * Compute $a + b \bmod \ell$.
+     * <p>
+     * If $a$ and $b$ are both canonical Scalars, the result is guaranteed to be a
+     * canonical Scalar. In all other cases, the result may be outside the range
+     * $[0, \ell)$.
      *
      * @param b the Scalar to add to this.
      * @return $a + b \bmod \ell$
@@ -449,6 +462,10 @@ public class Scalar {
 
     /**
      * Compute $a - b \bmod \ell$.
+     * <p>
+     * If $a$ and $b$ are both canonical Scalars, the result is guaranteed to be a
+     * canonical Scalar. In all other cases, the result may be outside the range
+     * $[0, \ell)$.
      *
      * @param b the Scalar to subtract from this.
      * @return $a - b \bmod \ell$
