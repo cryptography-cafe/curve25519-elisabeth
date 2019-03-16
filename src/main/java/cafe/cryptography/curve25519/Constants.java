@@ -148,4 +148,10 @@ public final class Constants {
      * The ristretto255 generator, as a RistrettoElement.
      */
     public static final RistrettoElement RISTRETTO_GENERATOR = new RistrettoElement(ED25519_BASEPOINT);
+
+    /**
+     * Table containing pre-computed multiples of the ristretto255 generator.
+     */
+    public static final RistrettoGeneratorTable RISTRETTO_GENERATOR_TABLE = new RistrettoGeneratorTable(
+            RISTRETTO_GENERATOR);
 }
