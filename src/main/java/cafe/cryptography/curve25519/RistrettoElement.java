@@ -26,15 +26,14 @@ public class RistrettoElement {
     static RistrettoElement map(final FieldElement t) {
         final FieldElement r = t.square().multiply(Constants.SQRT_M1);
         final FieldElement u = r.add(FieldElement.ONE).multiply(Constants.ONE_MINUS_D_SQ);
-        FieldElement c = FieldElement.MINUS_ONE;
-        final FieldElement v = c.subtract(r.multiply(Constants.EDWARDS_D)).multiply(r.add(Constants.EDWARDS_D));
+        final FieldElement v = FieldElement.MINUS_ONE.subtract(r.multiply(Constants.EDWARDS_D)).multiply(r.add(Constants.EDWARDS_D));
 
         final FieldElement.SqrtRatioM1Result sqrt = FieldElement.sqrtRatioM1(u, v);
         FieldElement s = sqrt.result;
 
         final FieldElement sPrime = s.multiply(t).ctAbs().negate();
         s = sPrime.ctSelect(s, sqrt.wasSquare);
-        c = r.ctSelect(c, sqrt.wasSquare);
+        final FieldElement c = r.ctSelect(FieldElement.MINUS_ONE, sqrt.wasSquare);
 
         final FieldElement N = c.multiply(r.subtract(FieldElement.ONE)).multiply(Constants.D_MINUS_ONE_SQ).subtract(v);
         final FieldElement sSq = s.square();
