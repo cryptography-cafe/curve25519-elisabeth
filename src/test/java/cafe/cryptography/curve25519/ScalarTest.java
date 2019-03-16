@@ -92,6 +92,38 @@ public class ScalarTest {
     }
 
     @Test
+    public void packageConstructorPreventsMutability() {
+        // Create byte array representing a zero scalar
+        byte[] bytes = new byte[32];
+
+        // Create a scalar from bytes
+        Scalar s = new Scalar(bytes);
+        assertThat(s, is(Scalar.ZERO));
+
+        // Modify the bytes
+        bytes[0] = 1;
+
+        // The scalar should be unaltered
+        assertThat(s, is(Scalar.ZERO));
+    }
+
+    @Test
+    public void toByteArrayPreventsMutability() {
+        // Create a zero scalar
+        Scalar s = new Scalar(new byte[32]);
+        assertThat(s, is(Scalar.ZERO));
+
+        // Grab the scalar as bytes
+        byte[] bytes = s.toByteArray();
+
+        // Modify the bytes
+        bytes[0] = 1;
+
+        // The scalar should be unaltered
+        assertThat(s, is(Scalar.ZERO));
+    }
+
+    @Test
     public void reduce() {
         Scalar biggest = Scalar.fromBytesModOrder(
                 Utils.hexToBytes("ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"));
