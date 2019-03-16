@@ -139,6 +139,12 @@ public final class Constants {
     public static final EdwardsBasepointTable ED25519_BASEPOINT_TABLE = new EdwardsBasepointTable(ED25519_BASEPOINT);
 
     /**
+     * Odd multiples of the Ed25519 basepoint.
+     */
+    static final AffineNielsPoint.NafLookupTable AFFINE_ODD_MULTIPLES_OF_BASEPOINT = AffineNielsPoint
+            .buildNafLookupTable(ED25519_BASEPOINT);
+
+    /**
      * The ristretto255 generator, as a RistrettoElement.
      */
     public static final RistrettoElement RISTRETTO_GENERATOR = new RistrettoElement(ED25519_BASEPOINT);

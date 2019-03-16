@@ -273,7 +273,7 @@ public class EdwardsPoint {
         final byte[] bNaf = b.nonAdjacentForm();
 
         ProjectiveNielsPoint.NafLookupTable tableA = ProjectiveNielsPoint.buildNafLookupTable(A);
-        AffineNielsPoint.NafLookupTable tableB = AffineNielsPoint.buildNafLookupTable(Constants.ED25519_BASEPOINT);
+        AffineNielsPoint.NafLookupTable tableB = Constants.AFFINE_ODD_MULTIPLES_OF_BASEPOINT;
 
         int i;
         for (i = 255; i >= 0; --i) {
