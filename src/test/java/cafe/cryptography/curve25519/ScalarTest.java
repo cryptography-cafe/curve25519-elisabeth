@@ -13,6 +13,7 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.lessThanOrEqualTo;
+import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertThat;
 
 public class ScalarTest {
@@ -147,6 +148,26 @@ public class ScalarTest {
                 .fromBits(Utils.hexToBytes("ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"));
         assertThat(exact.toByteArray(),
                 is(Utils.hexToBytes("ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff7f")));
+    }
+
+    @Test
+    public void addDoesNotReduceNonCanonical() {
+        Scalar largestEd25519Scalar = Scalar
+                .fromBits(Utils.hexToBytes("f8ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff7f"));
+        Scalar result = Scalar.fromCanonicalBytes(
+                Utils.hexToBytes("7e344775474a7f9723b63a8be92ae76dffffffffffffffffffffffffffffff0f"));
+        assertThat(largestEd25519Scalar.add(Scalar.ONE), is(not(result)));
+        assertThat(largestEd25519Scalar.add(Scalar.ONE).reduce(), is(result));
+    }
+
+    @Test
+    public void subtractDoesNotReduceNonCanonical() {
+        Scalar largestEd25519Scalar = Scalar
+                .fromBits(Utils.hexToBytes("f8ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff7f"));
+        Scalar result = Scalar.fromCanonicalBytes(
+                Utils.hexToBytes("7c344775474a7f9723b63a8be92ae76dffffffffffffffffffffffffffffff0f"));
+        assertThat(largestEd25519Scalar.subtract(Scalar.ONE), is(not(result)));
+        assertThat(largestEd25519Scalar.subtract(Scalar.ONE).reduce(), is(result));
     }
 
     @Test
