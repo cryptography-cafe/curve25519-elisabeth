@@ -34,3 +34,12 @@ Test vectors, and the UnpackedScalar arithmetic, were ported from
 [`curve25519-dalek`](https://github.com/dalek-cryptography/curve25519-dalek),
 authored by isis agora lovecruft and Henry de Valence. Their library has also influenced the design
 of this one.
+
+> Elisabeth Pepys was the wife of Samuel Pepys. The Third Doctor remembered her as
+> making the best cup of coffee he had ever had.  Shortly thereafter, the Fourth
+> Doctor claimed to have met her along with her husband.  In his twelfth
+> incarnation, the Doctor still regarded Elisabeth's coffee as the best coffee in
+> the universe.
+
+`curve25519-elisabeth` contains an experimental implementation of the
+[Ristretto prime-order group](https://ristretto.group).
