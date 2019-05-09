@@ -14,7 +14,7 @@ public final class Constants {
      * The order of the Ed25519 basepoint, $\ell = 2^{252} +
      * 27742317777372353535851937790883648493$.
      */
-    public static final Scalar BASEPOINT_ORDER = new Scalar(new byte[] {
+    static final Scalar BASEPOINT_ORDER = new Scalar(new byte[] {
         // @formatter:off
         (byte) 0xed, (byte) 0xd3, (byte) 0xf5, 0x5c, 0x1a, 0x63, 0x12, 0x58,
         (byte) 0xd6, (byte) 0x9c, (byte) 0xf7, (byte) 0xa2, (byte) 0xde, (byte) 0xf9, (byte) 0xde, 0x14,
@@ -48,7 +48,7 @@ public final class Constants {
     /**
      * Edwards $d$ value, equal to $-121665/121666 \bmod p$.
      */
-    public static final FieldElement EDWARDS_D = new FieldElement(new int[] {
+    static final FieldElement EDWARDS_D = new FieldElement(new int[] {
         // @formatter:off
         -10913610, 13857413, -15372611,   6949391,    114729,
          -8787816, -6275908,  -3247719, -18696448, -12055116,
@@ -58,12 +58,12 @@ public final class Constants {
     /**
      * Edwards $-d$ value, equal to $121665/121666 \bmod p$.
      */
-    public static final FieldElement NEG_EDWARDS_D = EDWARDS_D.negate();
+    static final FieldElement NEG_EDWARDS_D = EDWARDS_D.negate();
 
     /**
      * Edwards $2*d$ value, equal to $2*(-121665/121666) \bmod p$.
      */
-    public static final FieldElement EDWARDS_2D = new FieldElement(new int[] {
+    static final FieldElement EDWARDS_2D = new FieldElement(new int[] {
         // @formatter:off
         -21827239,  -5839606, -30745221, 13898782,  229458,
          15978800, -12551817,  -6495438, 29715968, 9444199,
@@ -73,18 +73,18 @@ public final class Constants {
     /**
      * $= 1 - d^2$, where $d$ is the Edwards curve parameter.
      */
-    public static final FieldElement ONE_MINUS_D_SQ = FieldElement.ONE.subtract(EDWARDS_D.square());
+    static final FieldElement ONE_MINUS_D_SQ = FieldElement.ONE.subtract(EDWARDS_D.square());
 
     /**
      * $= (d - 1)^2$, where $d$ is the Edwards curve parameter.
      */
-    public static final FieldElement D_MINUS_ONE_SQ = EDWARDS_D.subtract(FieldElement.ONE).square();
+    static final FieldElement D_MINUS_ONE_SQ = EDWARDS_D.subtract(FieldElement.ONE).square();
 
     /**
      * $= \sqrt{a*d - 1}$, where $a = -1 \bmod p$, $d$ are the Edwards curve
      * parameters.
      */
-    public static final FieldElement SQRT_AD_MINUS_ONE = new FieldElement(new int[] {
+    static final FieldElement SQRT_AD_MINUS_ONE = new FieldElement(new int[] {
         // @formatter:off
         24849947,   -153582, -23613485, 6347715, -21072328,
          -667138, -25271143, -15367704, -870347,  14525639,
@@ -95,7 +95,7 @@ public final class Constants {
      * $= 1/\sqrt{a-d}$, where $a = -1 \bmod p$, $d$ are the Edwards curve
      * parameters.
      */
-    public static final FieldElement INVSQRT_A_MINUS_D = new FieldElement(new int[] {
+    static final FieldElement INVSQRT_A_MINUS_D = new FieldElement(new int[] {
         // @formatter:off
         6111485,  4156064, -27798727, 12243468, -25904040,
          120897, 20826367,  -7060776,  6093568,  -1986012,
@@ -105,7 +105,7 @@ public final class Constants {
     /**
      * Precomputed value of one of the square roots of -1 (mod p).
      */
-    public static final FieldElement SQRT_M1 = new FieldElement(new int[] {
+    static final FieldElement SQRT_M1 = new FieldElement(new int[] {
         // @formatter:off
         -32595792,  -7943725,  9377950, 3500415, 12389472,
           -272473, -25146209, -2005654,  326686, 11406482,
