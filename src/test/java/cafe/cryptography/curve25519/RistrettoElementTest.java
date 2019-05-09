@@ -94,7 +94,7 @@ public class RistrettoElementTest {
             "80bd0726 2511cdde 4863f8a7 434cef69 6750681c b9510eea 557088f7 6d9e5065" };
 
     @Test
-    public void generatorDecompressionCompression() {
+    public void generatorDecompressionCompression() throws InvalidEncodingException {
         RistrettoElement B = RISTRETTO_GENERATOR_COMPRESSED.decompress();
         assertThat(B, is(Constants.RISTRETTO_GENERATOR));
         assertThat(B.compress(), is(RISTRETTO_GENERATOR_COMPRESSED));
@@ -102,13 +102,13 @@ public class RistrettoElementTest {
 
     @Test
     public void equalityRequiresSameClass() {
-        RistrettoElement B = RISTRETTO_GENERATOR_COMPRESSED.decompress();
+        RistrettoElement B = Constants.RISTRETTO_GENERATOR;
         EdwardsPoint P = B.repr;
         assertFalse(B.equals(P));
     }
 
     @Test
-    public void generatorMultiplesAdd() {
+    public void generatorMultiplesAdd() throws InvalidEncodingException {
         RistrettoElement P = RistrettoElement.IDENTITY;
         for (int i = 0; i < GENERATOR_MULTIPLES.length; i++) {
             CompressedRistretto compressed = new CompressedRistretto(Utils.hexToBytes(GENERATOR_MULTIPLES[i]));
@@ -119,7 +119,7 @@ public class RistrettoElementTest {
     }
 
     @Test
-    public void generatorMultiplesSubtract() {
+    public void generatorMultiplesSubtract() throws InvalidEncodingException {
         RistrettoElement P = Constants.RISTRETTO_GENERATOR.dbl().dbl().dbl().dbl();
         for (int i = GENERATOR_MULTIPLES.length - 1; i >= 0; i--) {
             P = P.subtract(Constants.RISTRETTO_GENERATOR);
@@ -136,13 +136,13 @@ public class RistrettoElementTest {
     }
 
     @Test
-    public void generatorDblVsGenerator2() {
+    public void generatorDblVsGenerator2() throws InvalidEncodingException {
         RistrettoElement expected = new CompressedRistretto(Utils.hexToBytes(GENERATOR_MULTIPLES[2])).decompress();
         assertThat(Constants.RISTRETTO_GENERATOR.dbl(), is(expected));
     }
 
     @Test
-    public void generatorTimesTwelveVsGenerator12() {
+    public void generatorTimesTwelveVsGenerator12() throws InvalidEncodingException {
         byte[] s = new byte[32];
         s[0] = 12;
         Scalar twelve = new Scalar(s);
@@ -157,7 +157,7 @@ public class RistrettoElementTest {
             try {
                 s.decompress();
                 fail("Invalid encoding should have been rejected");
-            } catch (IllegalArgumentException expected) {
+            } catch (InvalidEncodingException expected) {
                 // Woohoo!
             }
         }

@@ -36,8 +36,9 @@ public class CompressedRistretto {
      *
      * @return a RistrettoElement, if this is the canonical encoding of an element
      *         of the ristretto255 group.
+     * @throws InvalidEncodingException if this is an invalid encoding.
      */
-    public RistrettoElement decompress() {
+    public RistrettoElement decompress() throws InvalidEncodingException {
         // 1. First, interpret the string as an integer s in little-endian
         // representation. If the resulting value is >= p, decoding fails.
         // 2. If IS_NEGATIVE(s) returns TRUE, decoding fails.
@@ -45,7 +46,7 @@ public class CompressedRistretto {
         final byte[] sBytes = s.toByteArray();
         final int sIsCanonical = ConstantTime.equal(this.data, sBytes);
         if (sIsCanonical == 0 || s.isNegative() == 1) {
-            throw new IllegalArgumentException("Invalid ristretto255 encoding");
+            throw new InvalidEncodingException("Invalid ristretto255 encoding");
         }
 
         // 3. Process s as follows:
@@ -69,7 +70,7 @@ public class CompressedRistretto {
         // fails. Otherwise, return the internal representation in extended coordinates
         // (x, y, 1, t).
         if (invsqrt.wasSquare == 0 || t.isNegative() == 1 || y.isZero() == 1) {
-            throw new IllegalArgumentException("Invalid ristretto255 encoding");
+            throw new InvalidEncodingException("Invalid ristretto255 encoding");
         } else {
             return new RistrettoElement(new EdwardsPoint(x, y, FieldElement.ONE, t));
         }

@@ -26,7 +26,8 @@ public class ConstantsTest {
 
     @Test
     public void checkSqrtADMinusOne() {
-        System.out.println(FieldElement.fromByteArray(Constants.SQRT_AD_MINUS_ONE.toByteArray()).printInternalRepresentation());
+        System.out.println(
+                FieldElement.fromByteArray(Constants.SQRT_AD_MINUS_ONE.toByteArray()).printInternalRepresentation());
         assertThat(Constants.SQRT_AD_MINUS_ONE.square().add(FieldElement.ONE).negate(), is(Constants.EDWARDS_D));
     }
 
@@ -43,7 +44,7 @@ public class ConstantsTest {
     }
 
     @Test
-    public void checkEd25519Basepoint() {
+    public void checkEd25519Basepoint() throws InvalidEncodingException {
         CompressedEdwardsY encoded = new CompressedEdwardsY(
                 Utils.hexToBytes("5866666666666666666666666666666666666666666666666666666666666666"));
         EdwardsPoint B = encoded.decompress();

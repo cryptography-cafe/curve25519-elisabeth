@@ -85,13 +85,13 @@ public class EdwardsPointTest {
                     Utils.hexToBytes("c7176a703d4dd84fba3c0b760d10670f2a2053fa2c39ccc64ec7fd7792ac03fa")) };
 
     @Test
-    public void basepointDecompressionCompression() {
+    public void basepointDecompressionCompression() throws InvalidEncodingException {
         EdwardsPoint B = ED25519_BASEPOINT_COMPRESSED.decompress();
         assertThat(B.compress(), is(ED25519_BASEPOINT_COMPRESSED));
     }
 
     @Test
-    public void decompressionSignHandling() {
+    public void decompressionSignHandling() throws InvalidEncodingException {
         // Manually set the high bit of the last byte to flip the sign
         byte[] minusBasepointBytes = ED25519_BASEPOINT_COMPRESSED.toByteArray();
         minusBasepointBytes[31] |= 1 << 7;
@@ -155,7 +155,7 @@ public class EdwardsPointTest {
     }
 
     @Test
-    public void testVartimeDoubleScalarMultiplyBasepoint() {
+    public void testVartimeDoubleScalarMultiplyBasepoint() throws InvalidEncodingException {
         // Little-endian
         Scalar zero = Scalar.ZERO;
         Scalar one = Scalar.ONE;
@@ -188,14 +188,14 @@ public class EdwardsPointTest {
     }
 
     @Test
-    public void doubleScalarMulBasepointVsEd25519py() {
+    public void doubleScalarMulBasepointVsEd25519py() throws InvalidEncodingException {
         EdwardsPoint A = A_TIMES_BASEPOINT.decompress();
         EdwardsPoint result = EdwardsPoint.vartimeDoubleScalarMultiplyBasepoint(A_SCALAR, A, B_SCALAR);
         assertThat(result.compress(), is(DOUBLE_SCALAR_MULT_RESULT));
     }
 
     @Test
-    public void basepointMulByPow24VsBasepoint16Constant() {
+    public void basepointMulByPow24VsBasepoint16Constant() throws InvalidEncodingException {
         assertThat(Constants.ED25519_BASEPOINT.multiplyByPow2(4), is(BASE16_CMPRSSD.decompress()));
     }
 
@@ -206,7 +206,7 @@ public class EdwardsPointTest {
     }
 
     @Test
-    public void isSmallOrder() {
+    public void isSmallOrder() throws InvalidEncodingException {
         // The basepoint has large prime order
         assertFalse(Constants.ED25519_BASEPOINT.isSmallOrder());
         // EIGHT_TORSION_COMPRESSED has all points of small order.
@@ -216,7 +216,7 @@ public class EdwardsPointTest {
     }
 
     @Test
-    public void isTorsionFree() {
+    public void isTorsionFree() throws InvalidEncodingException {
         // The basepoint is torsion-free.
         assertTrue(Constants.ED25519_BASEPOINT.isTorsionFree());
 

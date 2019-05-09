@@ -36,8 +36,9 @@ public class CompressedEdwardsY {
      * Attempts to decompress to an EdwardsPoint.
      *
      * @return an EdwardsPoint, if this is a valid encoding.
+     * @throws InvalidEncodingException if this is an invalid encoding.
      */
-    public EdwardsPoint decompress() {
+    public EdwardsPoint decompress() throws InvalidEncodingException {
         FieldElement Y = FieldElement.fromByteArray(data);
         FieldElement YY = Y.square();
 
@@ -49,7 +50,7 @@ public class CompressedEdwardsY {
 
         FieldElement.SqrtRatioM1Result sqrt = FieldElement.sqrtRatioM1(u, v);
         if (sqrt.wasSquare != 1) {
-            throw new IllegalArgumentException("not a valid EdwardsPoint");
+            throw new InvalidEncodingException("not a valid EdwardsPoint");
         }
 
         FieldElement X = sqrt.result.negate().ctSelect(sqrt.result,
