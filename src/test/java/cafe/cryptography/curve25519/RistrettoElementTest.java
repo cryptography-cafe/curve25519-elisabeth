@@ -6,6 +6,12 @@
 
 package cafe.cryptography.curve25519;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+
 import org.junit.*;
 
 import static org.hamcrest.Matchers.is;
@@ -98,6 +104,18 @@ public class RistrettoElementTest {
         RistrettoElement B = RISTRETTO_GENERATOR_COMPRESSED.decompress();
         assertThat(B, is(Constants.RISTRETTO_GENERATOR));
         assertThat(B.compress(), is(RISTRETTO_GENERATOR_COMPRESSED));
+    }
+
+    @Test
+    public void generatorSerializeDeserialize() throws IOException, ClassNotFoundException {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        ObjectOutputStream oos = new ObjectOutputStream(baos);
+        oos.writeObject(Constants.RISTRETTO_GENERATOR);
+        oos.close();
+        ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
+        ObjectInputStream ois = new ObjectInputStream(bais);
+        RistrettoElement B = (RistrettoElement) ois.readObject();
+        assertThat(B, is(Constants.RISTRETTO_GENERATOR));
     }
 
     @Test

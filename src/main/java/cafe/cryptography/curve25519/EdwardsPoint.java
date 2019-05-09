@@ -6,17 +6,27 @@
 
 package cafe.cryptography.curve25519;
 
+import java.io.IOException;
+import java.io.InvalidObjectException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.ObjectStreamException;
+import java.io.Serializable;
+import java.lang.reflect.Field;
+
 /**
  * An EdwardsPoint represents a point on the Edwards form of Curve25519.
  */
-public class EdwardsPoint {
+public class EdwardsPoint implements Serializable {
+    private static final long serialVersionUID = 1L;
+
     public static final EdwardsPoint IDENTITY = new EdwardsPoint(FieldElement.ZERO, FieldElement.ONE, FieldElement.ONE,
             FieldElement.ZERO);
 
-    final FieldElement X;
-    final FieldElement Y;
-    final FieldElement Z;
-    final FieldElement T;
+    transient final FieldElement X;
+    transient final FieldElement Y;
+    transient final FieldElement Z;
+    transient final FieldElement T;
 
     /**
      * Only for internal use.
@@ -26,6 +36,75 @@ public class EdwardsPoint {
         this.Y = Y;
         this.Z = Z;
         this.T = T;
+    }
+
+    /**
+     * Overrides class serialization to use the canonical encoded format.
+     */
+    private void writeObject(ObjectOutputStream out) throws IOException {
+        out.write(this.compress().toByteArray());
+    }
+
+    /**
+     * Overrides class serialization to use the canonical encoded format.
+     */
+    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        byte[] encoded = new byte[32];
+        in.readFully(encoded);
+
+        try {
+            EdwardsPoint point = new CompressedEdwardsY(encoded).decompress();
+
+            // EdwardsPoint fields are all final, so we need to carefully set them.
+            Field fieldX = null;
+            Field fieldY = null;
+            Field fieldZ = null;
+            Field fieldT = null;
+            try {
+                fieldX = EdwardsPoint.class.getDeclaredField("X");
+                fieldY = EdwardsPoint.class.getDeclaredField("Y");
+                fieldZ = EdwardsPoint.class.getDeclaredField("Z");
+                fieldT = EdwardsPoint.class.getDeclaredField("T");
+
+                fieldX.setAccessible(true);
+                fieldY.setAccessible(true);
+                fieldZ.setAccessible(true);
+                fieldT.setAccessible(true);
+
+                fieldX.set(this, point.X);
+                fieldY.set(this, point.Y);
+                fieldZ.set(this, point.Z);
+                fieldT.set(this, point.T);
+            } catch (NoSuchFieldException nsfe) {
+                // Should never occur, but just in case...
+                throw new IOException(nsfe);
+            } catch (IllegalAccessException iae) {
+                // Could occur if a SecurityManager is enabled.
+                throw new IOException(iae);
+            } finally {
+                // Ensure the fields are always set back to final if there is a chance
+                // they might have been made accessible.
+                if (fieldX != null) {
+                    fieldX.setAccessible(false);
+                }
+                if (fieldY != null) {
+                    fieldY.setAccessible(false);
+                }
+                if (fieldZ != null) {
+                    fieldZ.setAccessible(false);
+                }
+                if (fieldT != null) {
+                    fieldT.setAccessible(false);
+                }
+            }
+        } catch (InvalidEncodingException iee) {
+            throw new InvalidObjectException(iee.getMessage());
+        }
+    }
+
+    @SuppressWarnings("unused")
+    private void readObjectNoData() throws ObjectStreamException {
+        throw new InvalidObjectException("Cannot deserialize EdwardsPoint from no data");
     }
 
     /**
