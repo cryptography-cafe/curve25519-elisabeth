@@ -6,6 +6,13 @@
 
 package cafe.cryptography.curve25519;
 
+import java.io.IOException;
+import java.io.InvalidObjectException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.ObjectStreamException;
+import java.io.Serializable;
+import java.lang.reflect.Field;
 import java.util.Arrays;
 
 import cafe.cryptography.subtle.ConstantTime;
@@ -16,17 +23,59 @@ import cafe.cryptography.subtle.ConstantTime;
  * The Ristretto encoding is canonical, so two points are equal if and only if
  * their encodings are equal.
  */
-public class CompressedRistretto {
+public class CompressedRistretto implements Serializable {
+    private static final long serialVersionUID = 1L;
+
     /**
      * The encoded point.
      */
-    private final byte[] data;
+    private transient final byte[] data;
 
     public CompressedRistretto(byte[] data) {
         if (data.length != 32) {
             throw new IllegalArgumentException("Invalid CompressedRistretto encoding");
         }
         this.data = data;
+    }
+
+    /**
+     * Overrides class serialization to use the canonical encoded format.
+     */
+    private void writeObject(ObjectOutputStream out) throws IOException {
+        out.write(this.toByteArray());
+    }
+
+    /**
+     * Overrides class serialization to use the canonical encoded format.
+     */
+    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        byte[] encoded = new byte[32];
+        in.readFully(encoded);
+
+        // CompressedRistretto fields are all final, so we need to carefully set them.
+        Field fieldData = null;
+        try {
+            fieldData = CompressedRistretto.class.getDeclaredField("data");
+            fieldData.setAccessible(true);
+            fieldData.set(this, encoded);
+        } catch (NoSuchFieldException nsfe) {
+            // Should never occur, but just in case...
+            throw new IOException(nsfe);
+        } catch (IllegalAccessException iae) {
+            // Could occur if a SecurityManager is enabled.
+            throw new IOException(iae);
+        } finally {
+            // Ensure the fields are always set back to final if there is a chance
+            // they might have been made accessible.
+            if (fieldData != null) {
+                fieldData.setAccessible(false);
+            }
+        }
+    }
+
+    @SuppressWarnings("unused")
+    private void readObjectNoData() throws ObjectStreamException {
+        throw new InvalidObjectException("Cannot deserialize CompressedRistretto from no data");
     }
 
     /**
