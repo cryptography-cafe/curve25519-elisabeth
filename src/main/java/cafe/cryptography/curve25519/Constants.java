@@ -24,23 +24,23 @@ public final class Constants {
     });
 
     /**
-     * The unpacked form of the Ed25519 basepoint order.
+     * The unpacked form of the Ed25519 basepoint order $\ell$.
      */
     static final UnpackedScalar L = UnpackedScalar.fromByteArray(BASEPOINT_ORDER.toByteArray());
 
     /**
-     * $\ell * \text{LFACTOR} = -1 \bmod 2^29$
+     * $\ell * \text{LFACTOR} = -1 \bmod 2^{29}$
      */
     static final int LFACTOR = 0x12547e1b;
 
     /**
-     * `R` = R % L where R = 2^261
+     * $= R \bmod \ell$ where $R = 2^{261}$
      */
     static final UnpackedScalar R = new UnpackedScalar(new int[] { 0x114df9ed, 0x1a617303, 0x0f7c098c, 0x16793167,
             0x1ffd656e, 0x1fffffff, 0x1fffffff, 0x1fffffff, 0x000fffff });
 
     /**
-     * `RR` = (R^2) % L where R = 2^261
+     * $= R^2 \bmod \ell$ where $R = 2^{261}$
      */
     static final UnpackedScalar RR = new UnpackedScalar(new int[] { 0x0b5f9d12, 0x1e141b17, 0x158d7f3d, 0x143f3757,
             0x1972d781, 0x042feb7c, 0x1ceec73d, 0x1e184d1e, 0x0005046d });
