@@ -6,6 +6,12 @@
 
 package cafe.cryptography.curve25519;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+
 import org.junit.*;
 import org.junit.rules.ExpectedException;
 
@@ -89,6 +95,18 @@ public class ScalarTest {
     @Test(expected = IllegalArgumentException.class)
     public void packageConstructorThrowsOnTooLong() {
         new Scalar(new byte[33]);
+    }
+
+    @Test
+    public void serializeDeserialize() throws IOException, ClassNotFoundException {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        ObjectOutputStream oos = new ObjectOutputStream(baos);
+        oos.writeObject(X);
+        oos.close();
+        ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
+        ObjectInputStream ois = new ObjectInputStream(bais);
+        Scalar s = (Scalar) ois.readObject();
+        assertThat(s, is(X));
     }
 
     @Test
