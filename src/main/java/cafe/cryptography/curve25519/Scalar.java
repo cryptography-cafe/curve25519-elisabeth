@@ -330,7 +330,7 @@ public class Scalar {
      *
      * @return the Scalar if the input was its canonical representation.
      */
-    public static Scalar fromCanonicalBytes(byte[] input) throws IllegalArgumentException {
+    public static Scalar fromCanonicalBytes(byte[] input) {
         Scalar s = new Scalar(input);
         if (!s.isCanonical()) {
             throw new IllegalArgumentException("Non-canonical scalar representation");
