@@ -6,6 +6,12 @@
 
 package cafe.cryptography.curve25519;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+
 import org.junit.*;
 
 import static org.hamcrest.Matchers.is;
@@ -88,6 +94,18 @@ public class EdwardsPointTest {
     public void basepointDecompressionCompression() throws InvalidEncodingException {
         EdwardsPoint B = ED25519_BASEPOINT_COMPRESSED.decompress();
         assertThat(B.compress(), is(ED25519_BASEPOINT_COMPRESSED));
+    }
+
+    @Test
+    public void basepointSerializeDeserialize() throws IOException, ClassNotFoundException {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        ObjectOutputStream oos = new ObjectOutputStream(baos);
+        oos.writeObject(Constants.ED25519_BASEPOINT);
+        oos.close();
+        ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
+        ObjectInputStream ois = new ObjectInputStream(bais);
+        EdwardsPoint B = (EdwardsPoint) ois.readObject();
+        assertThat(B, is(Constants.ED25519_BASEPOINT));
     }
 
     @Test

@@ -6,6 +6,12 @@
 
 package cafe.cryptography.curve25519;
 
+import java.io.IOException;
+import java.io.InvalidObjectException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.ObjectStreamException;
+import java.io.Serializable;
 import java.util.Arrays;
 
 import cafe.cryptography.subtle.ConstantTime;
@@ -16,17 +22,40 @@ import cafe.cryptography.subtle.ConstantTime;
  * The Ristretto encoding is canonical, so two points are equal if and only if
  * their encodings are equal.
  */
-public class CompressedRistretto {
+public class CompressedRistretto implements Serializable {
+    private static final long serialVersionUID = 1L;
+
     /**
      * The encoded point.
      */
-    private final byte[] data;
+    private transient byte[] data;
 
     public CompressedRistretto(byte[] data) {
         if (data.length != 32) {
             throw new IllegalArgumentException("Invalid CompressedRistretto encoding");
         }
         this.data = data;
+    }
+
+    /**
+     * Overrides class serialization to use the canonical encoded format.
+     */
+    private void writeObject(ObjectOutputStream out) throws IOException {
+        out.write(this.toByteArray());
+    }
+
+    /**
+     * Overrides class serialization to use the canonical encoded format.
+     */
+    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        byte[] encoded = new byte[32];
+        in.readFully(encoded);
+        this.data = encoded;
+    }
+
+    @SuppressWarnings("unused")
+    private void readObjectNoData() throws ObjectStreamException {
+        throw new InvalidObjectException("Cannot deserialize CompressedRistretto from no data");
     }
 
     /**

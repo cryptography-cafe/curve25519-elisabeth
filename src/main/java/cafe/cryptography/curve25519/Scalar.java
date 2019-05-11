@@ -6,6 +6,12 @@
 
 package cafe.cryptography.curve25519;
 
+import java.io.IOException;
+import java.io.InvalidObjectException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.ObjectStreamException;
+import java.io.Serializable;
 import java.util.Arrays;
 
 import cafe.cryptography.subtle.ConstantTime;
@@ -17,7 +23,9 @@ import static cafe.cryptography.curve25519.FieldElement.load_4;
  * An integer $s \lt 2^{255}$ which represents an element of the field
  * $\mathbb{Z} / \ell$.
  */
-public class Scalar {
+public class Scalar implements Serializable {
+    private static final long serialVersionUID = 1L;
+
     public static final Scalar ZERO = new Scalar(new byte[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 });
     public static final Scalar ONE = new Scalar(new byte[] { 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -29,7 +37,7 @@ public class Scalar {
      * <p>
      * Invariant: the highest bit must be zero ($s[31] \le 127$).
      */
-    private final byte[] s;
+    private transient byte[] s;
 
     Scalar(byte[] s) {
         if (s.length != 32 || (((s[31] >> 7) & 0x01) != 0)) {
@@ -37,6 +45,30 @@ public class Scalar {
         }
         // Store a copy to prevent interior mutability
         this.s = Arrays.copyOf(s, s.length);
+    }
+
+    /**
+     * Overrides class serialization to use the canonical encoded format.
+     */
+    private void writeObject(ObjectOutputStream out) throws IOException {
+        out.write(this.toByteArray());
+    }
+
+    /**
+     * Overrides class serialization to use the canonical encoded format.
+     */
+    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        byte[] scalar = new byte[32];
+        in.readFully(scalar);
+        if (((scalar[31] >> 7) & 0x01) != 0) {
+            throw new InvalidObjectException("Invalid scalar representation");
+        }
+        this.s = scalar;
+    }
+
+    @SuppressWarnings("unused")
+    private void readObjectNoData() throws ObjectStreamException {
+        throw new InvalidObjectException("Cannot deserialize Scalar from no data");
     }
 
     /**

@@ -6,18 +6,26 @@
 
 package cafe.cryptography.curve25519;
 
+import java.io.IOException;
+import java.io.InvalidObjectException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.ObjectStreamException;
+import java.io.Serializable;
 import java.util.Arrays;
 
 /**
  * An element of the prime-order ristretto255 group.
  */
-public class RistrettoElement {
+public class RistrettoElement implements Serializable {
+    private static final long serialVersionUID = 1L;
+
     public static final RistrettoElement IDENTITY = new RistrettoElement(EdwardsPoint.IDENTITY);
 
     /**
      * The internal representation. Not canonical.
      */
-    final EdwardsPoint repr;
+    transient EdwardsPoint repr;
 
     /**
      * Only for internal use.
@@ -27,12 +35,40 @@ public class RistrettoElement {
     }
 
     /**
+     * Overrides class serialization to use the canonical encoded format.
+     */
+    private void writeObject(ObjectOutputStream out) throws IOException {
+        out.write(this.compress().toByteArray());
+    }
+
+    /**
+     * Overrides class serialization to use the canonical encoded format.
+     */
+    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        byte[] encoded = new byte[32];
+        in.readFully(encoded);
+
+        try {
+            RistrettoElement elem = new CompressedRistretto(encoded).decompress();
+            this.repr = elem.repr;
+        } catch (InvalidEncodingException iee) {
+            throw new InvalidObjectException(iee.getMessage());
+        }
+    }
+
+    @SuppressWarnings("unused")
+    private void readObjectNoData() throws ObjectStreamException {
+        throw new InvalidObjectException("Cannot deserialize RistrettoElement from no data");
+    }
+
+    /**
      * The function MAP(t) from section 3.2.4 of the ristretto255 ID.
      */
     static RistrettoElement map(final FieldElement t) {
         final FieldElement r = t.square().multiply(Constants.SQRT_M1);
         final FieldElement u = r.add(FieldElement.ONE).multiply(Constants.ONE_MINUS_D_SQ);
-        final FieldElement v = FieldElement.MINUS_ONE.subtract(r.multiply(Constants.EDWARDS_D)).multiply(r.add(Constants.EDWARDS_D));
+        final FieldElement v = FieldElement.MINUS_ONE.subtract(r.multiply(Constants.EDWARDS_D))
+                .multiply(r.add(Constants.EDWARDS_D));
 
         final FieldElement.SqrtRatioM1Result sqrt = FieldElement.sqrtRatioM1(u, v);
         FieldElement s = sqrt.result;
@@ -62,12 +98,12 @@ public class RistrettoElement {
      */
     public static RistrettoElement fromUniformBytes(final byte[] b) {
         // 1. Interpret the low 255 bits of b[ 0..32] as an integer r0 in
-        //    little-endian representation. Reduce r0 modulo p.
+        // little-endian representation. Reduce r0 modulo p.
         final byte[] b0 = Arrays.copyOfRange(b, 0, 32);
         final FieldElement r0 = FieldElement.fromByteArray(b0);
 
         // 2. Interpret the low 255 bits of b[32..64] as an integer r1 in
-        //    little-endian representation. Reduce r1 modulo p.
+        // little-endian representation. Reduce r1 modulo p.
         final byte[] b1 = Arrays.copyOfRange(b, 32, 64);
         final FieldElement r1 = FieldElement.fromByteArray(b1);
 

@@ -6,6 +6,12 @@
 
 package cafe.cryptography.curve25519;
 
+import java.io.IOException;
+import java.io.InvalidObjectException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.ObjectStreamException;
+import java.io.Serializable;
 import java.util.Arrays;
 
 import cafe.cryptography.subtle.ConstantTime;
@@ -19,17 +25,40 @@ import cafe.cryptography.subtle.ConstantTime;
  * The first 255 bits of a CompressedEdwardsY represent the $y$-coordinate. The
  * high bit of the 32nd byte represents the sign of $x$.
  */
-public class CompressedEdwardsY {
+public class CompressedEdwardsY implements Serializable {
+    private static final long serialVersionUID = 1L;
+
     /**
      * The encoded point.
      */
-    private final byte[] data;
+    private transient byte[] data;
 
     public CompressedEdwardsY(byte[] data) {
         if (data.length != 32) {
             throw new IllegalArgumentException("Invalid CompressedEdwardsY encoding");
         }
         this.data = data;
+    }
+
+    /**
+     * Overrides class serialization to use the canonical encoded format.
+     */
+    private void writeObject(ObjectOutputStream out) throws IOException {
+        out.write(this.toByteArray());
+    }
+
+    /**
+     * Overrides class serialization to use the canonical encoded format.
+     */
+    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        byte[] encoded = new byte[32];
+        in.readFully(encoded);
+        this.data = encoded;
+    }
+
+    @SuppressWarnings("unused")
+    private void readObjectNoData() throws ObjectStreamException {
+        throw new InvalidObjectException("Cannot deserialize CompressedEdwardsY from no data");
     }
 
     /**
