@@ -12,7 +12,6 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.ObjectStreamException;
 import java.io.Serializable;
-import java.lang.reflect.Field;
 import java.util.Arrays;
 
 import cafe.cryptography.subtle.ConstantTime;
@@ -38,7 +37,7 @@ public class Scalar implements Serializable {
      * <p>
      * Invariant: the highest bit must be zero ($s[31] \le 127$).
      */
-    private transient final byte[] s;
+    private transient byte[] s;
 
     Scalar(byte[] s) {
         if (s.length != 32 || (((s[31] >> 7) & 0x01) != 0)) {
@@ -64,26 +63,7 @@ public class Scalar implements Serializable {
         if (((scalar[31] >> 7) & 0x01) != 0) {
             throw new InvalidObjectException("Invalid scalar representation");
         }
-
-        // Scalar fields are all final, so we need to carefully set them.
-        Field fieldS = null;
-        try {
-            fieldS = Scalar.class.getDeclaredField("s");
-            fieldS.setAccessible(true);
-            fieldS.set(this, scalar);
-        } catch (NoSuchFieldException nsfe) {
-            // Should never occur, but just in case...
-            throw new IOException(nsfe);
-        } catch (IllegalAccessException iae) {
-            // Could occur if a SecurityManager is enabled.
-            throw new IOException(iae);
-        } finally {
-            // Ensure the fields are always set back to final if there is a chance
-            // they might have been made accessible.
-            if (fieldS != null) {
-                fieldS.setAccessible(false);
-            }
-        }
+        this.s = scalar;
     }
 
     @SuppressWarnings("unused")

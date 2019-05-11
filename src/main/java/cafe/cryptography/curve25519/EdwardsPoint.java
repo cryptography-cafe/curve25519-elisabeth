@@ -12,7 +12,6 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.ObjectStreamException;
 import java.io.Serializable;
-import java.lang.reflect.Field;
 
 /**
  * An EdwardsPoint represents a point on the Edwards form of Curve25519.
@@ -23,10 +22,10 @@ public class EdwardsPoint implements Serializable {
     public static final EdwardsPoint IDENTITY = new EdwardsPoint(FieldElement.ZERO, FieldElement.ONE, FieldElement.ONE,
             FieldElement.ZERO);
 
-    transient final FieldElement X;
-    transient final FieldElement Y;
-    transient final FieldElement Z;
-    transient final FieldElement T;
+    transient FieldElement X;
+    transient FieldElement Y;
+    transient FieldElement Z;
+    transient FieldElement T;
 
     /**
      * Only for internal use.
@@ -54,49 +53,10 @@ public class EdwardsPoint implements Serializable {
 
         try {
             EdwardsPoint point = new CompressedEdwardsY(encoded).decompress();
-
-            // EdwardsPoint fields are all final, so we need to carefully set them.
-            Field fieldX = null;
-            Field fieldY = null;
-            Field fieldZ = null;
-            Field fieldT = null;
-            try {
-                fieldX = EdwardsPoint.class.getDeclaredField("X");
-                fieldY = EdwardsPoint.class.getDeclaredField("Y");
-                fieldZ = EdwardsPoint.class.getDeclaredField("Z");
-                fieldT = EdwardsPoint.class.getDeclaredField("T");
-
-                fieldX.setAccessible(true);
-                fieldY.setAccessible(true);
-                fieldZ.setAccessible(true);
-                fieldT.setAccessible(true);
-
-                fieldX.set(this, point.X);
-                fieldY.set(this, point.Y);
-                fieldZ.set(this, point.Z);
-                fieldT.set(this, point.T);
-            } catch (NoSuchFieldException nsfe) {
-                // Should never occur, but just in case...
-                throw new IOException(nsfe);
-            } catch (IllegalAccessException iae) {
-                // Could occur if a SecurityManager is enabled.
-                throw new IOException(iae);
-            } finally {
-                // Ensure the fields are always set back to final if there is a chance
-                // they might have been made accessible.
-                if (fieldX != null) {
-                    fieldX.setAccessible(false);
-                }
-                if (fieldY != null) {
-                    fieldY.setAccessible(false);
-                }
-                if (fieldZ != null) {
-                    fieldZ.setAccessible(false);
-                }
-                if (fieldT != null) {
-                    fieldT.setAccessible(false);
-                }
-            }
+            this.X = point.X;
+            this.Y = point.Y;
+            this.Z = point.Z;
+            this.T = point.T;
         } catch (InvalidEncodingException iee) {
             throw new InvalidObjectException(iee.getMessage());
         }

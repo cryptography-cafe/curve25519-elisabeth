@@ -12,7 +12,6 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.ObjectStreamException;
 import java.io.Serializable;
-import java.lang.reflect.Field;
 import java.util.Arrays;
 
 import cafe.cryptography.subtle.ConstantTime;
@@ -32,7 +31,7 @@ public class CompressedEdwardsY implements Serializable {
     /**
      * The encoded point.
      */
-    private transient final byte[] data;
+    private transient byte[] data;
 
     public CompressedEdwardsY(byte[] data) {
         if (data.length != 32) {
@@ -54,26 +53,7 @@ public class CompressedEdwardsY implements Serializable {
     private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
         byte[] encoded = new byte[32];
         in.readFully(encoded);
-
-        // CompressedEdwardsY fields are all final, so we need to carefully set them.
-        Field fieldData = null;
-        try {
-            fieldData = CompressedEdwardsY.class.getDeclaredField("data");
-            fieldData.setAccessible(true);
-            fieldData.set(this, encoded);
-        } catch (NoSuchFieldException nsfe) {
-            // Should never occur, but just in case...
-            throw new IOException(nsfe);
-        } catch (IllegalAccessException iae) {
-            // Could occur if a SecurityManager is enabled.
-            throw new IOException(iae);
-        } finally {
-            // Ensure the fields are always set back to final if there is a chance
-            // they might have been made accessible.
-            if (fieldData != null) {
-                fieldData.setAccessible(false);
-            }
-        }
+        this.data = encoded;
     }
 
     @SuppressWarnings("unused")

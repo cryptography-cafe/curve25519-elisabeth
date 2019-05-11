@@ -12,7 +12,6 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.ObjectStreamException;
 import java.io.Serializable;
-import java.lang.reflect.Field;
 import java.util.Arrays;
 
 /**
@@ -26,7 +25,7 @@ public class RistrettoElement implements Serializable {
     /**
      * The internal representation. Not canonical.
      */
-    transient final EdwardsPoint repr;
+    transient EdwardsPoint repr;
 
     /**
      * Only for internal use.
@@ -51,26 +50,7 @@ public class RistrettoElement implements Serializable {
 
         try {
             RistrettoElement elem = new CompressedRistretto(encoded).decompress();
-
-            // RistrettoElement fields are all final, so we need to carefully set them.
-            Field fieldRepr = null;
-            try {
-                fieldRepr = RistrettoElement.class.getDeclaredField("repr");
-                fieldRepr.setAccessible(true);
-                fieldRepr.set(this, elem.repr);
-            } catch (NoSuchFieldException nsfe) {
-                // Should never occur, but just in case...
-                throw new IOException(nsfe);
-            } catch (IllegalAccessException iae) {
-                // Could occur if a SecurityManager is enabled.
-                throw new IOException(iae);
-            } finally {
-                // Ensure the fields are always set back to final if there is a chance
-                // they might have been made accessible.
-                if (fieldRepr != null) {
-                    fieldRepr.setAccessible(false);
-                }
-            }
+            this.repr = elem.repr;
         } catch (InvalidEncodingException iee) {
             throw new InvalidObjectException(iee.getMessage());
         }
