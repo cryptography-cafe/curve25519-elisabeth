@@ -54,7 +54,7 @@ public class RistrettoElementBench {
     }
 
     @Benchmark
-    public RistrettoElement decompress() {
+    public RistrettoElement decompress() throws InvalidEncodingException {
         return this.Penc.decompress();
     }
 

@@ -3,21 +3,28 @@ language: java
 jdk:
   - oraclejdk11
   - oraclejdk9
-  - oraclejdk8
+  - openjdk12
   - openjdk11
   - openjdk10
   - openjdk9
-  - openjdk8
 
 matrix:
   include:
     - jdk: openjdk7
       install:
         - export TARGET_JAVA_HOME=$JAVA_HOME
-        - jdk_switcher use oraclejdk8
+        - jdk_switcher use oraclejdk9
         - ./gradlew assemble
-
-before_install: export JAVA7_HOME=$(jdk_switcher home openjdk7)
+    - jdk: openjdk8
+      install:
+        - export TARGET_JAVA_HOME=$JAVA_HOME
+        - jdk_switcher use oraclejdk9
+        - ./gradlew assemble
+    - jdk: oraclejdk8
+      install:
+        - export TARGET_JAVA_HOME=$JAVA_HOME
+        - jdk_switcher use oraclejdk9
+        - ./gradlew assemble
 
 after_success:
   - bash <(curl -s https://codecov.io/bash)

@@ -1,7 +1,7 @@
 # curve25519-elisabeth
 A pure-Java implementation of group operations on Curve25519.
 
-Requires Java 7 or higher.
+Requires Java 7 or higher. Requires JDK 9 or higher to build.
 
 # Documentation
 
