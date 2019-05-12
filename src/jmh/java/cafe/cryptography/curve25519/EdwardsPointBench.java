@@ -47,7 +47,7 @@ public class EdwardsPointBench {
     }
 
     @Benchmark
-    public EdwardsPoint decompress() {
+    public EdwardsPoint decompress() throws InvalidEncodingException {
         return this.Penc.decompress();
     }
 
