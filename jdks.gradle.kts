@@ -42,5 +42,12 @@ project.afterEvaluate {
         tasks.withType<JavaExec>().configureEach {
             executable = javaExecutable("java")
         }
+    } else {
+        tasks.named<JavaCompile>("compileJava") {
+            doFirst {
+                options.compilerArgs.addAll(listOf("--module-path", classpath.asPath))
+                classpath = files()
+            }
+        }
     }
 }
