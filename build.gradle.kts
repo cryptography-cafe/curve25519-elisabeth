@@ -54,7 +54,7 @@ tasks.jar {
 }
 
 group = "cafe.cryptography"
-version = "0.0.0"
+version = "0.1.0-SNAPSHOT"
 
 tasks.register<Jar>("sourcesJar") {
     from(sourceSets.main.get().allJava)
