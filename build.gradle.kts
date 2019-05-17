@@ -72,6 +72,30 @@ publishing {
             from(components["java"])
             artifact(tasks["sourcesJar"])
             artifact(tasks["javadocJar"])
+
+            pom {
+                name.set("curve25519-elisabeth")
+                description.set("Pure Java implementation of group operations on Curve25519")
+                url.set("https://cryptography.cafe")
+                licenses {
+                    license {
+                        name.set("MIT License")
+                        url.set("https://opensource.org/licenses/MIT")
+                    }
+                }
+                developers {
+                    developer {
+                        id.set("str4d")
+                        name.set("Jack Grigg")
+                        email.set("thestr4d@gmail.com")
+                    }
+                }
+                scm {
+                    connection.set("scm:git:git://github.com/cryptography-cafe/curve25519-elisabeth.git")
+                    developerConnection.set("scm:git:ssh://github.com:cryptography-cafe/curve25519-elisabeth.git")
+                    url.set("https://github.com/cryptography-cafe/curve25519-elisabeth/tree/master")
+                }
+            }
         }
     }
 }
