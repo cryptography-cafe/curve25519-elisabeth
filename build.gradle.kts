@@ -104,10 +104,10 @@ publishing {
             val snapshotRepoUrl = "https://oss.sonatype.org/content/repositories/snapshots/"
             url = uri(if (version.toString().endsWith("SNAPSHOT")) snapshotRepoUrl else releasesRepoUrl)
             credentials {
-                val NEXUS_USERNAME: String by project
-                val NEXUS_PASSWORD: String by project
-                username = NEXUS_USERNAME
-                password = NEXUS_PASSWORD
+                val NEXUS_USERNAME: String? by project
+                val NEXUS_PASSWORD: String? by project
+                username = NEXUS_USERNAME ?: ""
+                password = NEXUS_PASSWORD ?: ""
             }
         }
     }
