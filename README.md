@@ -1,4 +1,5 @@
-# curve25519-elisabeth
+# curve25519-elisabeth [![Maven Central](https://img.shields.io/maven-central/v/cafe.cryptography/curve25519-elisabeth.svg?label=Maven%20Central)](https://search.maven.org/search?q=g:%22cafe.cryptography%22%20AND%20a:%22curve25519-elisabeth%22) [![Build Status](https://travis-ci.com/cryptography-cafe/curve25519-elisabeth.svg?branch=master)](https://travis-ci.com/cryptography-cafe/curve25519-elisabeth) [![Codecov](https://img.shields.io/codecov/c/gh/cryptography-cafe/curve25519-elisabeth.svg)](https://codecov.io/gh/cryptography-cafe/curve25519-elisabeth)
+
 A pure-Java implementation of group operations on Curve25519.
 
 Requires Java 7 or higher. Requires JDK 9 or higher to build.
