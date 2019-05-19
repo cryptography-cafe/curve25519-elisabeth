@@ -4,6 +4,24 @@ A pure-Java implementation of group operations on Curve25519.
 
 Requires Java 7 or higher. Requires JDK 9 or higher to build.
 
+# Usage
+
+## Gradle
+
+```
+implementation 'cafe.cryptography:curve25519-elisabeth:0.1.0-SNAPSHOT'
+```
+
+## Apache Maven
+
+```
+<dependency>
+  <groupId>cafe.cryptography</groupId>
+  <artifactId>curve25519-elisabeth</artifactId>
+  <version>0.1.0-SNAPSHOT</version>
+</dependency>
+```
+
 # Documentation
 
 To view the public-facing API documentation, first build it:
