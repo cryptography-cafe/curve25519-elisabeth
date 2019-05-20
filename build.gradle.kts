@@ -54,7 +54,7 @@ tasks.jar {
 }
 
 group = "cafe.cryptography"
-version = "0.0.0"
+version = "0.1.0"
 
 tasks.register<Jar>("sourcesJar") {
     from(sourceSets.main.get().allJava)
@@ -72,6 +72,43 @@ publishing {
             from(components["java"])
             artifact(tasks["sourcesJar"])
             artifact(tasks["javadocJar"])
+
+            pom {
+                name.set("curve25519-elisabeth")
+                description.set("Pure Java implementation of group operations on Curve25519")
+                url.set("https://cryptography.cafe")
+                licenses {
+                    license {
+                        name.set("MIT License")
+                        url.set("https://opensource.org/licenses/MIT")
+                    }
+                }
+                developers {
+                    developer {
+                        id.set("str4d")
+                        name.set("Jack Grigg")
+                        email.set("thestr4d@gmail.com")
+                    }
+                }
+                scm {
+                    connection.set("scm:git:git://github.com/cryptography-cafe/curve25519-elisabeth.git")
+                    developerConnection.set("scm:git:ssh://github.com:cryptography-cafe/curve25519-elisabeth.git")
+                    url.set("https://github.com/cryptography-cafe/curve25519-elisabeth/tree/master")
+                }
+            }
+        }
+    }
+    repositories {
+        maven {
+            val releasesRepoUrl = "https://oss.sonatype.org/service/local/staging/deploy/maven2/"
+            val snapshotRepoUrl = "https://oss.sonatype.org/content/repositories/snapshots/"
+            url = uri(if (version.toString().endsWith("SNAPSHOT")) snapshotRepoUrl else releasesRepoUrl)
+            credentials {
+                val NEXUS_USERNAME: String? by project
+                val NEXUS_PASSWORD: String? by project
+                username = NEXUS_USERNAME ?: ""
+                password = NEXUS_PASSWORD ?: ""
+            }
         }
     }
 }

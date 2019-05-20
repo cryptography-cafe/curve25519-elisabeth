@@ -97,13 +97,13 @@ public class RistrettoElement implements Serializable {
      * @return the resulting element.
      */
     public static RistrettoElement fromUniformBytes(final byte[] b) {
-        // 1. Interpret the low 255 bits of b[ 0..32] as an integer r0 in
-        // little-endian representation. Reduce r0 modulo p.
+        // 1. Interpret the least significant 255 bits of b[ 0..32] as an
+        // integer r0 in little-endian representation. Reduce r0 modulo p.
         final byte[] b0 = Arrays.copyOfRange(b, 0, 32);
         final FieldElement r0 = FieldElement.fromByteArray(b0);
 
-        // 2. Interpret the low 255 bits of b[32..64] as an integer r1 in
-        // little-endian representation. Reduce r1 modulo p.
+        // 2. Interpret the least significant 255 bits of b[32..64] as an
+        // integer r1 in little-endian representation. Reduce r1 modulo p.
         final byte[] b1 = Arrays.copyOfRange(b, 32, 64);
         final FieldElement r1 = FieldElement.fromByteArray(b1);
 
@@ -205,9 +205,9 @@ public class RistrettoElement implements Serializable {
     public int hashCode() {
         // The general contract for the hashCode method states that equal objects must
         // have equal hash codes. Object equality is based on the encodings of the
-        // elements, not their internal representations (are not canonical). Note that
-        // equality is actually implemented using the ristretto255 EQUALS function, but
-        // it is simpler to derive a hashCode from the element's encoding.
+        // elements, not their internal representations (which are not canonical). Note
+        // that equality is actually implemented using the ristretto255 EQUALS function,
+        // but it is simpler to derive a hashCode from the element's encoding.
         return compress().hashCode();
     }
 
