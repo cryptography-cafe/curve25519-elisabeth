@@ -17,16 +17,16 @@ import java.util.Arrays;
 import cafe.cryptography.subtle.ConstantTime;
 
 /**
- * A Ristretto point in compressed wire format.
+ * A Ristretto element in compressed wire format.
  * <p>
- * The Ristretto encoding is canonical, so two points are equal if and only if
+ * The Ristretto encoding is canonical, so two elements are equal if and only if
  * their encodings are equal.
  */
 public class CompressedRistretto implements Serializable {
     private static final long serialVersionUID = 1L;
 
     /**
-     * The encoded point.
+     * The encoded element.
      */
     private transient byte[] data;
 
