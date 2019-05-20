@@ -1,6 +1,7 @@
 plugins {
     `java-library`
     `maven-publish`
+    signing
     jacoco
     id("me.champeau.gradle.jmh") version "0.4.8"
 }
@@ -111,6 +112,10 @@ publishing {
             }
         }
     }
+}
+
+signing {
+    sign(publishing.publications["mavenJava"])
 }
 
 tasks.jacocoTestReport {
