@@ -9,7 +9,7 @@ Requires Java 7 or higher. Requires JDK 9 or higher to build.
 ## Gradle
 
 ```
-implementation 'cafe.cryptography:curve25519-elisabeth:0.1.0-SNAPSHOT'
+implementation 'cafe.cryptography:curve25519-elisabeth:0.1.0'
 ```
 
 ## Apache Maven
@@ -18,7 +18,7 @@ implementation 'cafe.cryptography:curve25519-elisabeth:0.1.0-SNAPSHOT'
 <dependency>
   <groupId>cafe.cryptography</groupId>
   <artifactId>curve25519-elisabeth</artifactId>
-  <version>0.1.0-SNAPSHOT</version>
+  <version>0.1.0</version>
 </dependency>
 ```
 
