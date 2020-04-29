@@ -2,7 +2,7 @@
 
 A pure-Java implementation of group operations on Curve25519.
 
-Requires Java 7 or higher. Requires JDK 9 or higher to build.
+Requires Java 7 or higher. Requires JDK 10 or higher to build.
 
 # Usage
 
