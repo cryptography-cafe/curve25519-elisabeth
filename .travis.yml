@@ -2,30 +2,7 @@ language: java
 dist: trusty
 
 jdk:
-  - oraclejdk11
-  - oraclejdk9
   - openjdk12
-  - openjdk11
-  - openjdk10
-  - openjdk9
-
-matrix:
-  include:
-    - jdk: openjdk7
-      install:
-        - export TARGET_JAVA_HOME=$JAVA_HOME
-        - jdk_switcher use oraclejdk9
-        - ./gradlew assemble
-    - jdk: openjdk8
-      install:
-        - export TARGET_JAVA_HOME=$JAVA_HOME
-        - jdk_switcher use oraclejdk9
-        - ./gradlew assemble
-    - jdk: oraclejdk8
-      install:
-        - export TARGET_JAVA_HOME=$JAVA_HOME
-        - jdk_switcher use oraclejdk9
-        - ./gradlew assemble
 
 after_success:
   - bash <(curl -s https://codecov.io/bash)
