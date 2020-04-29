@@ -8,7 +8,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        java: [9, 10, 11, 12, 13]
+        java: [10, 11, 12, 13]
 
     steps:
     - uses: actions/checkout@v2
@@ -26,7 +26,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        java: [7, 8]
+        java: [7, 8, 9]
 
     steps:
     - uses: actions/checkout@v2
@@ -36,10 +36,10 @@ jobs:
         java-version: ${{ matrix.java }}
     - name: Set TARGET_JAVA_HOME
       run: echo "::set-env name=TARGET_JAVA_HOME::$JAVA_HOME"
-    - name: Set up Java 9 for running Gradle
+    - name: Set up Java 10 for running Gradle
       uses: actions/setup-java@v1
       with:
-        java-version: 9
+        java-version: 10
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
     - name: Build and test
