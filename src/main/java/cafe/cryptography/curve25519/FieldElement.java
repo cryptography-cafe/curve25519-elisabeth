@@ -1330,15 +1330,29 @@ class FieldElement {
      *         / v$ is square).
      */
     static SqrtRatioM1Result sqrtRatioM1(FieldElement u, FieldElement v) {
-        FieldElement v3 = v.square().multiply(v);
-        FieldElement v7 = v3.square().multiply(v);
-        FieldElement r = u.multiply(v3).multiply(u.multiply(v7).powP58());
-        FieldElement check = v.multiply(r.square());
+        // v^3
+        FieldElement v3 = v.square();
+        v3.multiplyAssign(v);
+
+        // u v^7
+        FieldElement v7u = v3.square();
+        v7u.multiplyAssign(v);
+        v7u.multiplyAssign(u);
+
+        // r = u v^3 (u v^7)^{(p-5)/8}
+        FieldElement r = v3; // Rename for clarity; we don't use v3 again.
+        r.multiplyAssign(u);
+        r.multiplyAssign(v7u.powP58());
+
+        // check = v r^2
+        FieldElement check = r.square();
+        check.multiplyAssign(v);
 
         FieldElement uNeg = u.negate();
         int correctSignSqrt = check.ctEquals(u);
         int flippedSignSqrt = check.ctEquals(uNeg);
-        int flippedSignSqrtM1 = check.ctEquals(uNeg.multiply(Constants.SQRT_M1));
+        uNeg.multiplyAssign(Constants.SQRT_M1);
+        int flippedSignSqrtM1 = check.ctEquals(uNeg);
 
         FieldElement rPrime = r.multiply(Constants.SQRT_M1);
         r = r.ctSelect(rPrime, flippedSignSqrt | flippedSignSqrtM1);
