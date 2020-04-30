@@ -1077,107 +1077,108 @@ class FieldElement {
         t1 = t0.square();
 
         // 8 == 2 * 4
-        t1 = t1.square();
+        t1.squareAssign();
 
         // 9 == 8 + 1
-        t1 = multiply(t1);
+        t1.multiplyAssign(this);
 
         // 11 == 9 + 2
-        t0 = t0.multiply(t1);
+        t0.multiplyAssign(t1);
 
         // 22 == 2 * 11
         t2 = t0.square();
 
         // 31 == 22 + 9
-        t1 = t1.multiply(t2);
+        t1.multiplyAssign(t2);
 
         // 2^6 - 2^1
         t2 = t1.square();
 
         // 2^10 - 2^5
         for (int i = 1; i < 5; ++i) {
-            t2 = t2.square();
+            t2.squareAssign();
         }
 
         // 2^10 - 2^0
-        t1 = t2.multiply(t1);
+        t1.multiplyAssign(t2);
 
         // 2^11 - 2^1
         t2 = t1.square();
 
         // 2^20 - 2^10
         for (int i = 1; i < 10; ++i) {
-            t2 = t2.square();
+            t2.squareAssign();
         }
 
         // 2^20 - 2^0
-        t2 = t2.multiply(t1);
+        t2.multiplyAssign(t1);
 
         // 2^21 - 2^1
         t3 = t2.square();
 
         // 2^40 - 2^20
         for (int i = 1; i < 20; ++i) {
-            t3 = t3.square();
+            t3.squareAssign();
         }
 
         // 2^40 - 2^0
-        t2 = t3.multiply(t2);
+        t2.multiplyAssign(t3);
 
         // 2^41 - 2^1
-        t2 = t2.square();
+        t2.squareAssign();
 
         // 2^50 - 2^10
         for (int i = 1; i < 10; ++i) {
-            t2 = t2.square();
+            t2.squareAssign();
         }
 
         // 2^50 - 2^0
-        t1 = t2.multiply(t1);
+        t1.multiplyAssign(t2);
 
         // 2^51 - 2^1
         t2 = t1.square();
 
         // 2^100 - 2^50
         for (int i = 1; i < 50; ++i) {
-            t2 = t2.square();
+            t2.squareAssign();
         }
 
         // 2^100 - 2^0
-        t2 = t2.multiply(t1);
+        t2.multiplyAssign(t1);
 
         // 2^101 - 2^1
         t3 = t2.square();
 
         // 2^200 - 2^100
         for (int i = 1; i < 100; ++i) {
-            t3 = t3.square();
+            t3.squareAssign();
         }
 
         // 2^200 - 2^0
-        t2 = t3.multiply(t2);
+        t2.multiplyAssign(t3);
 
         // 2^201 - 2^1
-        t2 = t2.square();
+        t2.squareAssign();
 
         // 2^250 - 2^50
         for (int i = 1; i < 50; ++i) {
-            t2 = t2.square();
+            t2.squareAssign();
         }
 
         // 2^250 - 2^0
-        t1 = t2.multiply(t1);
+        t1.multiplyAssign(t2);
 
         // 2^251 - 2^1
-        t1 = t1.square();
+        t1.squareAssign();
 
         // 2^255 - 2^5
         for (int i = 1; i < 5; ++i) {
-            t1 = t1.square();
+            t1.squareAssign();
         }
 
         // 2^255 - 21
-        return t1.multiply(t0);
+        t1.multiplyAssign(t0);
+        return t1;
     }
 
     /**
