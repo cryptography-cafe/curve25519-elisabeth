@@ -366,12 +366,21 @@ class FieldElement {
      * @return The field element this + val.
      */
     public FieldElement add(FieldElement val) {
+        FieldElement h = new FieldElement(Arrays.copyOf(t, t.length));
+        h.addAssign(val);
+        return h;
+    }
+
+    /**
+     * Adds the argument to this FieldElement: $f \gets f + g$
+     * <p>
+     * The mutating, non-allocating variant of {@link #add(FieldElement)}.
+     */
+    public void addAssign(FieldElement val) {
         int[] g = val.t;
-        int[] h = new int[10];
         for (int i = 0; i < 10; i++) {
-            h[i] = t[i] + g[i];
+            t[i] = t[i] + g[i];
         }
-        return new FieldElement(h);
     }
 
     /**
@@ -392,12 +401,21 @@ class FieldElement {
      * @return The field element this - val.
      **/
     public FieldElement subtract(FieldElement val) {
+        FieldElement h = new FieldElement(Arrays.copyOf(t, t.length));
+        h.subtractAssign(val);
+        return h;
+    }
+
+    /**
+     * Subtracts the argument from this FieldElement: $f \gets f - g$
+     * <p>
+     * The mutating, non-allocating variant of {@link #subtract(FieldElement)}.
+     */
+    public void subtractAssign(FieldElement val) {
         int[] g = val.t;
-        int[] h = new int[10];
         for (int i = 0; i < 10; i++) {
-            h[i] = t[i] - g[i];
+            t[i] = t[i] - g[i];
         }
-        return new FieldElement(h);
     }
 
     /**
@@ -414,11 +432,20 @@ class FieldElement {
      * @return The field element (-1) * this.
      */
     public FieldElement negate() {
-        int[] h = new int[10];
+        FieldElement h = new FieldElement(Arrays.copyOf(t, t.length));
+        h.negateAssign();
+        return h;
+    }
+
+    /**
+     * Negates this FieldElement: $f \gets -f$
+     * <p>
+     * The mutating, non-allocating variant of {@link #negate()}.
+     */
+    public void negateAssign() {
         for (int i = 0; i < 10; i++) {
-            h[i] = -t[i];
+            t[i] = -t[i];
         }
-        return new FieldElement(h);
     }
 
     /**
@@ -457,6 +484,17 @@ class FieldElement {
      * @return The (reasonably reduced) field element this * val.
      */
     public FieldElement multiply(FieldElement val) {
+        FieldElement h = new FieldElement(Arrays.copyOf(t, t.length));
+        h.multiplyAssign(val);
+        return h;
+    }
+
+    /**
+     * Multiplies this FieldElement by the argument: $f \gets f * g$
+     * <p>
+     * The mutating, non-allocating variant of {@link #multiply(FieldElement)}.
+     */
+    public void multiplyAssign(FieldElement val) {
         int[] g = val.t;
         int g1_19 = 19 * g[1]; /* 1.959375*2^29 */
         int g2_19 = 19 * g[2]; /* 1.959375*2^30; still ok */
@@ -662,18 +700,16 @@ class FieldElement {
         /* |h1| <= 1.01*2^24 */
         // @formatter:on
 
-        int[] h = new int[10];
-        h[0] = (int) h0;
-        h[1] = (int) h1;
-        h[2] = (int) h2;
-        h[3] = (int) h3;
-        h[4] = (int) h4;
-        h[5] = (int) h5;
-        h[6] = (int) h6;
-        h[7] = (int) h7;
-        h[8] = (int) h8;
-        h[9] = (int) h9;
-        return new FieldElement(h);
+        t[0] = (int) h0;
+        t[1] = (int) h1;
+        t[2] = (int) h2;
+        t[3] = (int) h3;
+        t[4] = (int) h4;
+        t[5] = (int) h5;
+        t[6] = (int) h6;
+        t[7] = (int) h7;
+        t[8] = (int) h8;
+        t[9] = (int) h9;
     }
 
     /**
@@ -695,6 +731,17 @@ class FieldElement {
      * @return The (reasonably reduced) square of this field element.
      */
     public FieldElement square() {
+        FieldElement h = new FieldElement(Arrays.copyOf(t, t.length));
+        h.squareAssign();
+        return h;
+    }
+
+    /**
+     * Squares this FieldElement: $f \gets f * f$
+     * <p>
+     * The mutating, non-allocating variant of {@link #square()}.
+     */
+    public void squareAssign() {
         int f0 = t[0];
         int f1 = t[1];
         int f2 = t[2];
@@ -825,18 +872,16 @@ class FieldElement {
         carry0 = (h0 + (long) (1<<25)) >> 26; h1 += carry0; h0 -= carry0 << 26;
         // @formatter:on
 
-        int[] h = new int[10];
-        h[0] = (int) h0;
-        h[1] = (int) h1;
-        h[2] = (int) h2;
-        h[3] = (int) h3;
-        h[4] = (int) h4;
-        h[5] = (int) h5;
-        h[6] = (int) h6;
-        h[7] = (int) h7;
-        h[8] = (int) h8;
-        h[9] = (int) h9;
-        return new FieldElement(h);
+        t[0] = (int) h0;
+        t[1] = (int) h1;
+        t[2] = (int) h2;
+        t[3] = (int) h3;
+        t[4] = (int) h4;
+        t[5] = (int) h5;
+        t[6] = (int) h6;
+        t[7] = (int) h7;
+        t[8] = (int) h8;
+        t[9] = (int) h9;
     }
 
     /**
@@ -858,6 +903,17 @@ class FieldElement {
      * @return The (reasonably reduced) square of this field element times 2.
      */
     public FieldElement squareAndDouble() {
+        FieldElement h = new FieldElement(Arrays.copyOf(t, t.length));
+        h.squareAndDoubleAssign();
+        return h;
+    }
+
+    /**
+     * Squares and doubles this FieldElement: $f \gets 2 * f * f$
+     * <p>
+     * The mutating, non-allocating variant of {@link #squareAndDouble()}.
+     */
+    public void squareAndDoubleAssign() {
         int f0 = t[0];
         int f1 = t[1];
         int f2 = t[2];
@@ -991,18 +1047,16 @@ class FieldElement {
         carry0 = (h0 + (long) (1<<25)) >> 26; h1 += carry0; h0 -= carry0 << 26;
         // @formatter:on
 
-        int[] h = new int[10];
-        h[0] = (int) h0;
-        h[1] = (int) h1;
-        h[2] = (int) h2;
-        h[3] = (int) h3;
-        h[4] = (int) h4;
-        h[5] = (int) h5;
-        h[6] = (int) h6;
-        h[7] = (int) h7;
-        h[8] = (int) h8;
-        h[9] = (int) h9;
-        return new FieldElement(h);
+        t[0] = (int) h0;
+        t[1] = (int) h1;
+        t[2] = (int) h2;
+        t[3] = (int) h3;
+        t[4] = (int) h4;
+        t[5] = (int) h5;
+        t[6] = (int) h6;
+        t[7] = (int) h7;
+        t[8] = (int) h8;
+        t[9] = (int) h9;
     }
 
     /**

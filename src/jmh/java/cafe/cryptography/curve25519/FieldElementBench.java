@@ -42,8 +42,18 @@ public class FieldElementBench {
     }
 
     @Benchmark
+    public void addAssign() {
+        this.a.addAssign(this.b);
+    }
+
+    @Benchmark
     public FieldElement multiply() {
         return this.a.multiply(this.b);
+    }
+
+    @Benchmark
+    public void multiplyAssign() {
+        this.a.multiplyAssign(this.b);
     }
 
     @Benchmark
@@ -52,8 +62,18 @@ public class FieldElementBench {
     }
 
     @Benchmark
+    public void squareAssign() {
+        this.a.squareAssign();
+    }
+
+    @Benchmark
     public FieldElement squareAndDouble() {
         return this.a.squareAndDouble();
+    }
+
+    @Benchmark
+    public void squareAndDoubleAssign() {
+        this.a.squareAndDoubleAssign();
     }
 
     @Benchmark
