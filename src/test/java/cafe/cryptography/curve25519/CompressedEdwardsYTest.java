@@ -15,7 +15,6 @@ import java.io.ObjectOutputStream;
 import org.junit.*;
 
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 
 public class CompressedEdwardsYTest {
