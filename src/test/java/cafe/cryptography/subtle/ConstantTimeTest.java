@@ -11,8 +11,8 @@ import java.util.Random;
 
 import org.junit.*;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
 
 public class ConstantTimeTest {
     @Test

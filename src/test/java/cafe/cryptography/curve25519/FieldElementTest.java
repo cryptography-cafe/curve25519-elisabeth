@@ -8,9 +8,9 @@ package cafe.cryptography.curve25519;
 
 import org.junit.*;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
-import static org.junit.Assert.assertThat;
 
 public class FieldElementTest {
     // Test vectors below, and the tests they are used in, are from

@@ -13,14 +13,15 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
 import org.junit.*;
-import org.junit.rules.ExpectedException;
+import org.junit.function.ThrowingRunnable;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.lessThanOrEqualTo;
 import static org.hamcrest.Matchers.not;
-import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertThrows;
 
 public class ScalarTest {
     /**
@@ -69,9 +70,6 @@ public class ScalarTest {
             0, -15, 0, 0, 0, 0, 1, 0, 0, 0, 0, 7, 0, 0, 0, 0, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 13, 0, 0, 0, 0, 0, 0, 11, 0,
             0, 0, 0, 0, 15, 0, 0, 0, 0, 0, -9, 0, 0, 0, 0, 0, 0, 0, -1, 0, 0, 0, 0, 0, 0, 0, 7, 0, 0, 0, 0, 0, -15, 0,
             0, 0, 0, 0, 15, 0, 0, 0, 0, 15, 0, 0, 0, 0, 15, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0 };
-
-    @Rule
-    public ExpectedException expectedEx = ExpectedException.none();
 
     @Test
     public void packageConstructorDoesNotThrowOnValid() {
@@ -170,26 +168,40 @@ public class ScalarTest {
         // = 28380414028753969466561515933501938171588560817147392552250411230663687203
         // (mod l)
         // Non-canonical because unreduced mod l
-        byte[] nonCanonicalBytesBecauseUnreduced = new byte[32];
+        final byte[] nonCanonicalBytesBecauseUnreduced = new byte[32];
         for (int i = 0; i < 32; i++) {
             nonCanonicalBytesBecauseUnreduced[i] = 16;
         }
 
-        expectedEx.expect(IllegalArgumentException.class);
-        expectedEx.expectMessage("Non-canonical scalar representation");
-        Scalar.fromCanonicalBytes(nonCanonicalBytesBecauseUnreduced);
+        ThrowingRunnable runnable = new ThrowingRunnable() {
+            public void run() {
+                Scalar.fromCanonicalBytes(nonCanonicalBytesBecauseUnreduced);
+            }
+        };
+
+        assertThrows(
+                "Non-canonical scalar representation",
+                IllegalArgumentException.class,
+                runnable);
     }
 
     @Test
     public void nonCanonicalDecodingHighbit() {
         // Encoding with high bit set, to check that the parser isn't pre-masking the
         // high bit
-        byte[] nonCanonicalBytesBecauseHighbit = new byte[32];
+        final byte[] nonCanonicalBytesBecauseHighbit = new byte[32];
         nonCanonicalBytesBecauseHighbit[31] = (byte) 0x80;
 
-        expectedEx.expect(IllegalArgumentException.class);
-        expectedEx.expectMessage("Invalid scalar representation");
-        Scalar.fromCanonicalBytes(nonCanonicalBytesBecauseHighbit);
+        ThrowingRunnable runnable = new ThrowingRunnable() {
+            public void run() {
+                Scalar.fromCanonicalBytes(nonCanonicalBytesBecauseHighbit);
+            }
+        };
+
+        assertThrows(
+                "Invalid scalar representation",
+                IllegalArgumentException.class,
+                runnable);
     }
 
     @Test
