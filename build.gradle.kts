@@ -28,7 +28,7 @@ sourceSets {
 }
 
 dependencies {
-    testImplementation("junit:junit:4.13") {
+    testImplementation("junit:junit:4.13.2") {
         exclude("org.hamcrest")
     }
     testImplementation("org.hamcrest:hamcrest:2.2")
