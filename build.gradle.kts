@@ -3,7 +3,7 @@ plugins {
     `maven-publish`
     signing
     jacoco
-    id("me.champeau.gradle.jmh") version "0.5.0"
+    id("me.champeau.gradle.jmh") version "0.5.3"
 }
 
 apply(from = "jdks.gradle.kts")
