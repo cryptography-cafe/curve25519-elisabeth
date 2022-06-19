@@ -9,11 +9,10 @@ package cafe.cryptography.subtle;
 import java.util.Arrays;
 import java.util.Random;
 
-import org.hamcrest.core.IsEqual;
 import org.junit.*;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
 
 public class ConstantTimeTest {
     @Test
