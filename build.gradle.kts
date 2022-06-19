@@ -3,7 +3,10 @@ plugins {
     `maven-publish`
     signing
     jacoco
-    id("me.champeau.gradle.jmh") version "0.5.0"
+    // 0.6.2 upgrades to JMH 1.28, which has dependencies that only support
+    // Java 8+. Once we've migrated to Gradle Toolchains, we can just use the
+    // latest Java for running benchmarks.
+    id("me.champeau.jmh") version "0.6.1"
 }
 
 apply(from = "jdks.gradle.kts")
