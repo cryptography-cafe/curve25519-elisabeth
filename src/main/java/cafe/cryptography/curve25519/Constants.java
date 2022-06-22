@@ -6,6 +6,8 @@
 
 package cafe.cryptography.curve25519;
 
+import java.math.BigInteger;
+
 /**
  * Various constants and useful parameters.
  */
@@ -154,4 +156,10 @@ public final class Constants {
      */
     public static final RistrettoGeneratorTable RISTRETTO_GENERATOR_TABLE = new RistrettoGeneratorTable(
             RISTRETTO_GENERATOR);
+
+    /**
+     * Value of ed25519 base point - 2
+     * Used for calculating the modular inverse of a Scalar
+     */
+    public static final BigInteger ModMinus2 = new BigInteger("7237005577332262213973186563042994240857116359379907606001950938285454250987");
 }

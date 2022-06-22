@@ -239,6 +239,16 @@ public class ScalarTest {
     }
 
     @Test
+    public void inverse() {
+        assertThat(X.invert(), is(XINV));
+    }
+
+    @Test
+    public void divide() {
+        assertThat(Y.divide(X), is(Y.multiply(XINV)));
+    }
+
+    @Test
     public void nonAdjacentForm() {
         byte[] naf = A_SCALAR.nonAdjacentForm();
         assertThat(naf, is(A_NAF));
