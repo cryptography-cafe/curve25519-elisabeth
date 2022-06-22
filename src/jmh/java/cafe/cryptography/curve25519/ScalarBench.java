@@ -59,6 +59,12 @@ public class ScalarBench {
     }
 
     @Benchmark
+    public Scalar invert() { return this.a.invert(); }
+
+    @Benchmark
+    public Scalar divide() { return this.a.divide(this.b); }
+
+    @Benchmark
     public Scalar multiplyAndAddManual() {
         return this.a.multiply(this.b).add(this.c);
     }
