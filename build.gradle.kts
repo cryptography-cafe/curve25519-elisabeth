@@ -6,7 +6,7 @@ plugins {
     // 0.6.2 upgrades to JMH 1.28, which has dependencies that only support
     // Java 8+. Once we've migrated to Gradle Toolchains, we can just use the
     // latest Java for running benchmarks.
-    id("me.champeau.jmh") version "0.6.1"
+    id("me.champeau.jmh") version "0.6.8"
 }
 
 apply(from = "jdks.gradle.kts")
