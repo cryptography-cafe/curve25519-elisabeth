@@ -297,6 +297,55 @@ public class EdwardsPoint implements Serializable {
         return Q;
     }
 
+    public static void findShortVector(final Scalar k) {
+        SignedScalar n = SignedScalar.PRIME;
+        SignedScalar Nu = SignedScalar.PRIME_SQUARED;
+        SignedScalar Nv = k.square(k).add(Scalar.ONE);
+        SignedScalar p = n.multiply(k); // Modular or no?
+
+        int r = 128;
+        int t = 253;
+
+        Scalar u0 = n;
+        Scalar u1 = Scalar.ZERO;
+
+        Scalar v0 = k;
+        Scalar v1 = Scalar.ONE;
+
+        while (true) {
+            if (Nu < Nv) {
+                Scalar tmp0 = u0;
+                Scalar tmp1 = u1;
+                u0 = v0;
+                u1 = v1;
+                v0 = tmp0;
+                v1 = tmp1;
+
+                tmp0 = Nu;
+                Nu = Nv;
+                Nv = tmp0;
+            }
+
+            int len_Nv = Nv.len();
+            if (len_Nv <= t) {
+                return (v0, v1);
+            }
+
+            int s = Math.max(0, p.len() - len_Nv);
+            if (p > 0) {
+                u0 = u0.subtract(v0.shl(s));
+                u1 = u1.subtract(v1.shl(s));
+                Nu = Nu.add(Nv.shl(2*s)).subtract(p.shl(s+1));
+                p = p.subtract(Nv.shl(s));
+            } else {
+                u0 = u0.add(v0.shl(s));
+                u1 = u1.add(v1.shl(s));
+                Nu = Nu.add(Nv.shl(2*s)).add(p.shl(s+1));
+                p = p.add(Nv.shl(s));
+            }
+        }
+    }
+
     /**
      * Compute $r = [a]A + [b]B$ in variable time, where $B$ is the Ed25519
      * basepoint.
